@@ -439,32 +439,44 @@ const firebaseConfig = {
         });
 
         // Signup
+        // Signup Fixed Logic
         document.getElementById('signup-btn').addEventListener('click', async () => {
             const name = document.getElementById('signup-name').value;
             const email = document.getElementById('signup-email').value;
             const pass = document.getElementById('signup-password').value;
+            
             if(!name || !email || !pass) return showAlert("Fill all fields");
             
             document.getElementById('loader').style.display = 'flex';
             try {
+                // ১. ইউজার তৈরি করা
                 const cred = await createUserWithEmailAndPassword(auth, email, pass);
-                await updateDoc(doc(db, "users", cred.user.uid), { name: name });
-                // Auth listener will handle the rest
+                
+                // ২. ডাটাবেসে নতুন ডকুমেন্ট তৈরি করা (setDoc ব্যবহার করতে হবে, updateDoc নয়)
+                const newUser = {
+                    uid: cred.user.uid,
+                    name: name,
+                    email: email,
+                    balance: 50, // সাইনআপ বোনাস
+                    referralCode: Math.random().toString(36).substring(2, 8).toUpperCase(),
+                    dailyAdCount: 0,
+                    lastAdDate: new Date().toISOString().split('T')[0],
+                    createdAt: serverTimestamp()
+                };
+
+                // এখানে setDoc ব্যবহার করা হয়েছে যা নতুন ডকুমেন্ট তৈরি করবে
+                await setDoc(doc(db, "users", cred.user.uid), newUser);
+                
+                // ৩. UI আপডেট করার দরকার নেই, onAuthStateChanged অটোমেটিক হ্যান্ডেল করবে
+                
             } catch(e) {
-                showAlert("Signup Failed: " + e.message);
+                console.error(e);
+                let msg = e.message;
+                if(msg.includes('email-already-in-use')) msg = "Email already used.";
+                showAlert("Signup Failed: " + msg);
                 document.getElementById('loader').style.display = 'none';
             }
         });
-
-        // Toggles
-        document.getElementById('show-signup').onclick = () => {
-            document.getElementById('login-view').classList.add('hidden');
-            document.getElementById('signup-view').classList.remove('hidden');
-        };
-        document.getElementById('show-login').onclick = () => {
-            document.getElementById('signup-view').classList.add('hidden');
-            document.getElementById('login-view').classList.remove('hidden');
-        };
         
         // Logout
         document.getElementById('logout-btn').onclick = () => signOut(auth);
@@ -681,4 +693,5 @@ const firebaseConfig = {
         lucide.createIcons();
     </script>
 </body>
+
 </html>
