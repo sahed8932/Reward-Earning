@@ -8,6 +8,9 @@
     <!-- Ad Code (Monetag) -->
     <script src='//libtl.com/sdk.js' data-zone='10352978' data-sdk='show_10352978'></script>
     
+    <!-- Telegram Web App Script (গুরুত্বপূর্ণ: এটি যোগ করা হয়েছে) -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
     <!-- Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -398,6 +401,11 @@
         
         window.signOut = signOut;
 
+        // --- TELEGRAM SETUP ---
+        const botUsername = "Reward_Earning1_bot"; // আপনার বটের ইউজারনেম
+        const tg = window.Telegram.WebApp;
+        tg.expand(); // অ্যাপ ফুল স্ক্রিন করার জন্য
+
         // Globals
         let currentUser = null;
         let userData = null;
@@ -454,8 +462,20 @@
                 } catch(e) { console.error(e); }
             } else {
                 currentUser = null;
-                const urlParams = new URLSearchParams(window.location.search);
-                const refCode = urlParams.get('ref');
+                
+                // --- REFERRAL HANDLING (TELEGRAM & WEB) ---
+                let refCode = null;
+                
+                // ১. টেলিগ্রাম থেকে রেফার কোড চেক করা
+                if(tg.initDataUnsafe && tg.initDataUnsafe.start_param) {
+                    refCode = tg.initDataUnsafe.start_param;
+                } 
+                // ২. ওয়েব লিংক (?ref=) থেকে চেক করা (ব্যাকআপ)
+                else {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    refCode = urlParams.get('ref');
+                }
+
                 if(refCode) {
                     document.getElementById('signup-referral').value = refCode;
                     document.getElementById('show-signup').click();
@@ -725,15 +745,38 @@
             } catch(e) { console.log("Index needed"); }
         }
 
-        // --- REFERRAL ---
-        window.copyCode = () => { navigator.clipboard.writeText(userData.referralCode); showToast("Code Copied!"); };
-        window.copyLink = () => { navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}?ref=${userData.referralCode}`); showToast("Link Copied!"); };
+        // --- NEW TELEGRAM SHARING LOGIC ---
+        
+        // শুধু লিংক কপি করা
+        window.copyCode = () => { 
+            navigator.clipboard.writeText(userData.referralCode); 
+            showToast("Refer Code Copied!"); 
+        };
+
+        window.copyLink = () => { 
+            // এখন টেলিগ্রামের লিংক কপি হবে
+            const link = `https://t.me/${botUsername}/app?startapp=${userData.referralCode}`;
+            navigator.clipboard.writeText(link); 
+            showToast("Telegram Link Copied!"); 
+        };
+
+        // সরাসরি টেলিগ্রামে শেয়ার করা
         window.shareLink = () => {
-            const link = `${window.location.origin}${window.location.pathname}?ref=${userData.referralCode}`;
-            if(navigator.share) navigator.share({ title: 'Earn Money', url: link }); else copyLink();
+            const link = `https://t.me/${botUsername}/app?startapp=${userData.referralCode}`;
+            const text = `Join Earn Pro and earn money daily! Use my code: ${userData.referralCode}`;
+            
+            const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(text)}`;
+            
+            // যদি টেলিগ্রাম অ্যাপের ভেতর থাকে
+            if(window.Telegram.WebApp.initData) {
+                window.Telegram.WebApp.openTelegramLink(shareUrl);
+            } else {
+                // যদি ব্রাউজারে থাকে
+                window.open(shareUrl, '_blank');
+            }
         };
 
         lucide.createIcons();
     </script>
 </body>
-</html>
+    </html>
