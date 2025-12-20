@@ -8,9 +8,6 @@
     <!-- Ad Code (Monetag) -->
     <script src='//libtl.com/sdk.js' data-zone='10352978' data-sdk='show_10352978'></script>
     
-    <!-- Telegram Web App Script (গুরুত্বপূর্ণ: এটি যোগ করা হয়েছে) -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
     <!-- Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -34,9 +31,6 @@
         .nav-link.active i { transform: translateY(-3px); }
         @keyframes slideUp { from { transform: translateY(10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         .progress-bar { transition: width 0.5s ease-in-out; }
-        .task-btn { position: relative; overflow: hidden; }
-        .task-btn::after { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); transition: 0.5s; }
-        .task-btn:hover::after { left: 100%; }
         
         /* Modal Animation */
         .modal-animate { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
@@ -136,13 +130,13 @@
                                     <p class="text-xs text-gray-400">Watch full ad to claim</p>
                                 </div>
                                 <span class="bg-slate-800 text-blue-400 text-xs px-2 py-1 rounded font-mono">
-                                    <span id="task1-count">0</span>/10
+                                    <span id="task1-count">0</span>/<span id="limit-task1">10</span>
                                 </span>
                             </div>
                             <div class="w-full bg-slate-800 h-1.5 rounded-full mb-3">
                                 <div id="task1-progress" class="bg-blue-500 h-1.5 rounded-full progress-bar" style="width: 0%"></div>
                             </div>
-                            <button id="btn-task1" onclick="handleTask('task1', 50)" class="w-full py-2.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold task-btn">START TASK</button>
+                            <button id="btn-task1" onclick="handleTask('task1', 50)" class="w-full py-2.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold">START TASK</button>
                         </div>
 
                         <!-- Task 2 (Ad) -->
@@ -153,13 +147,13 @@
                                     <p class="text-xs text-gray-400">Interact and earn</p>
                                 </div>
                                 <span class="bg-slate-800 text-purple-400 text-xs px-2 py-1 rounded font-mono">
-                                    <span id="task2-count">0</span>/10
+                                    <span id="task2-count">0</span>/<span id="limit-task2">10</span>
                                 </span>
                             </div>
                             <div class="w-full bg-slate-800 h-1.5 rounded-full mb-3">
                                 <div id="task2-progress" class="bg-purple-500 h-1.5 rounded-full progress-bar" style="width: 0%"></div>
                             </div>
-                            <button id="btn-task2" onclick="handleTask('task2', 50)" class="w-full py-2.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-white text-sm font-bold task-btn">START TASK</button>
+                            <button id="btn-task2" onclick="handleTask('task2', 50)" class="w-full py-2.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-white text-sm font-bold">START TASK</button>
                         </div>
 
                          <!-- Task 3 (Math) -->
@@ -170,54 +164,56 @@
                                     <p class="text-xs text-gray-400">Solve & Watch Ad</p>
                                 </div>
                                 <span class="bg-slate-800 text-green-400 text-xs px-2 py-1 rounded font-mono">
-                                    <span id="task3-count">0</span>/10
+                                    <span id="task3-count">0</span>/<span id="limit-task3">10</span>
                                 </span>
                             </div>
                             <div class="w-full bg-slate-800 h-1.5 rounded-full mb-3">
                                 <div id="task3-progress" class="bg-green-500 h-1.5 rounded-full progress-bar" style="width: 0%"></div>
                             </div>
-                            <button id="btn-task3" onclick="handleMathTask()" class="w-full py-2.5 rounded-lg bg-green-600 hover:bg-green-500 text-white text-sm font-bold task-btn">START QUIZ</button>
+                            <button id="btn-task3" onclick="handleMathTask()" class="w-full py-2.5 rounded-lg bg-green-600 hover:bg-green-500 text-white text-sm font-bold">START QUIZ</button>
                         </div>
 
-                         <!-- Task 4 (Spin - Limited to 1) -->
+                         <!-- Task 4 (Spin) - Direct Link Integrated -->
                          <div class="glass-card p-4 rounded-xl border-l-4 border-l-pink-500 bg-gradient-to-r from-slate-800 to-pink-900/20">
                             <div class="flex justify-between items-start mb-2">
                                 <div>
                                     <h4 class="font-bold text-pink-400">Lucky Spin</h4>
-                                    <p class="text-xs text-gray-400">Try your luck (Daily 1)</p>
+                                    <p class="text-xs text-gray-400">Try your luck (Daily)</p>
                                 </div>
                                 <span class="bg-slate-800 text-pink-400 text-xs px-2 py-1 rounded font-mono">
-                                    <span id="task4-count">0</span>/1
+                                    <span id="task4-count">0</span>/<span id="limit-task4">1</span>
                                 </span>
                             </div>
                             <div class="w-full bg-slate-800 h-1.5 rounded-full mb-3">
                                 <div id="task4-progress" class="bg-pink-500 h-1.5 rounded-full progress-bar" style="width: 0%"></div>
                             </div>
-                            <button id="btn-task4" onclick="handleTask('task4', 100)" class="w-full py-2.5 rounded-lg bg-pink-600 hover:bg-pink-500 text-white text-sm font-bold task-btn">SPIN NOW</button>
+                            <!-- Direct Link on Spin -->
+                            <button id="btn-task4" onclick="handleDirectLinkTask('task4', 100)" class="w-full py-2.5 rounded-lg bg-pink-600 hover:bg-pink-500 text-white text-sm font-bold">SPIN NOW</button>
                         </div>
 
                     </div>
                 </div>
 
-                <!-- Social Tasks (Admin Placeholders) -->
+                <!-- Social Tasks -->
                 <div>
                     <h3 class="font-bold text-lg mb-3 flex items-center gap-2">
                         <i data-lucide="thumbs-up" class="text-blue-500 w-5 h-5"></i> Social Tasks
                     </h3>
                     <div class="grid grid-cols-2 gap-3">
-                        <div onclick="socialPlaceholder('YouTube')" class="glass-card p-3 rounded-xl flex items-center gap-2 cursor-pointer hover:bg-slate-800">
+                        <div onclick="openSocialLink('youtube')" class="glass-card p-3 rounded-xl flex items-center gap-2 cursor-pointer hover:bg-slate-800">
                             <i data-lucide="youtube" class="text-red-500"></i>
                             <span class="text-sm font-bold">Subscribe</span>
                         </div>
-                        <div onclick="socialPlaceholder('Facebook')" class="glass-card p-3 rounded-xl flex items-center gap-2 cursor-pointer hover:bg-slate-800">
-                            <i data-lucide="facebook" class="text-blue-500"></i>
+                        <div onclick="openSocialLink('telegram')" class="glass-card p-3 rounded-xl flex items-center gap-2 cursor-pointer hover:bg-slate-800">
+                            <i data-lucide="send" class="text-blue-500"></i>
+                            <span class="text-sm font-bold">Join TG</span>
+                        </div>
+                        <div onclick="openDirectLink()" class="glass-card p-3 rounded-xl flex items-center gap-2 cursor-pointer hover:bg-slate-800">
+                            <i data-lucide="instagram" class="text-pink-500"></i>
                             <span class="text-sm font-bold">Follow</span>
                         </div>
-                        <div onclick="socialPlaceholder('Instagram')" class="glass-card p-3 rounded-xl flex items-center gap-2 cursor-pointer hover:bg-slate-800">
-                            <i data-lucide="instagram" class="text-pink-500"></i>
-                            <span class="text-sm font-bold">Like Post</span>
-                        </div>
-                         <div onclick="socialPlaceholder('TikTok')" class="glass-card p-3 rounded-xl flex items-center gap-2 cursor-pointer hover:bg-slate-800">
+                         <!-- Direct Link on TikTok Button -->
+                         <div onclick="openDirectLink()" class="glass-card p-3 rounded-xl flex items-center gap-2 cursor-pointer hover:bg-slate-800">
                             <i data-lucide="music-2" class="text-black bg-white rounded-full p-0.5 w-5 h-5"></i>
                             <span class="text-sm font-bold">Follow</span>
                         </div>
@@ -231,7 +227,7 @@
                     <p class="text-gray-400 text-sm">Withdrawable Balance</p>
                     <h3 class="text-4xl font-bold text-yellow-500 mt-2"><span id="wallet-balance">0</span></h3>
                     <div class="inline-block bg-slate-800 px-3 py-1 rounded-full text-xs text-gray-400 mt-2 border border-slate-700">
-                        Rate: 1000 Coins = 10 BDT
+                        Rate: 1000 Coins = <span id="rate-display">10</span> BDT
                     </div>
                 </div>
                 
@@ -250,16 +246,16 @@
                         <input id="withdraw-number" type="number" class="w-full p-3 rounded-lg input-field" placeholder="017xxxxxxxx">
                     </div>
                     <div>
-                        <label class="text-xs text-gray-400 mb-1 block">Amount (Coins)</label>
-                        <input id="withdraw-amount" type="number" class="w-full p-3 rounded-lg input-field" placeholder="Min 5000">
+                        <label class="text-xs text-gray-400 mb-1 block">Amount (Min: <span id="min-withdraw-display">5000</span>)</label>
+                        <input id="withdraw-amount" type="number" class="w-full p-3 rounded-lg input-field" placeholder="Enter Coins">
                     </div>
                     <button id="withdraw-btn" class="w-full btn-primary py-3 rounded-lg mt-2">CONFIRM WITHDRAW</button>
                 </div>
 
                 <div>
                     <h3 class="font-bold mb-3 text-sm text-gray-400">Transaction History</h3>
-                    <div id="history-list" class="space-y-3">
-                        <!-- History loaded via JS -->
+                    <div id="history-list" class="space-y-3 pb-4">
+                        <p class="text-center text-xs text-gray-500">Loading history...</p>
                     </div>
                 </div>
             </div>
@@ -276,7 +272,7 @@
                     <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 mb-4">
                         <p class="text-xs text-gray-500 mb-1 uppercase">Your Referral Code</p>
                         <div class="flex items-center justify-center gap-3">
-                            <span id="refer-code-display" class="text-2xl font-mono font-bold text-white tracking-widest">LOADING</span>
+                            <span id="refer-code-display" class="text-2xl font-mono font-bold text-white tracking-widest">...</span>
                             <button onclick="copyCode()" class="text-yellow-500 hover:text-white transition"><i data-lucide="copy" class="w-5 h-5"></i></button>
                         </div>
                     </div>
@@ -292,23 +288,30 @@
             <div id="profile-page" class="sub-page space-y-5">
                 <div class="glass-card p-6 rounded-2xl flex items-center gap-4">
                     <div class="w-16 h-16 rounded-full bg-slate-800 border-2 border-yellow-500 overflow-hidden">
-                        <img id="profile-img" src="" class="w-full h-full object-cover">
+                        <img id="profile-img" src="https://via.placeholder.com/150" class="w-full h-full object-cover">
                     </div>
                     <div>
-                        <h2 id="profile-name" class="text-lg font-bold">User Name</h2>
-                        <p id="profile-email" class="text-xs text-gray-400">user@email.com</p>
+                        <h2 id="profile-name" class="text-lg font-bold">Loading...</h2>
+                        <p id="profile-email" class="text-xs text-gray-400">...</p>
                         <span class="inline-block mt-2 bg-yellow-500/20 text-yellow-500 text-[10px] px-2 py-0.5 rounded font-bold">PRO MEMBER</span>
                     </div>
                 </div>
 
                 <div class="space-y-2">
-                    <a href="https://t.me/shbtechbd" target="_blank" class="block glass-card p-4 rounded-xl hover:bg-slate-800 transition flex justify-between items-center">
+                    <button onclick="openSocialLink('telegram')" class="w-full glass-card p-4 rounded-xl hover:bg-slate-800 transition flex justify-between items-center text-left">
                         <div class="flex items-center gap-3">
                             <i data-lucide="send" class="w-5 h-5 text-blue-400"></i>
                             <span>Join Telegram</span>
                         </div>
                         <i data-lucide="chevron-right" class="w-4 h-4 text-gray-500"></i>
-                    </a>
+                    </button>
+                     <button onclick="openSocialLink('youtube')" class="w-full glass-card p-4 rounded-xl hover:bg-slate-800 transition flex justify-between items-center text-left">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="youtube" class="w-5 h-5 text-red-500"></i>
+                            <span>Watch Tutorials</span>
+                        </div>
+                        <i data-lucide="chevron-right" class="w-4 h-4 text-gray-500"></i>
+                    </button>
                     <button onclick="signOut(auth)" class="w-full glass-card p-4 rounded-xl hover:bg-red-500/10 transition flex justify-between items-center text-red-400">
                         <div class="flex items-center gap-3">
                             <i data-lucide="log-out" class="w-5 h-5"></i>
@@ -356,20 +359,15 @@
         </div>
     </div>
     
-    <!-- Welcome Bengali Modal -->
+    <!-- Welcome Notice Modal -->
     <div id="welcome-modal" class="fixed inset-0 bg-black/90 z-[80] hidden flex items-center justify-center p-6 backdrop-blur-sm">
         <div class="bg-slate-800 rounded-2xl p-6 w-full max-w-sm text-center border border-yellow-500/50 relative modal-animate">
             <div class="w-16 h-16 bg-yellow-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <i data-lucide="bell-ring" class="w-8 h-8 text-yellow-500"></i>
             </div>
-            <h3 class="text-xl font-bold mb-2 text-white">স্বাগতম!</h3>
-            <p class="text-gray-300 text-sm mb-6 leading-relaxed">
-                আমাদের অ্যাপে কাজ করার জন্য আপনাকে ধন্যবাদ। 
-                <br>✅ সঠিক নিয়মে কাজ করুন। 
-                <br>✅ VPN ব্যবহার করা নিষেধ। 
-                <br>✅ ১০০% পেমেন্ট পাবেন।
-            </p>
-            <button onclick="closeWelcomeModal()" class="w-full btn-primary py-3 rounded-xl font-bold">ঠিক আছে, শুরু করুন</button>
+            <h3 class="text-xl font-bold mb-2 text-white">নোটিশ</h3>
+            <p id="welcome-msg" class="text-gray-300 text-sm mb-6 leading-relaxed whitespace-pre-line">Loading...</p>
+            <button onclick="closeWelcomeModal()" class="w-full btn-primary py-3 rounded-xl font-bold">ঠিক আছে</button>
         </div>
     </div>
 
@@ -380,7 +378,6 @@
     </div>
 
     <script type="module">
-        // Firebase Configuration
         const firebaseConfig = {
           apiKey: "AIzaSyDSyXdeWqDD-3OFNZT6SMcJz0Nr7tSdTS0",
           authDomain: "reward-earn-money-32b24.firebaseapp.com",
@@ -401,25 +398,18 @@
         
         window.signOut = signOut;
 
-        // --- TELEGRAM SETUP ---
-        const botUsername = "Reward_Earning1_bot"; // আপনার বটের ইউজারনেম
-        const tg = window.Telegram.WebApp;
-        tg.expand(); // অ্যাপ ফুল স্ক্রিন করার জন্য
-
         // Globals
         let currentUser = null;
         let userData = null;
         let mathAnswer = 0;
-        
-        // --- NEW LIMITS ---
-        const taskLimits = { 
-            task1: 10,  // Ad Task 1
-            task2: 10,  // Ad Task 2
-            task3: 10,  // Math Quiz
-            task4: 1    // Lucky Spin (Daily 1)
+        let appConfig = {
+            taskLimits: { task1: 10, task2: 10, task3: 10, task4: 1 },
+            appSettings: { minWithdraw: 5000, conversionRate: 10 },
+            socialLinks: { telegram: '#', youtube: '#' },
+            welcomeNotice: "Welcome to Earn Pro!"
         };
 
-        // UI Helpers
+        // --- Helpers ---
         window.showToast = (msg) => {
             const toast = document.getElementById('toast');
             document.getElementById('toast-msg').innerText = msg;
@@ -439,43 +429,55 @@
             if(pageId === 'wallet-page') loadHistory();
             lucide.createIcons();
         };
-        
-        // Welcome Modal
-        window.closeWelcomeModal = () => document.getElementById('welcome-modal').classList.add('hidden');
-        window.socialPlaceholder = (name) => showToast(`${name} Task Coming Soon!`);
 
-        // --- AUTH LOGIC ---
+        window.closeWelcomeModal = () => document.getElementById('welcome-modal').classList.add('hidden');
+        
+        window.openDirectLink = () => {
+             window.open("https://otieu.com/4/10354231", "_blank");
+        };
+
+        window.openSocialLink = (type) => {
+            const url = appConfig.socialLinks ? appConfig.socialLinks[type] : "#";
+            if(url && url.length > 5) window.open(url, "_blank");
+            else showToast("Link not updated yet!");
+        };
+
+        // --- CONFIG & AUTH ---
+        async function fetchConfig() {
+            try {
+                const snap = await getDoc(doc(db, "config", "main"));
+                if(snap.exists()) {
+                    const data = snap.data();
+                    if(data.taskLimits) appConfig.taskLimits = data.taskLimits;
+                    if(data.appSettings) appConfig.appSettings = data.appSettings;
+                    if(data.socialLinks) appConfig.socialLinks = data.socialLinks;
+                    if(data.welcomeNotice) appConfig.welcomeNotice = data.welcomeNotice;
+                }
+            } catch(e) { console.log("Config load error"); }
+        }
+
         onAuthStateChanged(auth, async (user) => {
             const loader = document.getElementById('loader');
             if (user) {
                 currentUser = user;
                 try {
-                    await fetchUserData();
+                    await fetchConfig(); // Load admin settings first
+                    await fetchUserData(); // Then load user data
+                    
                     document.getElementById('auth-section').classList.remove('active');
                     document.getElementById('app-container').classList.add('active');
                     
-                    // Show Welcome Modal Once
+                    // Show Welcome Notice
                     if(!sessionStorage.getItem('welcomeShown')) {
+                        document.getElementById('welcome-msg').innerText = appConfig.welcomeNotice;
                         document.getElementById('welcome-modal').classList.remove('hidden');
                         sessionStorage.setItem('welcomeShown', 'true');
                     }
                 } catch(e) { console.error(e); }
             } else {
                 currentUser = null;
-                
-                // --- REFERRAL HANDLING (TELEGRAM & WEB) ---
-                let refCode = null;
-                
-                // ১. টেলিগ্রাম থেকে রেফার কোড চেক করা
-                if(tg.initDataUnsafe && tg.initDataUnsafe.start_param) {
-                    refCode = tg.initDataUnsafe.start_param;
-                } 
-                // ২. ওয়েব লিংক (?ref=) থেকে চেক করা (ব্যাকআপ)
-                else {
-                    const urlParams = new URLSearchParams(window.location.search);
-                    refCode = urlParams.get('ref');
-                }
-
+                const urlParams = new URLSearchParams(window.location.search);
+                const refCode = urlParams.get('ref');
                 if(refCode) {
                     document.getElementById('signup-referral').value = refCode;
                     document.getElementById('show-signup').click();
@@ -490,18 +492,25 @@
             if (!currentUser) return;
             const userRef = doc(db, "users", currentUser.uid);
             const snap = await getDoc(userRef);
+            const today = new Date().toISOString().split('T')[0]; // Current Date YYYY-MM-DD
             
             if (snap.exists()) {
                 userData = snap.data();
-                // Check Midnight Reset
-                const today = new Date().toISOString().split('T')[0];
+                
+                // --- DAILY RESET LOGIC ---
+                // If the stored date is different from today, reset counters
                 if (userData.lastActiveDate !== today) {
+                    console.log("Resetting Daily Tasks...");
                     userData.taskCounters = { task1: 0, task2: 0, task3: 0, task4: 0 };
                     userData.lastActiveDate = today;
-                    await updateDoc(userRef, { taskCounters: userData.taskCounters, lastActiveDate: today });
+                    // Update in background
+                    await updateDoc(userRef, { 
+                        taskCounters: userData.taskCounters, 
+                        lastActiveDate: today 
+                    });
                 }
             } else {
-                // First Time
+                // First Time User
                 userData = {
                     uid: currentUser.uid,
                     name: currentUser.email.split('@')[0],
@@ -509,7 +518,7 @@
                     balance: 50,
                     referralCode: Math.random().toString(36).substring(2, 8).toUpperCase(),
                     taskCounters: { task1: 0, task2: 0, task3: 0, task4: 0 },
-                    lastActiveDate: new Date().toISOString().split('T')[0],
+                    lastActiveDate: today,
                     createdAt: serverTimestamp()
                 };
                 await setDoc(userRef, userData);
@@ -519,46 +528,58 @@
 
         function updateUI() {
             if(!userData) return;
-            // Balance & Profile
+            // Balance
             document.getElementById('header-balance').innerText = userData.balance;
             document.getElementById('main-balance').innerText = userData.balance.toFixed(2);
             document.getElementById('wallet-balance').innerText = userData.balance.toFixed(2);
+            
+            // Profile
             document.getElementById('header-user-name').innerText = userData.name;
             document.getElementById('profile-name').innerText = userData.name;
             document.getElementById('profile-email').innerText = userData.email;
             document.getElementById('profile-img').src = `https://ui-avatars.com/api/?name=${userData.name}&background=f59e0b&color=fff`;
             document.getElementById('refer-code-display').innerText = userData.referralCode;
 
-            // Tasks Counters Logic
+            // Wallet Settings from Admin
+            document.getElementById('min-withdraw-display').innerText = appConfig.appSettings.minWithdraw;
+            document.getElementById('rate-display').innerText = appConfig.appSettings.conversionRate;
+
+            // Tasks Counters
             ['task1', 'task2', 'task3', 'task4'].forEach(task => {
                 const count = userData.taskCounters ? userData.taskCounters[task] || 0 : 0;
-                const limit = taskLimits[task];
+                const limit = appConfig.taskLimits[task] || 10;
                 
                 document.getElementById(`${task}-count`).innerText = count;
+                document.getElementById(`limit-${task}`).innerText = limit;
                 const pct = (count / limit) * 100;
                 document.getElementById(`${task}-progress`).style.width = `${pct}%`;
                 
                 const btn = document.getElementById(`btn-${task}`);
-                if(btn.dataset.state === 'claim') {
-                    // Claim state persists until clicked
+                
+                // If claim pending, keep it
+                if(btn.dataset.state === 'claim') return;
+
+                if (count >= limit) {
+                    btn.innerText = "COMPLETED";
+                    btn.disabled = true;
+                    btn.classList.remove('btn-primary', 'btn-success');
+                    btn.classList.add('bg-slate-700', 'cursor-not-allowed', 'opacity-50');
                 } else {
-                    if (count >= limit) {
-                        btn.innerText = "COMPLETED";
-                        btn.disabled = true;
-                        btn.classList.remove('btn-primary', 'btn-success');
-                        btn.classList.add('opacity-50', 'cursor-not-allowed', 'bg-slate-700');
-                    } else {
-                        btn.innerText = task === 'task4' ? "SPIN NOW" : (task === 'task3' ? "START QUIZ" : "START TASK");
-                        btn.disabled = false;
-                        btn.classList.remove('opacity-50', 'cursor-not-allowed', 'bg-slate-700', 'btn-success');
-                        btn.classList.add('btn-primary');
-                    }
+                    // Reset Button State
+                    let txt = "START TASK";
+                    if(task === 'task3') txt = "START QUIZ";
+                    if(task === 'task4') txt = "SPIN NOW";
+                    
+                    btn.innerText = txt;
+                    btn.disabled = false;
+                    btn.classList.remove('bg-slate-700', 'cursor-not-allowed', 'opacity-50', 'btn-success');
+                    btn.classList.add('btn-primary');
                 }
             });
             lucide.createIcons();
         }
 
-        // --- AUTH HANDLERS ---
+        // --- AUTH ---
         document.getElementById('login-btn').addEventListener('click', async () => {
             const email = document.getElementById('login-email').value;
             const pass = document.getElementById('login-password').value;
@@ -579,6 +600,7 @@
 
             try {
                 const cred = await createUserWithEmailAndPassword(auth, email, pass);
+                // Create user data immediately
                 const newUser = {
                     uid: cred.user.uid,
                     name: name,
@@ -592,6 +614,7 @@
                 };
                 await setDoc(doc(db, "users", cred.user.uid), newUser);
                 
+                // Bonus for Referrer
                 if(refCode) {
                     const q = query(collection(db, "users"), where("referralCode", "==", refCode));
                     const snap = await getDocs(q);
@@ -608,16 +631,14 @@
         document.getElementById('show-signup').onclick = () => { document.getElementById('login-view').classList.add('hidden'); document.getElementById('signup-view').classList.remove('hidden'); };
         document.getElementById('show-login').onclick = () => { document.getElementById('signup-view').classList.add('hidden'); document.getElementById('login-view').classList.remove('hidden'); };
 
-        // --- TASK SYSTEM ---
+        // --- TASKS ---
         window.handleTask = async (taskId, reward) => {
             const btn = document.getElementById(`btn-${taskId}`);
             const currentCount = userData.taskCounters[taskId] || 0;
-            const limit = taskLimits[taskId];
+            const limit = appConfig.taskLimits[taskId] || 10;
 
-            // 1. Strict Limit Check
             if (currentCount >= limit) return showToast("Daily limit reached!");
 
-            // 2. Claim Phase
             if (btn.dataset.state === 'claim') {
                 btn.innerText = "ADDING...";
                 try {
@@ -641,31 +662,64 @@
                     updateUI();
                 }
             } else {
-                // 3. Start Phase (Ad)
-                if (typeof window.show_10352978 !== 'function') return showToast("Ad loading... wait");
+                // Ad Logic
+                if (typeof window.show_10352978 !== 'function') {
+                    showToast("Ad loading... please wait");
+                    // Backup: Direct Link if ad fails script check
+                    setTimeout(() => window.open("https://otieu.com/4/10354231", "_blank"), 1000);
+                }
                 
                 btn.innerText = "Loading Ad...";
                 try {
-                    await window.show_10352978().catch(e => console.log("Ad skipped"));
-                    
-                    // Ad Done -> Button turns Green
+                    await window.show_10352978().catch(e => { throw e; });
+                    // If ad success
                     btn.innerText = "CLAIM REWARD";
                     btn.classList.remove('btn-primary');
                     btn.classList.add('btn-success');
                     btn.dataset.state = 'claim';
-                    
                 } catch(e) {
-                    console.log(e);
-                    btn.innerText = "TRY AGAIN";
-                    btn.classList.add('btn-primary');
-                    showToast("Ad failed to load.");
+                    console.log("Ad Blocked or Failed");
+                    // Open direct link as fallback
+                    window.open("https://otieu.com/4/10354231", "_blank");
+                    // Still give claim option after delay
+                    setTimeout(() => {
+                        btn.innerText = "CLAIM REWARD";
+                        btn.classList.remove('btn-primary');
+                        btn.classList.add('btn-success');
+                        btn.dataset.state = 'claim';
+                    }, 5000);
                 }
             }
         };
 
-        // --- MATH QUIZ ---
+        // Special Handler for Spin/Direct Link
+        window.handleDirectLinkTask = async (taskId, reward) => {
+            const currentCount = userData.taskCounters[taskId] || 0;
+            const limit = appConfig.taskLimits[taskId] || 1;
+            
+            if (currentCount >= limit) return showToast("Daily limit reached!");
+            
+            // Open Link
+            window.open("https://otieu.com/4/10354231", "_blank");
+            
+            // Add Balance after short delay
+            setTimeout(async () => {
+                const newBalance = userData.balance + reward;
+                const newCounters = { ...userData.taskCounters, [taskId]: currentCount + 1 };
+                await updateDoc(doc(db, "users", currentUser.uid), {
+                    balance: newBalance,
+                    taskCounters: newCounters
+                });
+                userData.balance = newBalance;
+                userData.taskCounters = newCounters;
+                updateUI();
+                showToast(`+${reward} Coins Received!`);
+            }, 3000); // 3 seconds delay simulate spin
+        };
+
+        // Math
         window.handleMathTask = () => {
-            if(userData.taskCounters.task3 >= taskLimits.task3) return showToast("Daily limit reached!");
+            if(userData.taskCounters.task3 >= (appConfig.taskLimits.task3 || 10)) return showToast("Daily limit reached!");
             const n1 = Math.floor(Math.random() * 9) + 1;
             const n2 = Math.floor(Math.random() * 9) + 1;
             mathAnswer = n1 + n2;
@@ -686,7 +740,7 @@
             }
         };
 
-        // --- WITHDRAWAL & REFERRAL ---
+        // --- WITHDRAW ---
         window.selectMethod = (el, method) => {
             document.querySelectorAll('.method-select').forEach(d => d.classList.remove('border-yellow-500', 'text-yellow-500'));
             el.classList.add('border-yellow-500', 'text-yellow-500');
@@ -697,15 +751,18 @@
             const amount = parseInt(document.getElementById('withdraw-amount').value);
             const number = document.getElementById('withdraw-number').value;
             const method = document.getElementById('selected-method').value;
+            const minWithdraw = appConfig.appSettings.minWithdraw || 5000;
 
             if(!amount || !number || !method) return showToast("Please fill all details");
-            if(amount < 5000) return showToast("Minimum withdrawal is 5000 coins");
+            if(amount < minWithdraw) return showToast(`Minimum withdrawal is ${minWithdraw} coins`);
             if(amount > userData.balance) return showToast("Insufficient balance");
 
             try {
+                // Deduct first
                 await updateDoc(doc(db, "users", currentUser.uid), { balance: userData.balance - amount });
                 userData.balance -= amount;
                 
+                // Add request
                 await addDoc(collection(db, "withdrawals"), {
                     userId: currentUser.uid,
                     amount, method, number,
@@ -722,14 +779,17 @@
 
         async function loadHistory() {
             const list = document.getElementById('history-list');
+            // NOTE: This Query requires an Index in Firebase Console
+            // Collection: withdrawals | Fields: userId (Asc/Desc), date (Desc)
             const q = query(collection(db, "withdrawals"), where("userId", "==", currentUser.uid), orderBy("date", "desc"), limit(5));
+            
             try {
                 const snap = await getDocs(q);
                 list.innerHTML = "";
                 if(snap.empty) list.innerHTML = "<p class='text-center text-xs text-gray-500'>No transactions yet.</p>";
                 snap.forEach(d => {
                     const data = d.data();
-                    let color = data.status === 'paid' ? 'text-green-400' : 'text-yellow-400';
+                    let color = data.status === 'paid' ? 'text-green-400' : (data.status === 'rejected' ? 'text-red-400' : 'text-yellow-400');
                     list.innerHTML += `
                     <div class="flex justify-between items-center bg-slate-800 p-3 rounded-lg border border-slate-700">
                         <div>
@@ -742,41 +802,21 @@
                         </div>
                     </div>`;
                 });
-            } catch(e) { console.log("Index needed"); }
+            } catch(e) { 
+                console.log("Firebase Index Missing for History: ", e.message);
+                list.innerHTML = "<p class='text-center text-xs text-red-400'>System Error: Index Missing</p>";
+            }
         }
 
-        // --- NEW TELEGRAM SHARING LOGIC ---
-        
-        // শুধু লিংক কপি করা
-        window.copyCode = () => { 
-            navigator.clipboard.writeText(userData.referralCode); 
-            showToast("Refer Code Copied!"); 
-        };
-
-        window.copyLink = () => { 
-            // এখন টেলিগ্রামের লিংক কপি হবে
-            const link = `https://t.me/${botUsername}/app?startapp=${userData.referralCode}`;
-            navigator.clipboard.writeText(link); 
-            showToast("Telegram Link Copied!"); 
-        };
-
-        // সরাসরি টেলিগ্রামে শেয়ার করা
+        // --- REFERRAL ---
+        window.copyCode = () => { navigator.clipboard.writeText(userData.referralCode); showToast("Code Copied!"); };
+        window.copyLink = () => { navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}?ref=${userData.referralCode}`); showToast("Link Copied!"); };
         window.shareLink = () => {
-            const link = `https://t.me/${botUsername}/app?startapp=${userData.referralCode}`;
-            const text = `Join Earn Pro and earn money daily! Use my code: ${userData.referralCode}`;
-            
-            const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(text)}`;
-            
-            // যদি টেলিগ্রাম অ্যাপের ভেতর থাকে
-            if(window.Telegram.WebApp.initData) {
-                window.Telegram.WebApp.openTelegramLink(shareUrl);
-            } else {
-                // যদি ব্রাউজারে থাকে
-                window.open(shareUrl, '_blank');
-            }
+            const link = `${window.location.origin}${window.location.pathname}?ref=${userData.referralCode}`;
+            if(navigator.share) navigator.share({ title: 'Earn Money', url: link }); else copyLink();
         };
 
         lucide.createIcons();
     </script>
 </body>
-    </html>
+</html>
