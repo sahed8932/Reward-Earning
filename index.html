@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reward Earn Bd</title>
+    
+    <!-- Ad Code (Monetag/Others) -->
+    <!-- নোট: যদি অ্যাড ব্লকার থাকে বা স্ক্রিপ্ট লোড না হয়, অ্যাপ যাতে ক্র্যাশ না করে সেই ব্যবস্থা নিচে JS এ করা হয়েছে -->
+    <script src='//libtl.com/sdk.js' data-zone='10352978' data-sdk='show_10352978'></script>
+    
+    <!-- Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #ffffff; overflow-x: hidden; }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #1e1e1e; }
+        ::-webkit-scrollbar-thumb { background: #ff8c00; border-radius: 5px; }
+
+        /* General Styles */
+        .dark-bg { background-color: #0f172a; }
+        .card-bg { background-color: #1e293b; border: 1px solid #334155; }
+        
+        /* Buttons & Inputs */
+        .btn-accent { background: linear-gradient(45deg, #f59e0b, #fbbf24); color: #0f172a; font-weight: bold; transition: transform 0.2s; }
+        .btn-accent:active { transform: scale(0.95); }
+        .input-field { background-color: #334155; border: 2px solid transparent; color: white; transition: all 0.3s ease; }
+        .input-field:focus { border-color: #fbbf24; outline: none; }
+
+        /* Page Handling */
+        .page-section { display: none; opacity: 0; transition: opacity 0.3s ease-in-out; }
+        .page-section.active { display: flex; opacity: 1; }
+        .sub-page { display: none; animation: slideUp 0.4s ease-out; }
+        .sub-page.active { display: block; }
+
+        /* Navigation */
+        .bottom-nav { background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(10px); border-top: 1px solid #334155; }
+        .nav-link.active { color: #fbbf24; }
+        .nav-link.active i { transform: translateY(-3px); transition: transform 0.2s; }
+
+        /* Animations */
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Bubbles */
+        .bubbles { position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; z-index: -1; pointer-events: none; }
+        .bubbles li { position: absolute; display: block; list-style: none; width: 20px; height: 20px; background: rgba(251, 191, 36, 0.15); animation: floatUp 25s linear infinite; bottom: -150px; border-radius: 50%; }
+        .bubbles li:nth-child(1){ left: 25%; width: 80px; height: 80px; animation-delay: 0s; }
+        .bubbles li:nth-child(2){ left: 10%; width: 20px; height: 20px; animation-delay: 2s; animation-duration: 12s; }
+        .bubbles li:nth-child(3){ left: 70%; width: 20px; height: 20px; animation-delay: 4s; }
+        @keyframes floatUp { 0%{ transform: translateY(0) rotate(0deg); opacity: 1; } 100%{ transform: translateY(-1000px) rotate(720deg); opacity: 0; } }
+
+        .notification-dot { position: absolute; top: 2px; right: 2px; width: 8px; height: 8px; background-color: #ef4444; border-radius: 50%; display: none; }
+    </style>
+</head>
+<body class="max-w-md mx-auto min-h-screen relative bg-slate-900">
+
+    <!-- Background -->
+    <ul class="bubbles"><li></li><li></li><li></li><li></li><li></li></ul>
+
+    <!-- App Loader -->
+    <div id="loader" class="fixed inset-0 bg-slate-900 z-[100] flex flex-col items-center justify-center">
+        <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-yellow-400 mb-4"></div>
+        <p class="text-yellow-400 font-bold animate-pulse">Connecting...</p>
+    </div>
+
+    <!-- Auth Section -->
+    <div id="auth-section" class="min-h-screen p-6 flex-col justify-center items-center page-section z-10">
+        <div class="bg-slate-800/80 backdrop-blur-md p-8 rounded-2xl w-full max-w-sm border border-slate-700 shadow-2xl">
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-yellow-400/20 mb-4">
+                    <i data-lucide="coins" class="w-8 h-8 text-yellow-400"></i>
+                </div>
+                <h1 class="text-2xl font-bold text-white">Reward Earn Bd</h1>
+            </div>
+
+            <!-- Login View -->
+            <div id="login-view" class="space-y-4">
+                <div class="space-y-2">
+                    <label class="text-xs text-gray-400 uppercase">Email</label>
+                    <input id="login-email" type="email" class="w-full p-3 rounded-xl input-field" placeholder="user@email.com">
+                </div>
+                <div class="space-y-2">
+                    <label class="text-xs text-gray-400 uppercase">Password</label>
+                    <input id="login-password" type="password" class="w-full p-3 rounded-xl input-field" placeholder="••••••••">
+                </div>
+                <button id="login-btn" class="w-full p-3 rounded-xl btn-accent mt-4">LOG IN</button>
+                <p class="text-center text-sm text-gray-400 mt-4">No account? <a href="#" id="show-signup" class="text-yellow-400 font-bold">Sign Up</a></p>
+            </div>
+
+            <!-- Signup View -->
+            <div id="signup-view" class="hidden space-y-4">
+                <div class="space-y-2">
+                    <label class="text-xs text-gray-400 uppercase">Name</label>
+                    <input id="signup-name" type="text" class="w-full p-3 rounded-xl input-field" placeholder="Your Name">
+                </div>
+                <div class="space-y-2">
+                    <label class="text-xs text-gray-400 uppercase">Email</label>
+                    <input id="signup-email" type="email" class="w-full p-3 rounded-xl input-field" placeholder="user@email.com">
+                </div>
+                <div class="space-y-2">
+                    <label class="text-xs text-gray-400 uppercase">Password</label>
+                    <input id="signup-password" type="password" class="w-full p-3 rounded-xl input-field" placeholder="Create password">
+                </div>
+                <button id="signup-btn" class="w-full p-3 rounded-xl btn-accent mt-4">CREATE ACCOUNT</button>
+                <p class="text-center text-sm text-gray-400 mt-4">Has account? <a href="#" id="show-login" class="text-yellow-400 font-bold">Log In</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App Container -->
+    <div id="app-container" class="min-h-screen flex-col page-section relative z-10 pb-20">
+        <!-- Header -->
+        <header class="flex items-center justify-between p-4 sticky top-0 bg-slate-900/95 backdrop-blur-md z-20 border-b border-gray-800">
+            <div class="flex items-center gap-2">
+                <i data-lucide="coins" class="text-yellow-400 w-6 h-6"></i>
+                <h1 class="text-lg font-bold text-white">Reward Earn Bd</h1>
+            </div>
+            <div id="notification-bell" class="relative cursor-pointer p-2 rounded-full hover:bg-slate-800">
+                <i data-lucide="bell" class="w-5 h-5 text-gray-300"></i>
+                <div id="notification-dot" class="notification-dot"></div>
+            </div>
+        </header>
+
+        <main class="flex-grow">
+            <!-- Home Page -->
+            <div id="home-page" class="p-4 space-y-6 sub-page active">
+                <!-- Balance -->
+                <div class="bg-gradient-to-r from-slate-800 to-slate-900 p-6 rounded-2xl border border-slate-700 relative overflow-hidden">
+                    <div class="absolute right-0 top-0 w-32 h-32 bg-yellow-500/10 rounded-full blur-3xl -mr-16 -mt-16"></div>
+                    <div class="flex justify-between items-center relative z-10">
+                        <div>
+                            <p class="text-gray-400 text-sm">Total Balance</p>
+                            <h2 class="text-3xl font-bold text-white"><span id="coin-balance">0</span> <span class="text-sm text-yellow-400">Coins</span></h2>
+                        </div>
+                        <button onclick="navigateTo('wallet-page')" class="bg-yellow-400 text-slate-900 font-bold px-4 py-2 rounded-lg text-sm hover:bg-yellow-300">Withdraw</button>
+                    </div>
+                </div>
+
+                <!-- Tasks -->
+                <div>
+                    <div class="flex justify-between items-end mb-4">
+                        <h2 class="text-lg font-bold">Daily Tasks</h2>
+                        <span class="text-xs bg-slate-800 px-2 py-1 rounded text-gray-400">Ads Left: <span id="ads-left-count" class="text-yellow-400 font-bold">0</span></span>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <!-- Task Items -->
+                        <div onclick="claimReward('interstitial')" class="bg-gradient-to-r from-orange-600 to-red-600 p-4 rounded-xl flex justify-between items-center cursor-pointer active:scale-95 transition">
+                            <div class="flex items-center gap-3">
+                                <div class="bg-white/20 p-2 rounded"><i data-lucide="zap" class="text-white"></i></div>
+                                <div><h3 class="font-bold">Watch Ad</h3><p class="text-xs opacity-80">+50 Coins</p></div>
+                            </div>
+                            <span class="bg-white text-orange-600 text-xs font-bold px-3 py-1 rounded">CLAIM</span>
+                        </div>
+
+                        <div onclick="claimReward('popup')" class="card-bg p-4 rounded-xl flex justify-between items-center cursor-pointer border-slate-700 hover:border-yellow-500/50 transition">
+                            <div class="flex items-center gap-3">
+                                <div class="bg-slate-800 p-2 rounded"><i data-lucide="gift" class="text-yellow-400"></i></div>
+                                <div><h3 class="font-bold">Bonus Click</h3><p class="text-xs text-gray-400">+50 Coins</p></div>
+                            </div>
+                            <span class="bg-slate-700 text-white text-xs font-bold px-3 py-1 rounded">START</span>
+                        </div>
+                        
+                         <div onclick="claimReward('miniApp')" class="bg-gradient-to-r from-blue-600 to-indigo-600 p-4 rounded-xl flex justify-between items-center cursor-pointer active:scale-95 transition">
+                            <div class="flex items-center gap-3">
+                                <div class="bg-white/20 p-2 rounded"><i data-lucide="gamepad-2" class="text-white"></i></div>
+                                <div><h3 class="font-bold">Play Game</h3><p class="text-xs opacity-80">+100 Coins</p></div>
+                            </div>
+                            <span class="bg-white text-blue-600 text-xs font-bold px-3 py-1 rounded">PLAY</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wallet Page -->
+            <div id="wallet-page" class="p-4 space-y-6 sub-page">
+                <div class="card-bg p-6 rounded-2xl text-center">
+                    <p class="text-gray-400 text-sm">Withdrawable Balance</p>
+                    <h3 class="text-3xl font-bold text-yellow-400 mt-1"><span id="wallet-coin-balance">0</span> Coins</h3>
+                    <p id="coin-value-info" class="text-xs text-gray-500 mt-2">1000 Coins = 10 BDT</p>
+                </div>
+
+                <div class="space-y-4">
+                    <input id="withdraw-amount" type="number" placeholder="Enter Amount (Min: 5000)" class="w-full p-3 rounded-xl input-field bg-slate-800">
+                    <select id="withdraw-method" class="w-full p-3 rounded-xl input-field bg-slate-800">
+                        <option value="" disabled selected>Select Payment Method</option>
+                        <option value="bKash">bKash</option>
+                        <option value="Nagad">Nagad</option>
+                        <option value="Rocket">Rocket</option>
+                    </select>
+                    <input id="payment-number" type="number" placeholder="Enter Account Number" class="w-full p-3 rounded-xl input-field bg-slate-800">
+                    <button id="withdraw-btn" class="w-full btn-accent py-3 rounded-xl">WITHDRAW REQUEST</button>
+                </div>
+
+                <div>
+                    <h3 class="font-bold mb-2 flex items-center gap-2"><i data-lucide="history" class="w-4 h-4"></i> History</h3>
+                    <div id="withdrawal-history-list" class="space-y-2 text-sm text-gray-400">
+                        <p class="text-center py-4">Loading history...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Refer Page -->
+            <div id="refer-page" class="p-4 space-y-6 sub-page">
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-yellow-400/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i data-lucide="users" class="w-10 h-10 text-yellow-400"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold">Refer & Earn</h2>
+                    <p class="text-gray-400 text-sm mt-2">Share your code and earn 100 coins per friend!</p>
+                </div>
+
+                <div class="card-bg p-4 rounded-xl border border-dashed border-yellow-500/50 flex justify-between items-center">
+                    <span id="referral-code" class="text-xl font-mono font-bold text-yellow-400 tracking-widest">...</span>
+                    <button onclick="copyReferralCode()" class="p-2 hover:bg-slate-800 rounded"><i data-lucide="copy" class="w-5 h-5"></i></button>
+                </div>
+
+                <button onclick="shareReferral()" class="w-full btn-accent p-3 rounded-xl flex items-center justify-center gap-2">
+                    <i data-lucide="share-2" class="w-4 h-4"></i> Share Now
+                </button>
+
+                <div class="card-bg p-4 rounded-xl">
+                    <label class="text-xs text-gray-400 block mb-2">Have a code?</label>
+                    <div class="flex gap-2">
+                        <input id="enter-referral-code" type="text" placeholder="Enter Code" class="flex-1 p-2 rounded bg-slate-900 border border-slate-700 text-center uppercase">
+                        <button onclick="applyReferral()" class="bg-slate-700 hover:bg-slate-600 px-4 rounded font-bold text-sm">APPLY</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Page -->
+            <div id="profile-page" class="p-4 space-y-6 sub-page">
+                <div class="text-center mt-4">
+                    <div class="w-24 h-24 mx-auto rounded-full bg-slate-800 overflow-hidden border-4 border-slate-700">
+                        <img id="profile-img" src="" class="w-full h-full object-cover">
+                    </div>
+                    <h2 id="profile-name" class="text-xl font-bold mt-3">...</h2>
+                    <p id="profile-email" class="text-sm text-gray-400">...</p>
+                </div>
+
+                <div class="space-y-2">
+                    <div class="card-bg p-4 rounded-xl flex justify-between cursor-pointer hover:bg-slate-800">
+                        <span><i data-lucide="shield" class="inline w-4 h-4 mr-2 text-blue-500"></i> Privacy Policy</span>
+                        <i data-lucide="chevron-right" class="w-4 h-4 text-gray-500"></i>
+                    </div>
+                    <button id="logout-btn" class="w-full card-bg p-4 rounded-xl flex justify-between text-red-400 hover:bg-red-500/10">
+                        <span><i data-lucide="log-out" class="inline w-4 h-4 mr-2"></i> Logout</span>
+                    </button>
+                </div>
+            </div>
+            
+             <!-- Notifications Page -->
+            <div id="notifications-page" class="p-4 space-y-4 sub-page">
+                 <div class="flex items-center gap-2 mb-4">
+                    <i data-lucide="arrow-left" class="w-6 h-6 cursor-pointer" onclick="navigateTo('home-page')"></i>
+                    <h2 class="text-xl font-bold">Notifications</h2>
+                </div>
+                <div id="notifications-list" class="space-y-3 text-center text-gray-400">Loading...</div>
+            </div>
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav sticky bottom-0 grid grid-cols-4 items-center text-center py-3 z-30">
+            <a href="#" class="nav-link active" onclick="navigateTo('home-page')">
+                <i data-lucide="home" class="mx-auto w-6 h-6"></i>
+                <span class="text-[10px]">HOME</span>
+            </a>
+            <a href="#" class="nav-link" onclick="navigateTo('wallet-page')">
+                <i data-lucide="wallet" class="mx-auto w-6 h-6"></i>
+                <span class="text-[10px]">WALLET</span>
+            </a>
+            <a href="#" class="nav-link" onclick="navigateTo('refer-page')">
+                <i data-lucide="users" class="mx-auto w-6 h-6"></i>
+                <span class="text-[10px]">REFER</span>
+            </a>
+            <a href="#" class="nav-link" onclick="navigateTo('profile-page')">
+                <i data-lucide="user" class="mx-auto w-6 h-6"></i>
+                <span class="text-[10px]">PROFILE</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- Alert Modal -->
+    <div id="custom-alert" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-[150] p-6 animate-fade">
+        <div class="bg-slate-800 rounded-2xl p-6 w-full max-w-xs text-center border border-slate-700">
+            <div class="mb-4 text-yellow-400"><i data-lucide="info" class="w-10 h-10 mx-auto"></i></div>
+            <p id="alert-message" class="mb-6 text-gray-200">Message goes here</p>
+            <button onclick="closeAlert()" class="w-full bg-white text-black font-bold py-2 rounded-xl">OK</button>
+        </div>
+    </div>
+
+    <script type="module">
+const firebaseConfig = {
+  apiKey: "AIzaSyDSyXdeWqDD-3OFNZT6SMcJz0Nr7tSdTS0",
+  authDomain: "reward-earn-money-32b24.firebaseapp.com",
+  databaseURL: "https://reward-earn-money-32b24-default-rtdb.firebaseio.com",
+  projectId: "reward-earn-money-32b24",
+  storageBucket: "reward-earn-money-32b24.firebasestorage.app",
+  messagingSenderId: "647603026182",
+  appId: "1:647603026182:web:1bfe0a9dc3d8e4513f8687"
+};
+
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, addDoc, serverTimestamp, query, where, getDocs, orderBy, limit } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser = null;
+        let userData = null;
+        let appConfig = { minWithdrawal: 5000, dailyAdLimit: 10 };
+
+        // Globals for UI
+        window.showAlert = (msg) => {
+            document.getElementById('alert-message').textContent = msg;
+            document.getElementById('custom-alert').classList.remove('hidden');
+        };
+        window.closeAlert = () => document.getElementById('custom-alert').classList.add('hidden');
+        
+        // Navigation Logic
+        window.navigateTo = (pageId) => {
+            document.querySelectorAll('.sub-page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            
+            // Update Nav Icons
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+                if(link.getAttribute('onclick').includes(pageId)) link.classList.add('active');
+            });
+
+            if(pageId === 'wallet-page') loadHistory();
+            if(pageId === 'notifications-page') loadNotifications();
+            
+            // Refresh Icons logic for dynamic content
+            setTimeout(() => lucide.createIcons(), 100);
+        };
+
+        // --- Main Auth Flow ---
+        onAuthStateChanged(auth, async (user) => {
+            const loader = document.getElementById('loader');
+            loader.style.display = 'flex'; // Ensure loader is visible during transition
+
+            if (user) {
+                currentUser = user;
+                try {
+                    await fetchData();
+                    document.getElementById('auth-section').classList.remove('active');
+                    document.getElementById('app-container').classList.add('active');
+                    updateUI();
+                } catch (error) {
+                    console.error("Data Load Error:", error);
+                    window.showAlert("Error loading data. Check internet or Database rules.");
+                    // Fallback UI update to avoid blank screen
+                    document.getElementById('auth-section').classList.remove('active');
+                    document.getElementById('app-container').classList.add('active');
+                }
+            } else {
+                currentUser = null;
+                document.getElementById('app-container').classList.remove('active');
+                document.getElementById('auth-section').classList.add('active');
+            }
+            
+            // Hide loader after a short delay to ensure rendering
+            setTimeout(() => { loader.style.display = 'none'; }, 800);
+        });
+
+        async function fetchData() {
+            if (!currentUser) return;
+            const userRef = doc(db, "users", currentUser.uid);
+            
+            try {
+                const snap = await getDoc(userRef);
+                if (snap.exists()) {
+                    userData = snap.data();
+                } else {
+                    // Create new user doc
+                    const newUser = {
+                        uid: currentUser.uid,
+                        name: currentUser.email.split('@')[0],
+                        email: currentUser.email,
+                        balance: 50,
+                        referralCode: Math.random().toString(36).substring(2, 8).toUpperCase(),
+                        dailyAdCount: 0,
+                        lastAdDate: new Date().toISOString().split('T')[0],
+                        createdAt: serverTimestamp()
+                    };
+                    await setDoc(userRef, newUser);
+                    userData = newUser;
+                }
+            } catch (e) {
+                console.error("Firestore Error:", e);
+                // Mock data if database fails (prevents crash)
+                userData = { name: "User", balance: 0, referralCode: "ERROR" };
+                throw e; // Rethrow to trigger alert
+            }
+        }
+
+        function updateUI() {
+            if (!userData) return;
+            document.getElementById('coin-balance').textContent = userData.balance;
+            document.getElementById('wallet-coin-balance').textContent = userData.balance;
+            document.getElementById('profile-name').textContent = userData.name || "User";
+            document.getElementById('profile-email').textContent = currentUser.email;
+            document.getElementById('profile-img').src = `https://ui-avatars.com/api/?name=${userData.name}&background=1e293b&color=fbbf24`;
+            document.getElementById('referral-code').textContent = userData.referralCode;
+            
+            // Ad Limit logic
+            const today = new Date().toISOString().split('T')[0];
+            let count = (userData.lastAdDate === today) ? userData.dailyAdCount : 0;
+            document.getElementById('ads-left-count').textContent = Math.max(0, appConfig.dailyAdLimit - count);
+            
+            lucide.createIcons();
+        }
+
+        // --- Action Handlers ---
+        
+        // Login
+        document.getElementById('login-btn').addEventListener('click', async () => {
+            const email = document.getElementById('login-email').value;
+            const pass = document.getElementById('login-password').value;
+            if(!email || !pass) return showAlert("Fill all fields");
+            
+            document.getElementById('loader').style.display = 'flex';
+            try {
+                await signInWithEmailAndPassword(auth, email, pass);
+            } catch(e) {
+                showAlert("Login Failed: " + e.message);
+                document.getElementById('loader').style.display = 'none';
+            }
+        });
+
+        // Signup
+        document.getElementById('signup-btn').addEventListener('click', async () => {
+            const name = document.getElementById('signup-name').value;
+            const email = document.getElementById('signup-email').value;
+            const pass = document.getElementById('signup-password').value;
+            if(!name || !email || !pass) return showAlert("Fill all fields");
+            
+            document.getElementById('loader').style.display = 'flex';
+            try {
+                const cred = await createUserWithEmailAndPassword(auth, email, pass);
+                await updateDoc(doc(db, "users", cred.user.uid), { name: name });
+                // Auth listener will handle the rest
+            } catch(e) {
+                showAlert("Signup Failed: " + e.message);
+                document.getElementById('loader').style.display = 'none';
+            }
+        });
+
+        // Toggles
+        document.getElementById('show-signup').onclick = () => {
+            document.getElementById('login-view').classList.add('hidden');
+            document.getElementById('signup-view').classList.remove('hidden');
+        };
+        document.getElementById('show-login').onclick = () => {
+            document.getElementById('signup-view').classList.add('hidden');
+            document.getElementById('login-view').classList.remove('hidden');
+        };
+        
+        // Logout
+        document.getElementById('logout-btn').onclick = () => signOut(auth);
+
+        // Notifications Nav
+        document.getElementById('notification-bell').onclick = () => window.navigateTo('notifications-page');
+
+        // --- Feature Logic ---
+
+        // Claim Reward / Ads
+        window.claimReward = async (type) => {
+            if (!currentUser) return;
+            
+            // Daily Limit Check
+            const today = new Date().toISOString().split('T')[0];
+            if(userData.lastAdDate !== today) {
+                userData.dailyAdCount = 0;
+            }
+            if(userData.dailyAdCount >= appConfig.dailyAdLimit) {
+                return showAlert("Daily limit reached! Come back tomorrow.");
+            }
+
+            // Ad SDK Check
+            if (typeof window.show_10352978 !== 'function') {
+                return showAlert("Ad network not ready. Check internet or AdBlocker.");
+            }
+
+            const loader = document.getElementById('loader');
+            loader.style.display = 'flex';
+
+            try {
+                // Show Ad based on type
+                if(type === 'interstitial') await window.show_10352978();
+                else if(type === 'popup') await window.show_10352978('pop');
+                else await window.show_10352978();
+
+                // Reward User
+                const reward = (type === 'miniApp') ? 100 : 50;
+                const newRef = doc(db, "users", currentUser.uid);
+                
+                await updateDoc(newRef, {
+                    balance: (userData.balance || 0) + reward,
+                    dailyAdCount: (userData.dailyAdCount || 0) + 1,
+                    lastAdDate: today
+                });
+                
+                userData.balance += reward;
+                userData.dailyAdCount += 1;
+                userData.lastAdDate = today;
+                
+                updateUI();
+                showAlert(`Success! You earned ${reward} coins.`);
+
+            } catch(e) {
+                console.log(e);
+                showAlert("Ad closed early or failed to load.");
+            } finally {
+                loader.style.display = 'none';
+            }
+        };
+
+        // Withdraw
+        document.getElementById('withdraw-btn').onclick = async () => {
+            const amount = parseInt(document.getElementById('withdraw-amount').value);
+            const method = document.getElementById('withdraw-method').value;
+            const number = document.getElementById('payment-number').value;
+
+            if(!amount || !method || !number) return showAlert("Please fill all details.");
+            if(amount < appConfig.minWithdrawal) return showAlert(`Min withdrawal: ${appConfig.minWithdrawal}`);
+            if(amount > userData.balance) return showAlert("Insufficient balance.");
+
+            document.getElementById('loader').style.display = 'flex';
+            try {
+                // Deduct Balance
+                await updateDoc(doc(db, "users", currentUser.uid), {
+                    balance: userData.balance - amount
+                });
+                
+                // Create Request
+                await addDoc(collection(db, "withdrawals"), {
+                    userId: currentUser.uid,
+                    amount: amount,
+                    method: method,
+                    number: number,
+                    status: "pending",
+                    date: serverTimestamp()
+                });
+
+                userData.balance -= amount;
+                updateUI();
+                document.getElementById('withdraw-amount').value = "";
+                showAlert("Withdrawal requested successfully!");
+                loadHistory(); // Refresh history immediately
+            } catch(e) {
+                showAlert("Error: " + e.message);
+            } finally {
+                document.getElementById('loader').style.display = 'none';
+            }
+        };
+
+        // Load History
+        async function loadHistory() {
+            const list = document.getElementById('withdrawal-history-list');
+            if(!currentUser) return;
+            
+            const q = query(collection(db, "withdrawals"), where("userId", "==", currentUser.uid), orderBy("date", "desc"), limit(10));
+            try {
+                const snap = await getDocs(q);
+                list.innerHTML = "";
+                if(snap.empty) {
+                    list.innerHTML = "<p class='text-center py-4'>No history found.</p>";
+                    return;
+                }
+                snap.forEach(d => {
+                    const data = d.data();
+                    const statusColor = data.status === 'pending' ? 'text-yellow-400' : (data.status === 'paid' ? 'text-green-400' : 'text-red-400');
+                    list.innerHTML += `
+                        <div class="card-bg p-3 rounded-lg flex justify-between items-center border border-slate-700">
+                            <div>
+                                <p class="font-bold text-white">${data.amount} Coins</p>
+                                <p class="text-xs text-gray-400">${data.method} • ${data.status}</p>
+                            </div>
+                            <div class="${statusColor}"><i data-lucide="clock" class="w-4 h-4"></i></div>
+                        </div>
+                    `;
+                });
+                lucide.createIcons();
+            } catch(e) {
+                console.log(e); // Indexing error might happen first time
+                list.innerHTML = "<p class='text-center text-red-400 text-xs'>Create Index in Firebase Console.</p>";
+            }
+        }
+        
+        // Notifications
+        async function loadNotifications() {
+             const list = document.getElementById('notifications-list');
+             const q = query(collection(db, "notifications"), orderBy("createdAt", "desc"), limit(5));
+             try {
+                 const snap = await getDocs(q);
+                 list.innerHTML = "";
+                 if(snap.empty) {
+                     list.innerHTML = "<p class='py-10 opacity-50'>No new notifications.</p>";
+                     return;
+                 }
+                 snap.forEach(d => {
+                     const data = d.data();
+                     list.innerHTML += `
+                        <div class="card-bg p-4 rounded-xl text-left border border-slate-700">
+                            <h3 class="font-bold text-yellow-400 text-sm mb-1">${data.title}</h3>
+                            <p class="text-xs text-gray-300">${data.message}</p>
+                        </div>
+                     `;
+                 });
+             } catch(e) {
+                 console.log(e);
+             }
+        }
+
+        // Referral System
+        window.copyReferralCode = () => {
+            navigator.clipboard.writeText(userData.referralCode);
+            showAlert("Code copied!");
+        };
+        
+        window.shareReferral = () => {
+             if (navigator.share) {
+                navigator.share({
+                    title: 'Earn Money',
+                    text: `Use my code ${userData.referralCode} to join!`,
+                    url: window.location.href
+                });
+            } else {
+                window.copyReferralCode();
+            }
+        };
+
+        window.applyReferral = async () => {
+            const code = document.getElementById('enter-referral-code').value.trim().toUpperCase();
+            if(!code) return showAlert("Enter a code");
+            if(userData.referredBy) return showAlert("Already used a code");
+            if(code === userData.referralCode) return showAlert("Can't use own code");
+
+            const loader = document.getElementById('loader');
+            loader.style.display = 'flex';
+            
+            try {
+                // Find referrer
+                const q = query(collection(db, "users"), where("referralCode", "==", code));
+                const snap = await getDocs(q);
+                
+                if(!snap.empty) {
+                    const refDoc = snap.docs[0];
+                    // Bonus Logic
+                    await updateDoc(refDoc.ref, { balance: (refDoc.data().balance || 0) + 100 });
+                    await updateDoc(doc(db, "users", currentUser.uid), { 
+                        balance: userData.balance + 100,
+                        referredBy: code
+                    });
+                    userData.balance += 100;
+                    userData.referredBy = code;
+                    updateUI();
+                    showAlert("Bonus Applied! +100 Coins");
+                } else {
+                    showAlert("Invalid Code");
+                }
+            } catch(e) {
+                showAlert("Error applying code");
+            } finally {
+                loader.style.display = 'none';
+            }
+        };
+
+        // Initialize Icons
+        lucide.createIcons();
+    </script>
+</body>
+</html>
