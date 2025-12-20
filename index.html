@@ -34,7 +34,709 @@
         .task-btn { position: relative; overflow: hidden; }
         .task-btn::after { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); transition: 0.5s; }
         .task-btn:hover::after { left: 100%; }
+        
+        /* Modal Animation */
+        .modal-animate { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
     </style>
+</head>
+<body class="max-w-md mx-auto min-h-screen relative bg-slate-900 pb-20">
+
+    <!-- Loader -->
+    <div id="loader" class="fixed inset-0 bg-slate-900 z-[100] flex flex-col items-center justify-center">
+        <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-yellow-500 mb-4"></div>
+        <p class="text-yellow-500 font-bold text-sm tracking-widest animate-pulse">CONNECTING...</p>
+    </div>
+
+    <!-- Auth Section -->
+    <div id="auth-section" class="min-h-screen flex-col justify-center items-center page-section z-50 p-6">
+        <div class="glass-card p-8 rounded-2xl w-full max-w-sm shadow-2xl relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-yellow-500 to-transparent"></div>
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-yellow-500/20 mb-3">
+                    <i data-lucide="zap" class="w-8 h-8 text-yellow-500"></i>
+                </div>
+                <h1 class="text-2xl font-bold text-white">Earn Pro BD</h1>
+                <p class="text-gray-400 text-xs">Login to start earning</p>
+            </div>
+
+            <!-- Login -->
+            <div id="login-view" class="space-y-4">
+                <input id="login-email" type="email" class="w-full p-3 rounded-lg input-field" placeholder="Email Address">
+                <input id="login-password" type="password" class="w-full p-3 rounded-lg input-field" placeholder="Password">
+                <button id="login-btn" class="w-full p-3 rounded-lg btn-primary mt-2">SECURE LOGIN</button>
+                <p class="text-center text-sm text-gray-400 mt-4">New here? <a href="#" id="show-signup" class="text-yellow-500 hover:underline">Create Account</a></p>
+            </div>
+
+            <!-- Signup -->
+            <div id="signup-view" class="hidden space-y-4">
+                <input id="signup-name" type="text" class="w-full p-3 rounded-lg input-field" placeholder="Full Name">
+                <input id="signup-email" type="email" class="w-full p-3 rounded-lg input-field" placeholder="Email Address">
+                <input id="signup-password" type="password" class="w-full p-3 rounded-lg input-field" placeholder="Create Password">
+                <div class="relative">
+                     <input id="signup-referral" type="text" class="w-full p-3 rounded-lg input-field uppercase" placeholder="Referral Code (Optional)">
+                     <i data-lucide="gift" class="absolute right-3 top-3.5 w-5 h-5 text-gray-500"></i>
+                </div>
+                <button id="signup-btn" class="w-full p-3 rounded-lg btn-primary mt-2">REGISTER ACCOUNT</button>
+                <p class="text-center text-sm text-gray-400 mt-4">Have account? <a href="#" id="show-login" class="text-yellow-500 hover:underline">Login</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="app-container" class="min-h-screen flex-col page-section relative z-10">
+        <!-- Header -->
+        <header class="flex items-center justify-between p-5 sticky top-0 bg-slate-900/90 backdrop-blur-md z-40 border-b border-slate-800">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-yellow-500 rounded-lg flex items-center justify-center font-bold text-slate-900">P</div>
+                <div>
+                    <h1 class="text-sm font-bold text-white">Earn Pro</h1>
+                    <p class="text-[10px] text-gray-400" id="header-user-name">Welcome</p>
+                </div>
+            </div>
+            <div class="bg-slate-800 px-3 py-1.5 rounded-full border border-slate-700 flex items-center gap-2">
+                <i data-lucide="coins" class="w-4 h-4 text-yellow-500"></i>
+                <span id="header-balance" class="font-bold text-sm">0</span>
+            </div>
+        </header>
+
+        <main class="flex-grow p-4">
+            
+            <!-- Home Dashboard -->
+            <div id="home-page" class="sub-page active space-y-6">
+                <!-- Balance Card -->
+                <div class="bg-gradient-to-br from-slate-800 to-slate-900 p-6 rounded-2xl border border-slate-700 relative overflow-hidden shadow-xl">
+                    <div class="absolute right-[-20px] top-[-20px] w-32 h-32 bg-yellow-500/10 rounded-full blur-2xl"></div>
+                    <p class="text-gray-400 text-xs uppercase tracking-wider">Current Balance</p>
+                    <div class="flex items-end gap-2 mt-1">
+                        <h2 class="text-4xl font-bold text-white" id="main-balance">0.00</h2>
+                        <span class="text-yellow-500 font-medium mb-1">Coins</span>
+                    </div>
+                    <div class="mt-4 flex gap-3">
+                        <button onclick="navigateTo('wallet-page')" class="flex-1 bg-yellow-500 hover:bg-yellow-400 text-slate-900 py-2 rounded-lg text-sm font-bold">Withdraw</button>
+                        <button onclick="navigateTo('refer-page')" class="flex-1 bg-slate-700 hover:bg-slate-600 text-white py-2 rounded-lg text-sm font-bold">Invite</button>
+                    </div>
+                </div>
+
+                <!-- Daily Tasks Grid -->
+                <div>
+                    <h3 class="font-bold text-lg mb-3 flex items-center gap-2">
+                        <i data-lucide="target" class="text-yellow-500 w-5 h-5"></i> Daily Tasks
+                    </h3>
+                    <div class="grid grid-cols-1 gap-4">
+                        
+                        <!-- Task 1 (Ad) -->
+                        <div class="glass-card p-4 rounded-xl border-l-4 border-l-blue-500">
+                            <div class="flex justify-between items-start mb-2">
+                                <div>
+                                    <h4 class="font-bold">Ad Task 1</h4>
+                                    <p class="text-xs text-gray-400">Watch full ad to claim</p>
+                                </div>
+                                <span class="bg-slate-800 text-blue-400 text-xs px-2 py-1 rounded font-mono">
+                                    <span id="task1-count">0</span>/10
+                                </span>
+                            </div>
+                            <div class="w-full bg-slate-800 h-1.5 rounded-full mb-3">
+                                <div id="task1-progress" class="bg-blue-500 h-1.5 rounded-full progress-bar" style="width: 0%"></div>
+                            </div>
+                            <button id="btn-task1" onclick="handleTask('task1', 50)" class="w-full py-2.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold task-btn">START TASK</button>
+                        </div>
+
+                        <!-- Task 2 (Ad) -->
+                        <div class="glass-card p-4 rounded-xl border-l-4 border-l-purple-500">
+                            <div class="flex justify-between items-start mb-2">
+                                <div>
+                                    <h4 class="font-bold">Ad Task 2</h4>
+                                    <p class="text-xs text-gray-400">Interact and earn</p>
+                                </div>
+                                <span class="bg-slate-800 text-purple-400 text-xs px-2 py-1 rounded font-mono">
+                                    <span id="task2-count">0</span>/10
+                                </span>
+                            </div>
+                            <div class="w-full bg-slate-800 h-1.5 rounded-full mb-3">
+                                <div id="task2-progress" class="bg-purple-500 h-1.5 rounded-full progress-bar" style="width: 0%"></div>
+                            </div>
+                            <button id="btn-task2" onclick="handleTask('task2', 50)" class="w-full py-2.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-white text-sm font-bold task-btn">START TASK</button>
+                        </div>
+
+                         <!-- Task 3 (Math) -->
+                         <div class="glass-card p-4 rounded-xl border-l-4 border-l-green-500">
+                            <div class="flex justify-between items-start mb-2">
+                                <div>
+                                    <h4 class="font-bold">Math Quiz</h4>
+                                    <p class="text-xs text-gray-400">Solve & Watch Ad</p>
+                                </div>
+                                <span class="bg-slate-800 text-green-400 text-xs px-2 py-1 rounded font-mono">
+                                    <span id="task3-count">0</span>/10
+                                </span>
+                            </div>
+                            <div class="w-full bg-slate-800 h-1.5 rounded-full mb-3">
+                                <div id="task3-progress" class="bg-green-500 h-1.5 rounded-full progress-bar" style="width: 0%"></div>
+                            </div>
+                            <button id="btn-task3" onclick="handleMathTask()" class="w-full py-2.5 rounded-lg bg-green-600 hover:bg-green-500 text-white text-sm font-bold task-btn">START QUIZ</button>
+                        </div>
+
+                         <!-- Task 4 (Spin - Limited to 1) -->
+                         <div class="glass-card p-4 rounded-xl border-l-4 border-l-pink-500 bg-gradient-to-r from-slate-800 to-pink-900/20">
+                            <div class="flex justify-between items-start mb-2">
+                                <div>
+                                    <h4 class="font-bold text-pink-400">Lucky Spin</h4>
+                                    <p class="text-xs text-gray-400">Try your luck (Daily 1)</p>
+                                </div>
+                                <span class="bg-slate-800 text-pink-400 text-xs px-2 py-1 rounded font-mono">
+                                    <span id="task4-count">0</span>/1
+                                </span>
+                            </div>
+                            <div class="w-full bg-slate-800 h-1.5 rounded-full mb-3">
+                                <div id="task4-progress" class="bg-pink-500 h-1.5 rounded-full progress-bar" style="width: 0%"></div>
+                            </div>
+                            <button id="btn-task4" onclick="handleTask('task4', 100)" class="w-full py-2.5 rounded-lg bg-pink-600 hover:bg-pink-500 text-white text-sm font-bold task-btn">SPIN NOW</button>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Social Tasks (Admin Placeholders) -->
+                <div>
+                    <h3 class="font-bold text-lg mb-3 flex items-center gap-2">
+                        <i data-lucide="thumbs-up" class="text-blue-500 w-5 h-5"></i> Social Tasks
+                    </h3>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div onclick="socialPlaceholder('YouTube')" class="glass-card p-3 rounded-xl flex items-center gap-2 cursor-pointer hover:bg-slate-800">
+                            <i data-lucide="youtube" class="text-red-500"></i>
+                            <span class="text-sm font-bold">Subscribe</span>
+                        </div>
+                        <div onclick="socialPlaceholder('Facebook')" class="glass-card p-3 rounded-xl flex items-center gap-2 cursor-pointer hover:bg-slate-800">
+                            <i data-lucide="facebook" class="text-blue-500"></i>
+                            <span class="text-sm font-bold">Follow</span>
+                        </div>
+                        <div onclick="socialPlaceholder('Instagram')" class="glass-card p-3 rounded-xl flex items-center gap-2 cursor-pointer hover:bg-slate-800">
+                            <i data-lucide="instagram" class="text-pink-500"></i>
+                            <span class="text-sm font-bold">Like Post</span>
+                        </div>
+                         <div onclick="socialPlaceholder('TikTok')" class="glass-card p-3 rounded-xl flex items-center gap-2 cursor-pointer hover:bg-slate-800">
+                            <i data-lucide="music-2" class="text-black bg-white rounded-full p-0.5 w-5 h-5"></i>
+                            <span class="text-sm font-bold">Follow</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wallet Page -->
+            <div id="wallet-page" class="sub-page space-y-6">
+                <div class="text-center py-6">
+                    <p class="text-gray-400 text-sm">Withdrawable Balance</p>
+                    <h3 class="text-4xl font-bold text-yellow-500 mt-2"><span id="wallet-balance">0</span></h3>
+                    <div class="inline-block bg-slate-800 px-3 py-1 rounded-full text-xs text-gray-400 mt-2 border border-slate-700">
+                        Rate: 1000 Coins = 10 BDT
+                    </div>
+                </div>
+                
+                <div class="glass-card p-5 rounded-xl space-y-4">
+                    <h3 class="font-bold border-b border-slate-700 pb-2">Request Withdrawal</h3>
+                    <div>
+                        <label class="text-xs text-gray-400 mb-1 block">Payment Method</label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="method-select p-3 rounded-lg border border-slate-700 text-center cursor-pointer hover:border-yellow-500 bg-slate-800" onclick="selectMethod(this, 'bKash')">bKash</div>
+                            <div class="method-select p-3 rounded-lg border border-slate-700 text-center cursor-pointer hover:border-yellow-500 bg-slate-800" onclick="selectMethod(this, 'Nagad')">Nagad</div>
+                        </div>
+                        <input type="hidden" id="selected-method">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-400 mb-1 block">Account Number</label>
+                        <input id="withdraw-number" type="number" class="w-full p-3 rounded-lg input-field" placeholder="017xxxxxxxx">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-400 mb-1 block">Amount (Coins)</label>
+                        <input id="withdraw-amount" type="number" class="w-full p-3 rounded-lg input-field" placeholder="Min 5000">
+                    </div>
+                    <button id="withdraw-btn" class="w-full btn-primary py-3 rounded-lg mt-2">CONFIRM WITHDRAW</button>
+                </div>
+
+                <div>
+                    <h3 class="font-bold mb-3 text-sm text-gray-400">Transaction History</h3>
+                    <div id="history-list" class="space-y-3">
+                        <!-- History loaded via JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Refer Page -->
+            <div id="refer-page" class="sub-page space-y-6 text-center">
+                <div class="glass-card p-6 rounded-2xl border border-dashed border-yellow-500/30">
+                    <div class="w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg shadow-yellow-500/20">
+                        <i data-lucide="share-2" class="w-8 h-8 text-white"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold">Invite Friends</h2>
+                    <p class="text-gray-400 text-sm mt-2 mb-6">Earn <span class="text-yellow-500 font-bold">200 Coins</span> for every successful referral.</p>
+                    
+                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 mb-4">
+                        <p class="text-xs text-gray-500 mb-1 uppercase">Your Referral Code</p>
+                        <div class="flex items-center justify-center gap-3">
+                            <span id="refer-code-display" class="text-2xl font-mono font-bold text-white tracking-widest">LOADING</span>
+                            <button onclick="copyCode()" class="text-yellow-500 hover:text-white transition"><i data-lucide="copy" class="w-5 h-5"></i></button>
+                        </div>
+                    </div>
+                    
+                    <button onclick="copyLink()" class="w-full bg-slate-800 border border-slate-600 hover:bg-slate-700 text-white py-3 rounded-lg flex items-center justify-center gap-2 mb-2 font-medium">
+                        <i data-lucide="link" class="w-4 h-4"></i> Copy Referral Link
+                    </button>
+                    <button onclick="shareLink()" class="w-full btn-primary py-3 rounded-lg font-bold">SHARE NOW</button>
+                </div>
+            </div>
+
+            <!-- Profile Page -->
+            <div id="profile-page" class="sub-page space-y-5">
+                <div class="glass-card p-6 rounded-2xl flex items-center gap-4">
+                    <div class="w-16 h-16 rounded-full bg-slate-800 border-2 border-yellow-500 overflow-hidden">
+                        <img id="profile-img" src="" class="w-full h-full object-cover">
+                    </div>
+                    <div>
+                        <h2 id="profile-name" class="text-lg font-bold">User Name</h2>
+                        <p id="profile-email" class="text-xs text-gray-400">user@email.com</p>
+                        <span class="inline-block mt-2 bg-yellow-500/20 text-yellow-500 text-[10px] px-2 py-0.5 rounded font-bold">PRO MEMBER</span>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <a href="https://t.me/shbtechbd" target="_blank" class="block glass-card p-4 rounded-xl hover:bg-slate-800 transition flex justify-between items-center">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="send" class="w-5 h-5 text-blue-400"></i>
+                            <span>Join Telegram</span>
+                        </div>
+                        <i data-lucide="chevron-right" class="w-4 h-4 text-gray-500"></i>
+                    </a>
+                    <button onclick="signOut(auth)" class="w-full glass-card p-4 rounded-xl hover:bg-red-500/10 transition flex justify-between items-center text-red-400">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="log-out" class="w-5 h-5"></i>
+                            <span>Logout Account</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav fixed bottom-0 w-full max-w-md left-1/2 -translate-x-1/2 grid grid-cols-4 py-3 z-50">
+            <button class="nav-link active flex flex-col items-center gap-1" onclick="navigateTo('home-page')">
+                <i data-lucide="layout-grid" class="w-6 h-6"></i>
+                <span class="text-[10px] font-medium">HOME</span>
+            </button>
+            <button class="nav-link flex flex-col items-center gap-1" onclick="navigateTo('wallet-page')">
+                <i data-lucide="wallet" class="w-6 h-6"></i>
+                <span class="text-[10px] font-medium">WALLET</span>
+            </button>
+            <button class="nav-link flex flex-col items-center gap-1" onclick="navigateTo('refer-page')">
+                <i data-lucide="users" class="w-6 h-6"></i>
+                <span class="text-[10px] font-medium">INVITE</span>
+            </button>
+            <button class="nav-link flex flex-col items-center gap-1" onclick="navigateTo('profile-page')">
+                <i data-lucide="user-circle" class="w-6 h-6"></i>
+                <span class="text-[10px] font-medium">PROFILE</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- Math Quiz Modal -->
+    <div id="math-modal" class="fixed inset-0 bg-black/90 z-[60] hidden flex items-center justify-center p-6 backdrop-blur-sm">
+        <div class="bg-slate-800 rounded-2xl p-6 w-full max-w-xs text-center border border-slate-700 animate-bounce-in">
+            <h3 class="text-xl font-bold mb-4 text-white">Solve to Earn</h3>
+            <div class="bg-slate-900 p-4 rounded-lg mb-4 text-2xl font-mono font-bold text-yellow-500 border border-slate-700">
+                <span id="math-q">5 + 3</span> = ?
+            </div>
+            <input type="number" id="math-ans" class="w-full p-3 rounded-lg bg-slate-700 text-white text-center mb-4 focus:outline-none focus:ring-2 focus:ring-yellow-500" placeholder="Enter Answer">
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="closeMathModal()" class="bg-slate-600 text-white py-2 rounded-lg font-bold">Cancel</button>
+                <button onclick="submitMath()" class="btn-primary py-2 rounded-lg">Submit</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Welcome Bengali Modal -->
+    <div id="welcome-modal" class="fixed inset-0 bg-black/90 z-[80] hidden flex items-center justify-center p-6 backdrop-blur-sm">
+        <div class="bg-slate-800 rounded-2xl p-6 w-full max-w-sm text-center border border-yellow-500/50 relative modal-animate">
+            <div class="w-16 h-16 bg-yellow-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="bell-ring" class="w-8 h-8 text-yellow-500"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-2 text-white">স্বাগতম!</h3>
+            <p class="text-gray-300 text-sm mb-6 leading-relaxed">
+                আমাদের অ্যাপে কাজ করার জন্য আপনাকে ধন্যবাদ। 
+                <br>✅ সঠিক নিয়মে কাজ করুন। 
+                <br>✅ VPN ব্যবহার করা নিষেধ। 
+                <br>✅ ১০০% পেমেন্ট পাবেন।
+            </p>
+            <button onclick="closeWelcomeModal()" class="w-full btn-primary py-3 rounded-xl font-bold">ঠিক আছে, শুরু করুন</button>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed top-5 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-6 py-3 rounded-full shadow-2xl border border-slate-700 flex items-center gap-3 z-[100] translate-y-[-100px] transition-all duration-300">
+        <i data-lucide="info" class="text-yellow-500 w-5 h-5"></i>
+        <span id="toast-msg" class="text-sm font-medium">Notification</span>
+    </div>
+
+    <script type="module">
+        // Firebase Configuration
+        const firebaseConfig = {
+          apiKey: "AIzaSyDSyXdeWqDD-3OFNZT6SMcJz0Nr7tSdTS0",
+          authDomain: "reward-earn-money-32b24.firebaseapp.com",
+          databaseURL: "https://reward-earn-money-32b24-default-rtdb.firebaseio.com",
+          projectId: "reward-earn-money-32b24",
+          storageBucket: "reward-earn-money-32b24.firebasestorage.app",
+          messagingSenderId: "647603026182",
+          appId: "1:647603026182:web:1bfe0a9dc3d8e4513f8687"
+        };
+
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, addDoc, serverTimestamp, query, where, getDocs, orderBy, limit } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        
+        window.signOut = signOut;
+
+        // Globals
+        let currentUser = null;
+        let userData = null;
+        let mathAnswer = 0;
+        
+        // --- NEW LIMITS ---
+        const taskLimits = { 
+            task1: 10,  // Ad Task 1
+            task2: 10,  // Ad Task 2
+            task3: 10,  // Math Quiz
+            task4: 1    // Lucky Spin (Daily 1)
+        };
+
+        // UI Helpers
+        window.showToast = (msg) => {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = msg;
+            toast.style.transform = "translate(-50%, 0)";
+            setTimeout(() => toast.style.transform = "translate(-50%, -100px)", 3000);
+        };
+
+        window.navigateTo = (pageId) => {
+            document.querySelectorAll('.sub-page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            
+            document.querySelectorAll('.nav-link').forEach(btn => {
+                btn.classList.remove('active');
+                if(btn.getAttribute('onclick').includes(pageId)) btn.classList.add('active');
+            });
+
+            if(pageId === 'wallet-page') loadHistory();
+            lucide.createIcons();
+        };
+        
+        // Welcome Modal
+        window.closeWelcomeModal = () => document.getElementById('welcome-modal').classList.add('hidden');
+        window.socialPlaceholder = (name) => showToast(`${name} Task Coming Soon!`);
+
+        // --- AUTH LOGIC ---
+        onAuthStateChanged(auth, async (user) => {
+            const loader = document.getElementById('loader');
+            if (user) {
+                currentUser = user;
+                try {
+                    await fetchUserData();
+                    document.getElementById('auth-section').classList.remove('active');
+                    document.getElementById('app-container').classList.add('active');
+                    
+                    // Show Welcome Modal Once
+                    if(!sessionStorage.getItem('welcomeShown')) {
+                        document.getElementById('welcome-modal').classList.remove('hidden');
+                        sessionStorage.setItem('welcomeShown', 'true');
+                    }
+                } catch(e) { console.error(e); }
+            } else {
+                currentUser = null;
+                const urlParams = new URLSearchParams(window.location.search);
+                const refCode = urlParams.get('ref');
+                if(refCode) {
+                    document.getElementById('signup-referral').value = refCode;
+                    document.getElementById('show-signup').click();
+                }
+                document.getElementById('app-container').classList.remove('active');
+                document.getElementById('auth-section').classList.add('active');
+            }
+            loader.style.display = 'none';
+        });
+
+        async function fetchUserData() {
+            if (!currentUser) return;
+            const userRef = doc(db, "users", currentUser.uid);
+            const snap = await getDoc(userRef);
+            
+            if (snap.exists()) {
+                userData = snap.data();
+                // Check Midnight Reset
+                const today = new Date().toISOString().split('T')[0];
+                if (userData.lastActiveDate !== today) {
+                    userData.taskCounters = { task1: 0, task2: 0, task3: 0, task4: 0 };
+                    userData.lastActiveDate = today;
+                    await updateDoc(userRef, { taskCounters: userData.taskCounters, lastActiveDate: today });
+                }
+            } else {
+                // First Time
+                userData = {
+                    uid: currentUser.uid,
+                    name: currentUser.email.split('@')[0],
+                    email: currentUser.email,
+                    balance: 50,
+                    referralCode: Math.random().toString(36).substring(2, 8).toUpperCase(),
+                    taskCounters: { task1: 0, task2: 0, task3: 0, task4: 0 },
+                    lastActiveDate: new Date().toISOString().split('T')[0],
+                    createdAt: serverTimestamp()
+                };
+                await setDoc(userRef, userData);
+            }
+            updateUI();
+        }
+
+        function updateUI() {
+            if(!userData) return;
+            // Balance & Profile
+            document.getElementById('header-balance').innerText = userData.balance;
+            document.getElementById('main-balance').innerText = userData.balance.toFixed(2);
+            document.getElementById('wallet-balance').innerText = userData.balance.toFixed(2);
+            document.getElementById('header-user-name').innerText = userData.name;
+            document.getElementById('profile-name').innerText = userData.name;
+            document.getElementById('profile-email').innerText = userData.email;
+            document.getElementById('profile-img').src = `https://ui-avatars.com/api/?name=${userData.name}&background=f59e0b&color=fff`;
+            document.getElementById('refer-code-display').innerText = userData.referralCode;
+
+            // Tasks Counters Logic
+            ['task1', 'task2', 'task3', 'task4'].forEach(task => {
+                const count = userData.taskCounters ? userData.taskCounters[task] || 0 : 0;
+                const limit = taskLimits[task];
+                
+                document.getElementById(`${task}-count`).innerText = count;
+                const pct = (count / limit) * 100;
+                document.getElementById(`${task}-progress`).style.width = `${pct}%`;
+                
+                const btn = document.getElementById(`btn-${task}`);
+                if(btn.dataset.state === 'claim') {
+                    // Claim state persists until clicked
+                } else {
+                    if (count >= limit) {
+                        btn.innerText = "COMPLETED";
+                        btn.disabled = true;
+                        btn.classList.remove('btn-primary', 'btn-success');
+                        btn.classList.add('opacity-50', 'cursor-not-allowed', 'bg-slate-700');
+                    } else {
+                        btn.innerText = task === 'task4' ? "SPIN NOW" : (task === 'task3' ? "START QUIZ" : "START TASK");
+                        btn.disabled = false;
+                        btn.classList.remove('opacity-50', 'cursor-not-allowed', 'bg-slate-700', 'btn-success');
+                        btn.classList.add('btn-primary');
+                    }
+                }
+            });
+            lucide.createIcons();
+        }
+
+        // --- AUTH HANDLERS ---
+        document.getElementById('login-btn').addEventListener('click', async () => {
+            const email = document.getElementById('login-email').value;
+            const pass = document.getElementById('login-password').value;
+            if(!email || !pass) return showToast("Fill all fields");
+            document.getElementById('loader').style.display = 'flex';
+            try { await signInWithEmailAndPassword(auth, email, pass); }
+            catch(e) { showToast(e.message); document.getElementById('loader').style.display = 'none'; }
+        });
+
+        document.getElementById('signup-btn').addEventListener('click', async () => {
+            const name = document.getElementById('signup-name').value;
+            const email = document.getElementById('signup-email').value;
+            const pass = document.getElementById('signup-password').value;
+            const refCode = document.getElementById('signup-referral').value.trim().toUpperCase();
+
+            if(!name || !email || !pass) return showToast("Fill all fields");
+            document.getElementById('loader').style.display = 'flex';
+
+            try {
+                const cred = await createUserWithEmailAndPassword(auth, email, pass);
+                const newUser = {
+                    uid: cred.user.uid,
+                    name: name,
+                    email: email,
+                    balance: 50,
+                    referralCode: Math.random().toString(36).substring(2, 8).toUpperCase(),
+                    referredBy: refCode || null,
+                    taskCounters: { task1: 0, task2: 0, task3: 0, task4: 0 },
+                    lastActiveDate: new Date().toISOString().split('T')[0],
+                    createdAt: serverTimestamp()
+                };
+                await setDoc(doc(db, "users", cred.user.uid), newUser);
+                
+                if(refCode) {
+                    const q = query(collection(db, "users"), where("referralCode", "==", refCode));
+                    const snap = await getDocs(q);
+                    if(!snap.empty) {
+                        await updateDoc(snap.docs[0].ref, { balance: (snap.docs[0].data().balance || 0) + 200 });
+                    }
+                }
+            } catch(e) { 
+                showToast(e.message); 
+                document.getElementById('loader').style.display = 'none'; 
+            }
+        });
+
+        document.getElementById('show-signup').onclick = () => { document.getElementById('login-view').classList.add('hidden'); document.getElementById('signup-view').classList.remove('hidden'); };
+        document.getElementById('show-login').onclick = () => { document.getElementById('signup-view').classList.add('hidden'); document.getElementById('login-view').classList.remove('hidden'); };
+
+        // --- TASK SYSTEM ---
+        window.handleTask = async (taskId, reward) => {
+            const btn = document.getElementById(`btn-${taskId}`);
+            const currentCount = userData.taskCounters[taskId] || 0;
+            const limit = taskLimits[taskId];
+
+            // 1. Strict Limit Check
+            if (currentCount >= limit) return showToast("Daily limit reached!");
+
+            // 2. Claim Phase
+            if (btn.dataset.state === 'claim') {
+                btn.innerText = "ADDING...";
+                try {
+                    const newBalance = userData.balance + reward;
+                    const newCounters = { ...userData.taskCounters, [taskId]: currentCount + 1 };
+                    
+                    await updateDoc(doc(db, "users", currentUser.uid), {
+                        balance: newBalance,
+                        taskCounters: newCounters
+                    });
+
+                    userData.balance = newBalance;
+                    userData.taskCounters = newCounters;
+                    
+                    delete btn.dataset.state;
+                    updateUI();
+                    showToast(`Success! +${reward} coins added.`);
+                } catch(e) {
+                    showToast("Error adding balance");
+                    delete btn.dataset.state;
+                    updateUI();
+                }
+            } else {
+                // 3. Start Phase (Ad)
+                if (typeof window.show_10352978 !== 'function') return showToast("Ad loading... wait");
+                
+                btn.innerText = "Loading Ad...";
+                try {
+                    await window.show_10352978().catch(e => console.log("Ad skipped"));
+                    
+                    // Ad Done -> Button turns Green
+                    btn.innerText = "CLAIM REWARD";
+                    btn.classList.remove('btn-primary');
+                    btn.classList.add('btn-success');
+                    btn.dataset.state = 'claim';
+                    
+                } catch(e) {
+                    console.log(e);
+                    btn.innerText = "TRY AGAIN";
+                    btn.classList.add('btn-primary');
+                    showToast("Ad failed to load.");
+                }
+            }
+        };
+
+        // --- MATH QUIZ ---
+        window.handleMathTask = () => {
+            if(userData.taskCounters.task3 >= taskLimits.task3) return showToast("Daily limit reached!");
+            const n1 = Math.floor(Math.random() * 9) + 1;
+            const n2 = Math.floor(Math.random() * 9) + 1;
+            mathAnswer = n1 + n2;
+            document.getElementById('math-q').innerText = `${n1} + ${n2}`;
+            document.getElementById('math-ans').value = '';
+            document.getElementById('math-modal').classList.remove('hidden');
+        };
+
+        window.closeMathModal = () => document.getElementById('math-modal').classList.add('hidden');
+        
+        window.submitMath = async () => {
+            const ans = parseInt(document.getElementById('math-ans').value);
+            if(ans === mathAnswer) {
+                closeMathModal();
+                await handleTask('task3', 50); 
+            } else {
+                showToast("Wrong Answer!");
+            }
+        };
+
+        // --- WITHDRAWAL & REFERRAL ---
+        window.selectMethod = (el, method) => {
+            document.querySelectorAll('.method-select').forEach(d => d.classList.remove('border-yellow-500', 'text-yellow-500'));
+            el.classList.add('border-yellow-500', 'text-yellow-500');
+            document.getElementById('selected-method').value = method;
+        };
+
+        document.getElementById('withdraw-btn').onclick = async () => {
+            const amount = parseInt(document.getElementById('withdraw-amount').value);
+            const number = document.getElementById('withdraw-number').value;
+            const method = document.getElementById('selected-method').value;
+
+            if(!amount || !number || !method) return showToast("Please fill all details");
+            if(amount < 5000) return showToast("Minimum withdrawal is 5000 coins");
+            if(amount > userData.balance) return showToast("Insufficient balance");
+
+            try {
+                await updateDoc(doc(db, "users", currentUser.uid), { balance: userData.balance - amount });
+                userData.balance -= amount;
+                
+                await addDoc(collection(db, "withdrawals"), {
+                    userId: currentUser.uid,
+                    amount, method, number,
+                    status: 'pending',
+                    date: serverTimestamp()
+                });
+                
+                updateUI();
+                showToast("Withdrawal Request Submitted!");
+                loadHistory();
+                document.getElementById('withdraw-amount').value = "";
+            } catch(e) { showToast(e.message); }
+        };
+
+        async function loadHistory() {
+            const list = document.getElementById('history-list');
+            const q = query(collection(db, "withdrawals"), where("userId", "==", currentUser.uid), orderBy("date", "desc"), limit(5));
+            try {
+                const snap = await getDocs(q);
+                list.innerHTML = "";
+                if(snap.empty) list.innerHTML = "<p class='text-center text-xs text-gray-500'>No transactions yet.</p>";
+                snap.forEach(d => {
+                    const data = d.data();
+                    let color = data.status === 'paid' ? 'text-green-400' : 'text-yellow-400';
+                    list.innerHTML += `
+                    <div class="flex justify-between items-center bg-slate-800 p-3 rounded-lg border border-slate-700">
+                        <div>
+                            <p class="font-bold text-sm text-white">${data.method}</p>
+                            <p class="text-[10px] text-gray-400">${data.number}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-bold ${color}">${data.amount}</p>
+                            <p class="text-[10px] uppercase text-gray-500">${data.status}</p>
+                        </div>
+                    </div>`;
+                });
+            } catch(e) { console.log("Index needed"); }
+        }
+
+        // --- REFERRAL ---
+        window.copyCode = () => { navigator.clipboard.writeText(userData.referralCode); showToast("Code Copied!"); };
+        window.copyLink = () => { navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}?ref=${userData.referralCode}`); showToast("Link Copied!"); };
+        window.shareLink = () => {
+            const link = `${window.location.origin}${window.location.pathname}?ref=${userData.referralCode}`;
+            if(navigator.share) navigator.share({ title: 'Earn Money', url: link }); else copyLink();
+        };
+
+        lucide.createIcons();
+    </script>
+</body>
+</html>    </style>
 </head>
 <body class="max-w-md mx-auto min-h-screen relative bg-slate-900 pb-20">
 
@@ -1239,6 +1941,7 @@
     </script>
 </body>
     </html>
+
 
 
 
