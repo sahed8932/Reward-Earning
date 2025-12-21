@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reward Earn Pro</title>
     
+    <!-- Telegram Web App SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <!-- Ad Code (Monetag) -->
     <script src='//libtl.com/sdk.js' data-zone='10352978' data-sdk='show_10352978'></script>
     
@@ -31,8 +33,6 @@
         .nav-link.active i { transform: translateY(-3px); }
         @keyframes slideUp { from { transform: translateY(10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         .progress-bar { transition: width 0.5s ease-in-out; }
-        
-        /* Modal Animation */
         .modal-animate { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
     </style>
@@ -43,6 +43,16 @@
     <div id="loader" class="fixed inset-0 bg-slate-900 z-[100] flex flex-col items-center justify-center">
         <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-yellow-500 mb-4"></div>
         <p class="text-yellow-500 font-bold text-sm tracking-widest animate-pulse">CONNECTING...</p>
+    </div>
+
+    <!-- Banned Screen -->
+    <div id="banned-screen" class="fixed inset-0 bg-slate-900 z-[200] hidden flex-col items-center justify-center p-6 text-center">
+        <div class="w-20 h-20 bg-red-500/20 rounded-full flex items-center justify-center mb-6">
+            <i data-lucide="ban" class="w-10 h-10 text-red-500"></i>
+        </div>
+        <h1 class="text-2xl font-bold text-white mb-2">ACCESS DENIED</h1>
+        <p class="text-gray-400">Your IP has been banned by the administrator due to suspicious activity.</p>
+        <p class="mt-4 text-xs text-slate-600 font-mono" id="my-ip-display">IP: ...</p>
     </div>
 
     <!-- Auth Section -->
@@ -70,10 +80,12 @@
                 <input id="signup-name" type="text" class="w-full p-3 rounded-lg input-field" placeholder="Full Name">
                 <input id="signup-email" type="email" class="w-full p-3 rounded-lg input-field" placeholder="Email Address">
                 <input id="signup-password" type="password" class="w-full p-3 rounded-lg input-field" placeholder="Create Password">
-                <div class="relative">
-                     <input id="signup-referral" type="text" class="w-full p-3 rounded-lg input-field uppercase" placeholder="Referral Code (Optional)">
-                     <i data-lucide="gift" class="absolute right-3 top-3.5 w-5 h-5 text-gray-500"></i>
+                
+                <!-- Auto Referral Message -->
+                <div class="p-3 bg-slate-800 rounded-lg border border-slate-700 text-xs text-center text-gray-400" id="ref-status-msg">
+                    Checking for referral...
                 </div>
+                
                 <button id="signup-btn" class="w-full p-3 rounded-lg btn-primary mt-2">REGISTER ACCOUNT</button>
                 <p class="text-center text-sm text-gray-400 mt-4">Have account? <a href="#" id="show-login" class="text-yellow-500 hover:underline">Login</a></p>
             </div>
@@ -187,7 +199,6 @@
                             <div class="w-full bg-slate-800 h-1.5 rounded-full mb-3">
                                 <div id="task4-progress" class="bg-pink-500 h-1.5 rounded-full progress-bar" style="width: 0%"></div>
                             </div>
-                            <!-- Direct Link on Spin -->
                             <button id="btn-task4" onclick="handleDirectLinkTask('task4', 100)" class="w-full py-2.5 rounded-lg bg-pink-600 hover:bg-pink-500 text-white text-sm font-bold">SPIN NOW</button>
                         </div>
 
@@ -212,7 +223,6 @@
                             <i data-lucide="instagram" class="text-pink-500"></i>
                             <span class="text-sm font-bold">Follow</span>
                         </div>
-                         <!-- Direct Link on TikTok Button -->
                          <div onclick="openDirectLink()" class="glass-card p-3 rounded-xl flex items-center gap-2 cursor-pointer hover:bg-slate-800">
                             <i data-lucide="music-2" class="text-black bg-white rounded-full p-0.5 w-5 h-5"></i>
                             <span class="text-sm font-bold">Follow</span>
@@ -312,7 +322,6 @@
                         </div>
                         <i data-lucide="chevron-right" class="w-4 h-4 text-gray-500"></i>
                     </button>
-                    <!-- UPDATED LOGOUT BUTTON -->
                     <button onclick="handleLogout()" class="w-full glass-card p-4 rounded-xl hover:bg-red-500/10 transition flex justify-between items-center text-red-400">
                         <div class="flex items-center gap-3">
                             <i data-lucide="log-out" class="w-5 h-5"></i>
@@ -397,16 +406,62 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
         
-        // --- LOGOUT FIX: Create a global wrapper function ---
-        window.handleLogout = async () => {
+        let detectedRefCode = null;
+        let clientIP = "Unknown";
+
+        // --- CHECK IP & CONFIG ---
+        async function checkSecurity() {
             try {
-                await signOut(auth);
-                showToast("Logged out successfully");
-            } catch (error) {
-                console.error(error);
-                showToast("Error logging out");
+                // Get Client IP
+                const res = await fetch('https://ipapi.co/json/');
+                const data = await res.json();
+                clientIP = data.ip;
+                
+                // Check Blacklist in Firebase
+                const secSnap = await getDoc(doc(db, "config", "security"));
+                if(secSnap.exists()) {
+                    const banned = secSnap.data().bannedIps || [];
+                    if(banned.includes(clientIP)) {
+                        document.getElementById('banned-screen').classList.remove('hidden');
+                        document.getElementById('banned-screen').style.display = 'flex';
+                        document.getElementById('my-ip-display').innerText = `IP: ${clientIP}`;
+                        document.getElementById('loader').style.display = 'none';
+                        return false;
+                    }
+                }
+                return true;
+            } catch(e) { console.log("Security Check Error", e); return true; }
+        }
+
+        // --- DETECT REFERRAL FROM TELEGRAM START PARAM ---
+        function detectReferral() {
+            // 1. Check Telegram WebApp param
+            if(window.Telegram && window.Telegram.WebApp) {
+                const initData = window.Telegram.WebApp.initDataUnsafe;
+                if(initData && initData.start_param) {
+                    detectedRefCode = initData.start_param.toUpperCase();
+                }
             }
-        };
+            // 2. Fallback: URL param (for web testing)
+            if(!detectedRefCode) {
+                const urlParams = new URLSearchParams(window.location.search);
+                detectedRefCode = urlParams.get('ref') || urlParams.get('start');
+                if(detectedRefCode) detectedRefCode = detectedRefCode.toUpperCase();
+            }
+
+            if(detectedRefCode) {
+                document.getElementById('ref-status-msg').innerText = `Referral Applied: ${detectedRefCode}`;
+                document.getElementById('ref-status-msg').classList.replace('text-gray-400', 'text-green-400');
+            } else {
+                document.getElementById('ref-status-msg').innerText = `No Referral Code Detected`;
+            }
+        }
+
+        // Initialize App
+        (async () => {
+            const allowed = await checkSecurity();
+            if(allowed) detectReferral();
+        })();
 
         // Globals
         let currentUser = null;
@@ -419,7 +474,11 @@
             welcomeNotice: "Welcome to Earn Pro!"
         };
 
-        // --- Helpers ---
+        window.handleLogout = async () => {
+            try { await signOut(auth); showToast("Logged out successfully"); } 
+            catch (error) { showToast("Error logging out"); }
+        };
+
         window.showToast = (msg) => {
             const toast = document.getElementById('toast');
             document.getElementById('toast-msg').innerText = msg;
@@ -441,10 +500,7 @@
         };
 
         window.closeWelcomeModal = () => document.getElementById('welcome-modal').classList.add('hidden');
-        
-        window.openDirectLink = () => {
-             window.open("https://otieu.com/4/10354231", "_blank");
-        };
+        window.openDirectLink = () => window.open("https://otieu.com/4/10354231", "_blank");
 
         window.openSocialLink = (type) => {
             const url = appConfig.socialLinks ? appConfig.socialLinks[type] : "#";
@@ -471,13 +527,12 @@
             if (user) {
                 currentUser = user;
                 try {
-                    await fetchConfig(); // Load admin settings first
-                    await fetchUserData(); // Then load user data
+                    await fetchConfig(); 
+                    await fetchUserData(); 
                     
                     document.getElementById('auth-section').classList.remove('active');
                     document.getElementById('app-container').classList.add('active');
                     
-                    // Show Welcome Notice
                     if(!sessionStorage.getItem('welcomeShown')) {
                         document.getElementById('welcome-msg').innerText = appConfig.welcomeNotice;
                         document.getElementById('welcome-modal').classList.remove('hidden');
@@ -486,14 +541,10 @@
                 } catch(e) { console.error(e); }
             } else {
                 currentUser = null;
-                const urlParams = new URLSearchParams(window.location.search);
-                const refCode = urlParams.get('ref');
-                if(refCode) {
-                    document.getElementById('signup-referral').value = refCode;
-                    document.getElementById('show-signup').click();
-                }
                 document.getElementById('app-container').classList.remove('active');
                 document.getElementById('auth-section').classList.add('active');
+                // Auto switch to Signup if ref code present
+                if(detectedRefCode) document.getElementById('show-signup').click();
             }
             loader.style.display = 'none';
         });
@@ -502,25 +553,16 @@
             if (!currentUser) return;
             const userRef = doc(db, "users", currentUser.uid);
             const snap = await getDoc(userRef);
-            const today = new Date().toISOString().split('T')[0]; // Current Date YYYY-MM-DD
+            const today = new Date().toISOString().split('T')[0];
             
             if (snap.exists()) {
                 userData = snap.data();
-                
-                // --- DAILY RESET LOGIC ---
-                // If the stored date is different from today, reset counters
                 if (userData.lastActiveDate !== today) {
-                    console.log("Resetting Daily Tasks...");
                     userData.taskCounters = { task1: 0, task2: 0, task3: 0, task4: 0 };
                     userData.lastActiveDate = today;
-                    // Update in background
-                    await updateDoc(userRef, { 
-                        taskCounters: userData.taskCounters, 
-                        lastActiveDate: today 
-                    });
+                    await updateDoc(userRef, { taskCounters: userData.taskCounters, lastActiveDate: today });
                 }
             } else {
-                // First Time User
                 userData = {
                     uid: currentUser.uid,
                     name: currentUser.email.split('@')[0],
@@ -529,7 +571,8 @@
                     referralCode: Math.random().toString(36).substring(2, 8).toUpperCase(),
                     taskCounters: { task1: 0, task2: 0, task3: 0, task4: 0 },
                     lastActiveDate: today,
-                    createdAt: serverTimestamp()
+                    createdAt: serverTimestamp(),
+                    ip: clientIP // Store IP
                 };
                 await setDoc(userRef, userData);
             }
@@ -538,23 +581,19 @@
 
         function updateUI() {
             if(!userData) return;
-            // Balance
             document.getElementById('header-balance').innerText = userData.balance;
             document.getElementById('main-balance').innerText = userData.balance.toFixed(2);
             document.getElementById('wallet-balance').innerText = userData.balance.toFixed(2);
             
-            // Profile
             document.getElementById('header-user-name').innerText = userData.name;
             document.getElementById('profile-name').innerText = userData.name;
             document.getElementById('profile-email').innerText = userData.email;
             document.getElementById('profile-img').src = `https://ui-avatars.com/api/?name=${userData.name}&background=f59e0b&color=fff`;
             document.getElementById('refer-code-display').innerText = userData.referralCode;
 
-            // Wallet Settings from Admin
             document.getElementById('min-withdraw-display').innerText = appConfig.appSettings.minWithdraw;
             document.getElementById('rate-display').innerText = appConfig.appSettings.conversionRate;
 
-            // Tasks Counters
             ['task1', 'task2', 'task3', 'task4'].forEach(task => {
                 const count = userData.taskCounters ? userData.taskCounters[task] || 0 : 0;
                 const limit = appConfig.taskLimits[task] || 10;
@@ -565,8 +604,6 @@
                 document.getElementById(`${task}-progress`).style.width = `${pct}%`;
                 
                 const btn = document.getElementById(`btn-${task}`);
-                
-                // If claim pending, keep it
                 if(btn.dataset.state === 'claim') return;
 
                 if (count >= limit) {
@@ -575,11 +612,9 @@
                     btn.classList.remove('btn-primary', 'btn-success');
                     btn.classList.add('bg-slate-700', 'cursor-not-allowed', 'opacity-50');
                 } else {
-                    // Reset Button State
                     let txt = "START TASK";
                     if(task === 'task3') txt = "START QUIZ";
                     if(task === 'task4') txt = "SPIN NOW";
-                    
                     btn.innerText = txt;
                     btn.disabled = false;
                     btn.classList.remove('bg-slate-700', 'cursor-not-allowed', 'opacity-50', 'btn-success');
@@ -589,7 +624,6 @@
             lucide.createIcons();
         }
 
-        // --- AUTH ---
         document.getElementById('login-btn').addEventListener('click', async () => {
             const email = document.getElementById('login-email').value;
             const pass = document.getElementById('login-password').value;
@@ -603,14 +637,14 @@
             const name = document.getElementById('signup-name').value;
             const email = document.getElementById('signup-email').value;
             const pass = document.getElementById('signup-password').value;
-            const refCode = document.getElementById('signup-referral').value.trim().toUpperCase();
+            // Use Detected Ref Code automatically
+            const refCode = detectedRefCode; 
 
             if(!name || !email || !pass) return showToast("Fill all fields");
             document.getElementById('loader').style.display = 'flex';
 
             try {
                 const cred = await createUserWithEmailAndPassword(auth, email, pass);
-                // Create user data immediately
                 const newUser = {
                     uid: cred.user.uid,
                     name: name,
@@ -620,11 +654,11 @@
                     referredBy: refCode || null,
                     taskCounters: { task1: 0, task2: 0, task3: 0, task4: 0 },
                     lastActiveDate: new Date().toISOString().split('T')[0],
-                    createdAt: serverTimestamp()
+                    createdAt: serverTimestamp(),
+                    ip: clientIP // Store IP
                 };
                 await setDoc(doc(db, "users", cred.user.uid), newUser);
                 
-                // Bonus for Referrer
                 if(refCode) {
                     const q = query(collection(db, "users"), where("referralCode", "==", refCode));
                     const snap = await getDocs(q);
@@ -641,12 +675,10 @@
         document.getElementById('show-signup').onclick = () => { document.getElementById('login-view').classList.add('hidden'); document.getElementById('signup-view').classList.remove('hidden'); };
         document.getElementById('show-login').onclick = () => { document.getElementById('signup-view').classList.add('hidden'); document.getElementById('login-view').classList.remove('hidden'); };
 
-        // --- TASKS ---
         window.handleTask = async (taskId, reward) => {
             const btn = document.getElementById(`btn-${taskId}`);
             const currentCount = userData.taskCounters[taskId] || 0;
             const limit = appConfig.taskLimits[taskId] || 10;
-
             if (currentCount >= limit) return showToast("Daily limit reached!");
 
             if (btn.dataset.state === 'claim') {
@@ -654,44 +686,27 @@
                 try {
                     const newBalance = userData.balance + reward;
                     const newCounters = { ...userData.taskCounters, [taskId]: currentCount + 1 };
-                    
-                    await updateDoc(doc(db, "users", currentUser.uid), {
-                        balance: newBalance,
-                        taskCounters: newCounters
-                    });
-
+                    await updateDoc(doc(db, "users", currentUser.uid), { balance: newBalance, taskCounters: newCounters });
                     userData.balance = newBalance;
                     userData.taskCounters = newCounters;
-                    
                     delete btn.dataset.state;
                     updateUI();
                     showToast(`Success! +${reward} coins added.`);
-                } catch(e) {
-                    showToast("Error adding balance");
-                    delete btn.dataset.state;
-                    updateUI();
-                }
+                } catch(e) { showToast("Error adding balance"); delete btn.dataset.state; updateUI(); }
             } else {
-                // Ad Logic
-                if (typeof window.show_10352978 !== 'function') {
+                 if (typeof window.show_10352978 !== 'function') {
                     showToast("Ad loading... please wait");
-                    // Backup: Direct Link if ad fails script check
                     setTimeout(() => window.open("https://otieu.com/4/10354231", "_blank"), 1000);
                 }
-                
                 btn.innerText = "Loading Ad...";
                 try {
                     await window.show_10352978().catch(e => { throw e; });
-                    // If ad success
                     btn.innerText = "CLAIM REWARD";
                     btn.classList.remove('btn-primary');
                     btn.classList.add('btn-success');
                     btn.dataset.state = 'claim';
                 } catch(e) {
-                    console.log("Ad Blocked or Failed");
-                    // Open direct link as fallback
                     window.open("https://otieu.com/4/10354231", "_blank");
-                    // Still give claim option after delay
                     setTimeout(() => {
                         btn.innerText = "CLAIM REWARD";
                         btn.classList.remove('btn-primary');
@@ -702,32 +717,22 @@
             }
         };
 
-        // Special Handler for Spin/Direct Link
         window.handleDirectLinkTask = async (taskId, reward) => {
             const currentCount = userData.taskCounters[taskId] || 0;
             const limit = appConfig.taskLimits[taskId] || 1;
-            
             if (currentCount >= limit) return showToast("Daily limit reached!");
-            
-            // Open Link
             window.open("https://otieu.com/4/10354231", "_blank");
-            
-            // Add Balance after short delay
             setTimeout(async () => {
                 const newBalance = userData.balance + reward;
                 const newCounters = { ...userData.taskCounters, [taskId]: currentCount + 1 };
-                await updateDoc(doc(db, "users", currentUser.uid), {
-                    balance: newBalance,
-                    taskCounters: newCounters
-                });
+                await updateDoc(doc(db, "users", currentUser.uid), { balance: newBalance, taskCounters: newCounters });
                 userData.balance = newBalance;
                 userData.taskCounters = newCounters;
                 updateUI();
                 showToast(`+${reward} Coins Received!`);
-            }, 3000); // 3 seconds delay simulate spin
+            }, 3000); 
         };
 
-        // Math
         window.handleMathTask = () => {
             if(userData.taskCounters.task3 >= (appConfig.taskLimits.task3 || 10)) return showToast("Daily limit reached!");
             const n1 = Math.floor(Math.random() * 9) + 1;
@@ -737,20 +742,12 @@
             document.getElementById('math-ans').value = '';
             document.getElementById('math-modal').classList.remove('hidden');
         };
-
         window.closeMathModal = () => document.getElementById('math-modal').classList.add('hidden');
-        
         window.submitMath = async () => {
             const ans = parseInt(document.getElementById('math-ans').value);
-            if(ans === mathAnswer) {
-                closeMathModal();
-                await handleTask('task3', 50); 
-            } else {
-                showToast("Wrong Answer!");
-            }
+            if(ans === mathAnswer) { closeMathModal(); await handleTask('task3', 50); } else { showToast("Wrong Answer!"); }
         };
 
-        // --- WITHDRAW ---
         window.selectMethod = (el, method) => {
             document.querySelectorAll('.method-select').forEach(d => d.classList.remove('border-yellow-500', 'text-yellow-500'));
             el.classList.add('border-yellow-500', 'text-yellow-500');
@@ -768,18 +765,14 @@
             if(amount > userData.balance) return showToast("Insufficient balance");
 
             try {
-                // Deduct first
                 await updateDoc(doc(db, "users", currentUser.uid), { balance: userData.balance - amount });
                 userData.balance -= amount;
-                
-                // Add request
                 await addDoc(collection(db, "withdrawals"), {
                     userId: currentUser.uid,
                     amount, method, number,
                     status: 'pending',
                     date: serverTimestamp()
                 });
-                
                 updateUI();
                 showToast("Withdrawal Request Submitted!");
                 loadHistory();
@@ -789,10 +782,7 @@
 
         async function loadHistory() {
             const list = document.getElementById('history-list');
-            // NOTE: This Query requires an Index in Firebase Console
-            // Collection: withdrawals | Fields: userId (Asc/Desc), date (Desc)
             const q = query(collection(db, "withdrawals"), where("userId", "==", currentUser.uid), orderBy("date", "desc"), limit(5));
-            
             try {
                 const snap = await getDocs(q);
                 list.innerHTML = "";
@@ -812,18 +802,19 @@
                         </div>
                     </div>`;
                 });
-            } catch(e) { 
-                console.log("Firebase Index Missing for History: ", e.message);
-                list.innerHTML = "<p class='text-center text-xs text-red-400'>System Error: Index Missing</p>";
-            }
+            } catch(e) { list.innerHTML = "<p class='text-center text-xs text-red-400'>Error loading history</p>"; }
         }
 
-        // --- REFERRAL ---
         window.copyCode = () => { navigator.clipboard.writeText(userData.referralCode); showToast("Code Copied!"); };
-        window.copyLink = () => { navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}?ref=${userData.referralCode}`); showToast("Link Copied!"); };
+        window.copyLink = () => { 
+            // Telegram Bot Link format
+            const botLink = "https://t.me/YOUR_BOT_USERNAME?start=" + userData.referralCode;
+            navigator.clipboard.writeText(botLink); 
+            showToast("Bot Link Copied!"); 
+        };
         window.shareLink = () => {
-            const link = `${window.location.origin}${window.location.pathname}?ref=${userData.referralCode}`;
-            if(navigator.share) navigator.share({ title: 'Earn Money', url: link }); else copyLink();
+            const botLink = "https://t.me/YOUR_BOT_USERNAME?start=" + userData.referralCode;
+            if(navigator.share) navigator.share({ title: 'Earn Money', url: botLink }); else copyLink();
         };
 
         lucide.createIcons();
