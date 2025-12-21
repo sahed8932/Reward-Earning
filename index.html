@@ -808,12 +808,12 @@
         window.copyCode = () => { navigator.clipboard.writeText(userData.referralCode); showToast("Code Copied!"); };
         window.copyLink = () => { 
             // Telegram Bot Link format
-            const botLink = "https://t.me/YOUR_BOT_USERNAME?start=" + userData.referralCode;
+            const botLink = "https://t.me/Reward_Earning1_bot?start=" + userData.referralCode;
             navigator.clipboard.writeText(botLink); 
             showToast("Bot Link Copied!"); 
         };
         window.shareLink = () => {
-            const botLink = "https://t.me/YOUR_BOT_USERNAME?start=" + userData.referralCode;
+            const botLink = "https://t.me/Reward_Earning1_bot?start=" + userData.referralCode;
             if(navigator.share) navigator.share({ title: 'Earn Money', url: botLink }); else copyLink();
         };
 
@@ -821,3 +821,4 @@
     </script>
 </body>
 </html>
+
