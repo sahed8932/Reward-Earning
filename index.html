@@ -312,7 +312,8 @@
                         </div>
                         <i data-lucide="chevron-right" class="w-4 h-4 text-gray-500"></i>
                     </button>
-                    <button onclick="signOut(auth)" class="w-full glass-card p-4 rounded-xl hover:bg-red-500/10 transition flex justify-between items-center text-red-400">
+                    <!-- UPDATED LOGOUT BUTTON -->
+                    <button onclick="handleLogout()" class="w-full glass-card p-4 rounded-xl hover:bg-red-500/10 transition flex justify-between items-center text-red-400">
                         <div class="flex items-center gap-3">
                             <i data-lucide="log-out" class="w-5 h-5"></i>
                             <span>Logout Account</span>
@@ -396,7 +397,16 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
         
-        window.signOut = signOut;
+        // --- LOGOUT FIX: Create a global wrapper function ---
+        window.handleLogout = async () => {
+            try {
+                await signOut(auth);
+                showToast("Logged out successfully");
+            } catch (error) {
+                console.error(error);
+                showToast("Error logging out");
+            }
+        };
 
         // Globals
         let currentUser = null;
