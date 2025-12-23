@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Reward Earn Pro - BD</title>
     
     <!-- Telegram Web App SDK -->
@@ -16,7 +16,7 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #ffffff; overflow-x: hidden; user-select: none; }
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #ffffff; overflow-x: hidden; user-select: none; -webkit-tap-highlight-color: transparent; }
         ::-webkit-scrollbar { width: 0px; }
         .btn-primary { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; font-weight: bold; transition: all 0.2s; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3); }
         .btn-primary:active { transform: scale(0.96); }
@@ -271,7 +271,7 @@
                 </div>
             </div>
 
-            <!-- Refer Page (UPDATED) -->
+            <!-- Refer Page -->
             <div id="refer-page" class="sub-page space-y-6">
                 <!-- Referral Code Section -->
                 <div class="glass-card p-6 rounded-2xl border border-dashed border-yellow-500/30 text-center">
@@ -289,10 +289,10 @@
                         </div>
                     </div>
                     
-                    <button onclick="shareLink()" class="w-full btn-primary py-2.5 rounded-lg font-bold text-sm">SHARE INVITE LINK</button>
+                    <button onclick="shareLink()" class="w-full btn-primary py-2.5 rounded-lg font-bold text-sm">INVITE FRIENDS</button>
                 </div>
 
-                <!-- Special Offer Section (NEW) -->
+                <!-- Special Offer Section -->
                 <div class="glass-card p-5 rounded-2xl border-l-4 border-l-red-500 bg-gradient-to-r from-slate-800 to-red-900/20">
                     <div class="flex justify-between items-center mb-3">
                         <h3 class="font-bold text-white flex items-center gap-2">
@@ -416,6 +416,13 @@
     </div>
 
     <script type="module">
+        // ============================================
+        // CONFIGURATION (Auto-Filled for You)
+        // ============================================
+        const BOT_USERNAME = "Reward_Earning1_bot"; 
+        const APP_SHORT_NAME = "app"; // IMPORTANT: See Step 2 below
+        // ============================================
+
         const firebaseConfig = {
           apiKey: "AIzaSyDSyXdeWqDD-3OFNZT6SMcJz0Nr7tSdTS0",
           authDomain: "reward-earn-money-32b24.firebaseapp.com",
@@ -437,15 +444,16 @@
         let detectedRefCode = null;
         let clientIP = "Unknown";
 
-        // --- CHECK IP & CONFIG ---
         async function checkSecurity() {
             try {
-                // Get Client IP
-                const res = await fetch('https://ipapi.co/json/');
+                if (window.Telegram && window.Telegram.WebApp) {
+                    window.Telegram.WebApp.expand();
+                    window.Telegram.WebApp.enableClosingConfirmation();
+                }
+                const res = await fetch('https://api.ipify.org?format=json');
                 const data = await res.json();
                 clientIP = data.ip;
                 
-                // Check Blacklist in Firebase (If Banned manually by Admin)
                 const secSnap = await getDoc(doc(db, "config", "security"));
                 if(secSnap.exists()) {
                     const banned = secSnap.data().bannedIps || [];
@@ -465,7 +473,6 @@
             document.getElementById('loader').style.display = 'none';
         }
 
-        // --- DETECT REFERRAL ---
         function detectReferral() {
             if(window.Telegram && window.Telegram.WebApp) {
                 const initData = window.Telegram.WebApp.initDataUnsafe;
@@ -475,10 +482,9 @@
             }
             if(!detectedRefCode) {
                 const urlParams = new URLSearchParams(window.location.search);
-                detectedRefCode = urlParams.get('ref') || urlParams.get('start');
+                detectedRefCode = urlParams.get('tgWebAppStartParam') || urlParams.get('startapp') || urlParams.get('ref');
                 if(detectedRefCode) detectedRefCode = detectedRefCode.toUpperCase();
             }
-
             if(detectedRefCode) {
                 document.getElementById('ref-status-msg').innerText = `Referral Applied: ${detectedRefCode}`;
                 document.getElementById('ref-status-msg').classList.replace('text-gray-400', 'text-green-400');
@@ -492,7 +498,6 @@
             if(allowed) detectReferral();
         })();
 
-        // Globals
         let currentUser = null;
         let userData = null;
         let mathAnswer = 0;
@@ -518,12 +523,10 @@
         window.navigateTo = (pageId) => {
             document.querySelectorAll('.sub-page').forEach(p => p.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
-            
             document.querySelectorAll('.nav-link').forEach(btn => {
                 btn.classList.remove('active');
                 if(btn.getAttribute('onclick').includes(pageId)) btn.classList.add('active');
             });
-
             if(pageId === 'wallet-page') loadHistory();
             lucide.createIcons();
         };
@@ -533,11 +536,16 @@
 
         window.openSocialLink = (type) => {
             const url = appConfig.socialLinks ? appConfig.socialLinks[type] : "#";
-            if(url && url.length > 5) window.open(url, "_blank");
+            if(url && url.length > 5) {
+                if(window.Telegram && window.Telegram.WebApp && type === 'telegram') {
+                    window.Telegram.WebApp.openTelegramLink(url);
+                } else {
+                    window.open(url, "_blank");
+                }
+            }
             else showToast("Link not updated yet!");
         };
 
-        // --- CONFIG & AUTH ---
         async function fetchConfig() {
             try {
                 const snap = await getDoc(doc(db, "config", "main"));
@@ -558,10 +566,8 @@
                 try {
                     await fetchConfig(); 
                     await fetchUserData(); 
-                    
                     document.getElementById('auth-section').classList.remove('active');
                     document.getElementById('app-container').classList.add('active');
-                    
                     if(!sessionStorage.getItem('welcomeShown')) {
                         document.getElementById('welcome-msg').innerText = appConfig.welcomeNotice;
                         document.getElementById('welcome-modal').classList.remove('hidden');
@@ -590,9 +596,8 @@
                     userData.lastActiveDate = today;
                     await updateDoc(userRef, { taskCounters: userData.taskCounters, lastActiveDate: today });
                 }
-                // Ensure new fields exist for old users
-                if(!userData.referralCount) userData.referralCount = 0;
-                if(!userData.bonusClaims) userData.bonusClaims = 0;
+                if(userData.referralCount === undefined) userData.referralCount = 0;
+                if(userData.bonusClaims === undefined) userData.bonusClaims = 0;
             }
             updateUI();
         }
@@ -602,23 +607,17 @@
             document.getElementById('header-balance').innerText = userData.balance;
             document.getElementById('main-balance').innerText = userData.balance.toFixed(2);
             document.getElementById('wallet-balance').innerText = userData.balance.toFixed(2);
-            
             document.getElementById('header-user-name').innerText = userData.name;
             document.getElementById('profile-name').innerText = userData.name;
             document.getElementById('profile-email').innerText = userData.email;
             document.getElementById('profile-img').src = `https://ui-avatars.com/api/?name=${userData.name}&background=f59e0b&color=fff`;
             document.getElementById('refer-code-display').innerText = userData.referralCode;
-
             document.getElementById('min-withdraw-display').innerText = appConfig.appSettings.minWithdraw;
             document.getElementById('rate-display').innerText = appConfig.appSettings.conversionRate;
 
-            // Update Referral Stats
             const refCount = userData.referralCount || 0;
             const claims = userData.bonusClaims || 0;
             document.getElementById('total-refer-count').innerText = refCount;
-            
-            // Logic for Bonus Button
-            // Formula: Available = Total Refers - (Claims * 10)
             const usedRefs = claims * 10;
             const availableRefs = refCount - usedRefs;
             
@@ -638,24 +637,19 @@
             ['task1', 'task2', 'task3', 'task4'].forEach(task => {
                 const count = userData.taskCounters ? userData.taskCounters[task] || 0 : 0;
                 const limit = appConfig.taskLimits[task] || 10;
-                
                 document.getElementById(`${task}-count`).innerText = count;
                 document.getElementById(`limit-${task}`).innerText = limit;
                 const pct = (count / limit) * 100;
                 document.getElementById(`${task}-progress`).style.width = `${pct}%`;
-                
                 const btn = document.getElementById(`btn-${task}`);
                 if(btn.dataset.state === 'claim') return;
-
                 if (count >= limit) {
                     btn.innerText = "COMPLETED";
                     btn.disabled = true;
                     btn.classList.remove('btn-primary', 'btn-success');
                     btn.classList.add('bg-slate-700', 'cursor-not-allowed', 'opacity-50');
                 } else {
-                    let txt = "START TASK";
-                    if(task === 'task3') txt = "START QUIZ";
-                    if(task === 'task4') txt = "SPIN NOW";
+                    let txt = task === 'task3' ? "START QUIZ" : (task === 'task4' ? "SPIN NOW" : "START TASK");
                     btn.innerText = txt;
                     btn.disabled = false;
                     btn.classList.remove('bg-slate-700', 'cursor-not-allowed', 'opacity-50', 'btn-success');
@@ -665,24 +659,15 @@
             lucide.createIcons();
         }
 
-        // --- SIGNUP (UPDATED: Removed IP Block, but kept IP Logging) ---
         document.getElementById('signup-btn').addEventListener('click', async () => {
             const name = document.getElementById('signup-name').value;
             const email = document.getElementById('signup-email').value;
             const pass = document.getElementById('signup-password').value;
             const refCode = detectedRefCode; 
-
             if(!name || !email || !pass) return showToast("Fill all fields");
             document.getElementById('loader').style.display = 'flex';
-
             try {
-                // FIXED: We allow signup even if IP is shared.
-                // We just log the IP to the database for Admin review later.
-                
-                // 1. Create User Authentication
                 const cred = await createUserWithEmailAndPassword(auth, email, pass);
-                
-                // 2. Save User Data (With IP)
                 const newUser = {
                     uid: cred.user.uid,
                     name: name,
@@ -695,12 +680,9 @@
                     taskCounters: { task1: 0, task2: 0, task3: 0, task4: 0 },
                     lastActiveDate: new Date().toISOString().split('T')[0],
                     createdAt: serverTimestamp(),
-                    ip: clientIP || "Unknown" // Robust fallback
+                    ip: clientIP || "Unknown"
                 };
-                
                 await setDoc(doc(db, "users", cred.user.uid), newUser);
-                
-                // 3. Process Referral Reward
                 if(refCode) {
                     const q = query(collection(db, "users"), where("referralCode", "==", refCode));
                     const snap = await getDocs(q);
@@ -712,10 +694,7 @@
                         });
                     }
                 }
-            } catch(e) { 
-                showToast(e.message); 
-                document.getElementById('loader').style.display = 'none'; 
-            }
+            } catch(e) { showToast(e.message); document.getElementById('loader').style.display = 'none'; }
         });
 
         document.getElementById('login-btn').addEventListener('click', async () => {
@@ -730,7 +709,6 @@
         document.getElementById('show-signup').onclick = () => { document.getElementById('login-view').classList.add('hidden'); document.getElementById('signup-view').classList.remove('hidden'); };
         document.getElementById('show-login').onclick = () => { document.getElementById('signup-view').classList.add('hidden'); document.getElementById('login-view').classList.remove('hidden'); };
 
-        // --- TASKS ---
         window.handleTask = async (taskId, reward) => {
             const btn = document.getElementById(`btn-${taskId}`);
             const currentCount = userData.taskCounters[taskId] || 0;
@@ -744,7 +722,6 @@
                         balance: increment(reward), 
                         [`taskCounters.${taskId}`]: increment(1)
                     });
-                    // Local Update
                     userData.balance += reward;
                     userData.taskCounters[taskId]++;
                     delete btn.dataset.state;
@@ -807,52 +784,32 @@
             if(ans === mathAnswer) { closeMathModal(); await handleTask('task3', 50); } else { showToast("Wrong Answer!"); }
         };
 
-        // --- REFERRAL BONUS CLAIM LOGIC ---
         window.handleRefBonus = async () => {
             const operator = document.getElementById('bonus-operator').value;
             const number = document.getElementById('bonus-number').value;
-            
             const refCount = userData.referralCount || 0;
             const claims = userData.bonusClaims || 0;
             const available = refCount - (claims * 10);
-
             if(available < 10) return showToast("You need 10 referrals to claim!");
             if(!operator) return showToast("Select an Operator");
             if(!number || number.length < 11) return showToast("Enter valid number");
-
             const btn = document.getElementById('btn-claim-bonus');
             btn.innerText = "Processing...";
             btn.disabled = true;
-
             try {
-                // Add to withdrawals collection as a 'Bonus Claim'
                 await addDoc(collection(db, "withdrawals"), {
-                    userId: currentUser.uid,
-                    amount: "20 BDT",
-                    method: `Bonus (${operator})`,
-                    number: number,
-                    status: 'pending',
-                    type: 'referral_bonus',
-                    date: serverTimestamp()
+                    userId: currentUser.uid, amount: "20 BDT", method: `Bonus (${operator})`,
+                    number: number, status: 'pending', type: 'referral_bonus', date: serverTimestamp()
                 });
-
-                // Update user doc locally and remotely
-                await updateDoc(doc(db, "users", currentUser.uid), {
-                    bonusClaims: increment(1)
-                });
+                await updateDoc(doc(db, "users", currentUser.uid), { bonusClaims: increment(1) });
                 userData.bonusClaims += 1;
-                
                 showToast("Request Submitted Successfuly!");
                 document.getElementById('bonus-number').value = "";
                 updateUI();
-                navigateTo('wallet-page'); // Go to history
-            } catch(e) {
-                showToast("Error: " + e.message);
-                updateUI(); // Reset button
-            }
+                navigateTo('wallet-page');
+            } catch(e) { showToast("Error: " + e.message); updateUI(); }
         };
 
-        // --- WITHDRAWAL ---
         window.selectMethod = (el, method) => {
             document.querySelectorAll('.method-select').forEach(d => d.classList.remove('border-yellow-500', 'text-yellow-500'));
             el.classList.add('border-yellow-500', 'text-yellow-500');
@@ -864,20 +821,15 @@
             const number = document.getElementById('withdraw-number').value;
             const method = document.getElementById('selected-method').value;
             const minWithdraw = appConfig.appSettings.minWithdraw || 5000;
-
             if(!amount || !number || !method) return showToast("Please fill all details");
             if(amount < minWithdraw) return showToast(`Minimum withdrawal is ${minWithdraw} coins`);
             if(amount > userData.balance) return showToast("Insufficient balance");
-
             try {
                 await updateDoc(doc(db, "users", currentUser.uid), { balance: increment(-amount) });
                 userData.balance -= amount;
                 await addDoc(collection(db, "withdrawals"), {
-                    userId: currentUser.uid,
-                    amount, method, number,
-                    status: 'pending',
-                    type: 'regular',
-                    date: serverTimestamp()
+                    userId: currentUser.uid, amount, method, number,
+                    status: 'pending', type: 'regular', date: serverTimestamp()
                 });
                 updateUI();
                 showToast("Withdrawal Request Submitted!");
@@ -896,9 +848,7 @@
                 snap.forEach(d => {
                     const data = d.data();
                     let color = data.status === 'paid' ? 'text-green-400' : (data.status === 'rejected' ? 'text-red-400' : 'text-yellow-400');
-                    // Display different text if it's a bonus
                     let amtDisplay = data.type === 'referral_bonus' ? data.amount : data.amount;
-                    
                     list.innerHTML += `
                     <div class="flex justify-between items-center bg-slate-800 p-3 rounded-lg border border-slate-700">
                         <div>
@@ -914,15 +864,18 @@
             } catch(e) { list.innerHTML = "<p class='text-center text-xs text-red-400'>Error loading history</p>"; }
         }
 
-        window.copyCode = () => { navigator.clipboard.writeText(userData.referralCode); showToast("Code Copied!"); };
-        window.copyLink = () => { 
-            const botLink = "https://t.me/Reward_Earning1_bot?start=" + userData.referralCode;
-            navigator.clipboard.writeText(botLink); 
-            showToast("Bot Link Copied!"); 
+        window.copyCode = () => { 
+            const link = `https://t.me/${BOT_USERNAME}/${APP_SHORT_NAME}?startapp=${userData.referralCode}`;
+            navigator.clipboard.writeText(link); 
+            showToast("App Link Copied!"); 
         };
+
         window.shareLink = () => {
-            const botLink = "https://t.me/Reward_Earning1_bot?start=" + userData.referralCode;
-            if(navigator.share) navigator.share({ title: 'Earn Money', url: botLink }); else copyLink();
+            const link = `https://t.me/${BOT_USERNAME}/${APP_SHORT_NAME}?startapp=${userData.referralCode}`;
+            const msg = `Join Earn Pro and earn real money! Use my code: ${userData.referralCode}`;
+            const fullUrl = `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(msg)}`;
+            if(window.Telegram && window.Telegram.WebApp) { window.Telegram.WebApp.openTelegramLink(fullUrl); } 
+            else { window.open(fullUrl, "_blank"); }
         };
 
         lucide.createIcons();
