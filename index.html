@@ -46,6 +46,15 @@
         <p class="text-yellow-500 font-bold text-sm tracking-widest animate-pulse">CONNECTING...</p>
     </div>
 
+    <!-- Maintenance Screen -->
+    <div id="maintenance-screen" class="fixed inset-0 bg-slate-900 z-[200] hidden flex-col items-center justify-center p-6 text-center">
+        <div class="w-20 h-20 bg-yellow-500/20 rounded-full flex items-center justify-center mb-6">
+            <i data-lucide="wrench" class="w-10 h-10 text-yellow-500"></i>
+        </div>
+        <h1 class="text-2xl font-bold text-white mb-2">MAINTENANCE</h1>
+        <p class="text-gray-400">The app is currently under maintenance. Please check back later.</p>
+    </div>
+
     <!-- Banned Screen -->
     <div id="banned-screen" class="fixed inset-0 bg-slate-900 z-[200] hidden flex-col items-center justify-center p-6 text-center">
         <div class="w-20 h-20 bg-red-500/20 rounded-full flex items-center justify-center mb-6">
@@ -140,7 +149,7 @@
                             <div class="flex justify-between items-start mb-2">
                                 <div>
                                     <h4 class="font-bold">Ad Task 1</h4>
-                                    <p class="text-xs text-gray-400">Watch full ad to claim</p>
+                                    <p class="text-xs text-gray-400">Watch full ad to claim <span id="reward-text-task1" class="text-yellow-500"></span></p>
                                 </div>
                                 <span class="bg-slate-800 text-blue-400 text-xs px-2 py-1 rounded font-mono">
                                     <span id="task1-count">0</span>/<span id="limit-task1">10</span>
@@ -149,7 +158,7 @@
                             <div class="w-full bg-slate-800 h-1.5 rounded-full mb-3">
                                 <div id="task1-progress" class="bg-blue-500 h-1.5 rounded-full progress-bar" style="width: 0%"></div>
                             </div>
-                            <button id="btn-task1" onclick="handleTask('task1', 50)" class="w-full py-2.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold">START TASK</button>
+                            <button id="btn-task1" onclick="handleTask('task1')" class="w-full py-2.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold">START TASK</button>
                         </div>
 
                         <!-- Task 2 (Ad) -->
@@ -157,7 +166,7 @@
                             <div class="flex justify-between items-start mb-2">
                                 <div>
                                     <h4 class="font-bold">Ad Task 2</h4>
-                                    <p class="text-xs text-gray-400">Interact and earn</p>
+                                    <p class="text-xs text-gray-400">Interact and earn <span id="reward-text-task2" class="text-yellow-500"></span></p>
                                 </div>
                                 <span class="bg-slate-800 text-purple-400 text-xs px-2 py-1 rounded font-mono">
                                     <span id="task2-count">0</span>/<span id="limit-task2">10</span>
@@ -166,7 +175,7 @@
                             <div class="w-full bg-slate-800 h-1.5 rounded-full mb-3">
                                 <div id="task2-progress" class="bg-purple-500 h-1.5 rounded-full progress-bar" style="width: 0%"></div>
                             </div>
-                            <button id="btn-task2" onclick="handleTask('task2', 50)" class="w-full py-2.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-white text-sm font-bold">START TASK</button>
+                            <button id="btn-task2" onclick="handleTask('task2')" class="w-full py-2.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-white text-sm font-bold">START TASK</button>
                         </div>
 
                          <!-- Task 3 (Math) -->
@@ -174,7 +183,7 @@
                             <div class="flex justify-between items-start mb-2">
                                 <div>
                                     <h4 class="font-bold">Math Quiz</h4>
-                                    <p class="text-xs text-gray-400">Solve & Watch Ad</p>
+                                    <p class="text-xs text-gray-400">Solve & Watch Ad <span id="reward-text-task3" class="text-yellow-500"></span></p>
                                 </div>
                                 <span class="bg-slate-800 text-green-400 text-xs px-2 py-1 rounded font-mono">
                                     <span id="task3-count">0</span>/<span id="limit-task3">10</span>
@@ -191,7 +200,7 @@
                             <div class="flex justify-between items-start mb-2">
                                 <div>
                                     <h4 class="font-bold text-pink-400">Lucky Spin</h4>
-                                    <p class="text-xs text-gray-400">Try your luck (Daily)</p>
+                                    <p class="text-xs text-gray-400">Try your luck <span id="reward-text-task4" class="text-yellow-500"></span></p>
                                 </div>
                                 <span class="bg-slate-800 text-pink-400 text-xs px-2 py-1 rounded font-mono">
                                     <span id="task4-count">0</span>/<span id="limit-task4">1</span>
@@ -200,8 +209,11 @@
                             <div class="w-full bg-slate-800 h-1.5 rounded-full mb-3">
                                 <div id="task4-progress" class="bg-pink-500 h-1.5 rounded-full progress-bar" style="width: 0%"></div>
                             </div>
-                            <button id="btn-task4" onclick="handleDirectLinkTask('task4', 100)" class="w-full py-2.5 rounded-lg bg-pink-600 hover:bg-pink-500 text-white text-sm font-bold">SPIN NOW</button>
+                            <button id="btn-task4" onclick="handleDirectLinkTask('task4')" class="w-full py-2.5 rounded-lg bg-pink-600 hover:bg-pink-500 text-white text-sm font-bold">SPIN NOW</button>
                         </div>
+
+                        <!-- Dynamic Tasks Container (Admin Added) -->
+                        <div id="dynamic-tasks-container" class="space-y-4"></div>
 
                     </div>
                 </div>
@@ -273,13 +285,12 @@
 
             <!-- Refer Page -->
             <div id="refer-page" class="sub-page space-y-6">
-                <!-- Referral Code Section -->
                 <div class="glass-card p-6 rounded-2xl border border-dashed border-yellow-500/30 text-center">
                     <div class="w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-3 shadow-lg shadow-yellow-500/20">
                         <i data-lucide="share-2" class="w-6 h-6 text-white"></i>
                     </div>
                     <h2 class="text-xl font-bold">Invite Friends</h2>
-                    <p class="text-gray-400 text-xs mt-1 mb-4">Earn <span class="text-yellow-500 font-bold">200 Coins</span> for every successful referral.</p>
+                    <p class="text-gray-400 text-xs mt-1 mb-4" id="refer-offer-text">Earn <span class="text-yellow-500 font-bold">200 Coins</span> for every successful referral.</p>
                     
                     <div class="bg-slate-900 p-3 rounded-xl border border-slate-700 mb-3">
                         <p class="text-[10px] text-gray-500 mb-1 uppercase">Your Referral Code</p>
@@ -292,7 +303,6 @@
                     <button onclick="shareLink()" class="w-full btn-primary py-2.5 rounded-lg font-bold text-sm">INVITE FRIENDS</button>
                 </div>
 
-                <!-- Special Offer Section -->
                 <div class="glass-card p-5 rounded-2xl border-l-4 border-l-red-500 bg-gradient-to-r from-slate-800 to-red-900/20">
                     <div class="flex justify-between items-center mb-3">
                         <h3 class="font-bold text-white flex items-center gap-2">
@@ -307,10 +317,8 @@
                         <br><span class="text-[10px] text-gray-500">* একই মোবাইল দিয়ে ফেইক রেফার করলে একাউন্ট ব্যান হবে।</span>
                     </p>
                     
-                    <!-- Recharge Form -->
                     <div id="bonus-claim-section" class="bg-slate-900/50 p-4 rounded-xl border border-slate-700">
                         <p class="text-xs text-gray-400 mb-2">Claim Mobile Recharge (20 BDT)</p>
-                        
                         <select id="bonus-operator" class="w-full p-2.5 rounded-lg input-field text-sm mb-2">
                             <option value="">Select Operator</option>
                             <option value="Grameenphone">Grameenphone</option>
@@ -319,9 +327,7 @@
                             <option value="Airtel">Airtel</option>
                             <option value="Teletalk">Teletalk</option>
                         </select>
-                        
                         <input id="bonus-number" type="number" class="w-full p-2.5 rounded-lg input-field text-sm mb-3" placeholder="Phone Number (e.g. 017...)">
-                        
                         <button id="btn-claim-bonus" onclick="handleRefBonus()" class="w-full py-2.5 rounded-lg bg-slate-700 text-gray-400 text-sm font-bold cursor-not-allowed">
                             NEED 10 REFERS
                         </button>
@@ -343,14 +349,14 @@
                 </div>
 
                 <div class="space-y-2">
-                    <button onclick="openSocialLink('telegram')" class="w-full glass-card p-4 rounded-xl hover:bg-slate-800 transition flex justify-between items-center text-left">
+                    <button id="tg-join-btn" onclick="openSocialLink('telegram')" class="w-full glass-card p-4 rounded-xl hover:bg-slate-800 transition flex justify-between items-center text-left">
                         <div class="flex items-center gap-3">
                             <i data-lucide="send" class="w-5 h-5 text-blue-400"></i>
                             <span>Join Telegram</span>
                         </div>
                         <i data-lucide="chevron-right" class="w-4 h-4 text-gray-500"></i>
                     </button>
-                    <button onclick="handleLogout()" class="w-full glass-card p-4 rounded-xl hover:bg-red-500/10 transition flex justify-between items-center text-red-400">
+                    <button id="logout-btn" onclick="handleLogout()" class="w-full glass-card p-4 rounded-xl hover:bg-red-500/10 transition flex justify-between items-center text-red-400">
                         <div class="flex items-center gap-3">
                             <i data-lucide="log-out" class="w-5 h-5"></i>
                             <span>Logout Account</span>
@@ -417,10 +423,10 @@
 
     <script type="module">
         // ============================================
-        // CONFIGURATION (Auto-Filled for You)
+        // CONFIGURATION (Auto-Filled)
         // ============================================
         const BOT_USERNAME = "Reward_Earning1_bot"; 
-        const APP_SHORT_NAME = "app"; // IMPORTANT: See Step 2 below
+        const APP_SHORT_NAME = "app"; 
         // ============================================
 
         const firebaseConfig = {
@@ -444,6 +450,7 @@
         let detectedRefCode = null;
         let clientIP = "Unknown";
 
+        // Security
         async function checkSecurity() {
             try {
                 if (window.Telegram && window.Telegram.WebApp) {
@@ -503,9 +510,11 @@
         let mathAnswer = 0;
         let appConfig = {
             taskLimits: { task1: 10, task2: 10, task3: 10, task4: 1 },
-            appSettings: { minWithdraw: 5000, conversionRate: 10 },
+            taskRewards: { task1: 50, task2: 50, task3: 50, task4: 100 },
+            appSettings: { minWithdraw: 5000, conversionRate: 10, offerText: "Earn 200 Coins for every invite" },
             socialLinks: { telegram: '#', youtube: '#' },
-            welcomeNotice: "Welcome to Earn Pro!"
+            welcomeNotice: "Welcome to Earn Pro!",
+            uiSettings: { showLogout: true, showTelegram: true, maintenanceMode: false }
         };
 
         window.handleLogout = async () => {
@@ -552,12 +561,53 @@
                 if(snap.exists()) {
                     const data = snap.data();
                     if(data.taskLimits) appConfig.taskLimits = data.taskLimits;
+                    if(data.taskRewards) appConfig.taskRewards = data.taskRewards;
                     if(data.appSettings) appConfig.appSettings = data.appSettings;
                     if(data.socialLinks) appConfig.socialLinks = data.socialLinks;
                     if(data.welcomeNotice) appConfig.welcomeNotice = data.welcomeNotice;
+                    if(data.uiSettings) appConfig.uiSettings = data.uiSettings;
+
+                    // Maintenance Check
+                    if(appConfig.uiSettings.maintenanceMode) {
+                        document.getElementById('maintenance-screen').classList.remove('hidden');
+                        document.getElementById('maintenance-screen').style.display = 'flex';
+                        document.getElementById('app-container').style.display = 'none';
+                    }
                 }
+                loadDynamicTasks();
             } catch(e) { console.log("Config load error"); }
         }
+
+        async function loadDynamicTasks() {
+            const container = document.getElementById('dynamic-tasks-container');
+            const q = query(collection(db, "dynamicTasks"), orderBy("createdAt", "desc"));
+            const snap = await getDocs(q);
+            container.innerHTML = "";
+            snap.forEach(d => {
+                const t = d.data();
+                container.innerHTML += `
+                <div class="glass-card p-4 rounded-xl border-l-4 border-l-yellow-500">
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <h4 class="font-bold">${t.title}</h4>
+                            <p class="text-xs text-gray-400">Reward: <span class="text-yellow-500">${t.reward}</span> Coins</p>
+                        </div>
+                    </div>
+                    <button onclick="handleDynamicTask('${t.reward}', '${t.link}')" class="w-full py-2.5 rounded-lg bg-yellow-600 hover:bg-yellow-500 text-white text-sm font-bold">START TASK</button>
+                </div>`;
+            });
+        }
+
+        window.handleDynamicTask = async (reward, link) => {
+            if(link && link.length > 5) window.open(link, "_blank");
+            showToast("Wait 5 seconds...");
+            setTimeout(async () => {
+                await updateDoc(doc(db, "users", currentUser.uid), { balance: increment(parseInt(reward)) });
+                userData.balance += parseInt(reward);
+                updateUI();
+                showToast(`+${reward} Coins Added!`);
+            }, 5000);
+        };
 
         onAuthStateChanged(auth, async (user) => {
             const loader = document.getElementById('loader');
@@ -614,6 +664,16 @@
             document.getElementById('refer-code-display').innerText = userData.referralCode;
             document.getElementById('min-withdraw-display').innerText = appConfig.appSettings.minWithdraw;
             document.getElementById('rate-display').innerText = appConfig.appSettings.conversionRate;
+            
+            if(appConfig.appSettings.offerText) {
+                document.getElementById('refer-offer-text').innerText = appConfig.appSettings.offerText;
+            }
+
+            // Profile Controls
+            if(appConfig.uiSettings) {
+                document.getElementById('logout-btn').style.display = appConfig.uiSettings.showLogout ? 'flex' : 'none';
+                document.getElementById('tg-join-btn').style.display = appConfig.uiSettings.showTelegram ? 'flex' : 'none';
+            }
 
             const refCount = userData.referralCount || 0;
             const claims = userData.bonusClaims || 0;
@@ -637,12 +697,19 @@
             ['task1', 'task2', 'task3', 'task4'].forEach(task => {
                 const count = userData.taskCounters ? userData.taskCounters[task] || 0 : 0;
                 const limit = appConfig.taskLimits[task] || 10;
+                const reward = appConfig.taskRewards[task] || 50;
+
                 document.getElementById(`${task}-count`).innerText = count;
                 document.getElementById(`limit-${task}`).innerText = limit;
+                if(document.getElementById(`reward-text-${task}`)) {
+                    document.getElementById(`reward-text-${task}`).innerText = `(+${reward})`;
+                }
+                
                 const pct = (count / limit) * 100;
                 document.getElementById(`${task}-progress`).style.width = `${pct}%`;
                 const btn = document.getElementById(`btn-${task}`);
                 if(btn.dataset.state === 'claim') return;
+                
                 if (count >= limit) {
                     btn.innerText = "COMPLETED";
                     btn.disabled = true;
@@ -709,10 +776,12 @@
         document.getElementById('show-signup').onclick = () => { document.getElementById('login-view').classList.add('hidden'); document.getElementById('signup-view').classList.remove('hidden'); };
         document.getElementById('show-login').onclick = () => { document.getElementById('signup-view').classList.add('hidden'); document.getElementById('login-view').classList.remove('hidden'); };
 
-        window.handleTask = async (taskId, reward) => {
+        window.handleTask = async (taskId) => {
             const btn = document.getElementById(`btn-${taskId}`);
             const currentCount = userData.taskCounters[taskId] || 0;
             const limit = appConfig.taskLimits[taskId] || 10;
+            const reward = appConfig.taskRewards[taskId] || 50;
+            
             if (currentCount >= limit) return showToast("Daily limit reached!");
 
             if (btn.dataset.state === 'claim') {
@@ -752,9 +821,11 @@
             }
         };
 
-        window.handleDirectLinkTask = async (taskId, reward) => {
+        window.handleDirectLinkTask = async (taskId) => {
             const currentCount = userData.taskCounters[taskId] || 0;
             const limit = appConfig.taskLimits[taskId] || 1;
+            const reward = appConfig.taskRewards[taskId] || 100;
+
             if (currentCount >= limit) return showToast("Daily limit reached!");
             window.open("https://otieu.com/4/10354231", "_blank");
             setTimeout(async () => {
@@ -781,7 +852,7 @@
         window.closeMathModal = () => document.getElementById('math-modal').classList.add('hidden');
         window.submitMath = async () => {
             const ans = parseInt(document.getElementById('math-ans').value);
-            if(ans === mathAnswer) { closeMathModal(); await handleTask('task3', 50); } else { showToast("Wrong Answer!"); }
+            if(ans === mathAnswer) { closeMathModal(); await handleTask('task3'); } else { showToast("Wrong Answer!"); }
         };
 
         window.handleRefBonus = async () => {
