@@ -44,6 +44,7 @@
     <div id="loader" class="fixed inset-0 bg-slate-900 z-[100] flex flex-col items-center justify-center">
         <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-yellow-500 mb-4"></div>
         <p class="text-yellow-500 font-bold text-sm tracking-widest animate-pulse">CONNECTING...</p>
+        <p id="loading-text" class="text-gray-500 text-xs mt-2">Please wait...</p>
     </div>
 
     <!-- Maintenance Screen -->
@@ -239,9 +240,7 @@
                     </div>
                 </div>
 
-                <!-- ============================================== -->
-                <!-- NEW ADSTERRA BANNER ADDED HERE (CENTERED)      -->
-                <!-- ============================================== -->
+                <!-- Adsterra Banner -->
                 <div class="flex justify-center items-center my-4 bg-slate-800/50 p-2 rounded-xl">
                     <script type="text/javascript">
                         atOptions = {
@@ -254,7 +253,6 @@
                     </script>
                     <script type="text/javascript" src="https://www.highperformanceformat.com/f6889c0d46bfecd9364466833db17e7f/invoke.js"></script>
                 </div>
-                <!-- ============================================== -->
 
                 <!-- Social Tasks -->
                 <div>
@@ -464,6 +462,17 @@
     </div>
 
     <script type="module">
+        // Debug Error Handler
+        window.onerror = function(message, source, lineno, colno, error) {
+            console.error("Global Error:", message);
+            document.getElementById('loading-text').innerText = "Error: " + message;
+            setTimeout(() => {
+                 document.getElementById('loader').style.display = 'none';
+                 // Force show auth if error occurs early
+                 document.getElementById('auth-section').classList.add('active');
+            }, 3000);
+        };
+
         // ============================================
         // CONFIGURATION (Auto-Filled)
         // ============================================
@@ -643,7 +652,7 @@
                     }
                 }
                 loadDynamicTasks();
-            } catch(e) { console.log("Config load error"); }
+            } catch(e) { console.log("Config load error - using default"); }
         }
 
         async function loadDynamicTasks() {
@@ -691,14 +700,17 @@
                         document.getElementById('welcome-modal').classList.remove('hidden');
                         sessionStorage.setItem('welcomeShown', 'true');
                     }
-                } catch(e) { console.error(e); }
+                } catch(e) { 
+                    console.error(e); 
+                    showToast("Error loading user data.");
+                }
             } else {
                 currentUser = null;
                 document.getElementById('app-container').classList.remove('active');
                 document.getElementById('auth-section').classList.add('active');
                 if(detectedRefCode) document.getElementById('show-signup').click();
             }
-            loader.style.display = 'none';
+            if(loader) loader.style.display = 'none';
         });
 
         async function fetchUserData() {
@@ -1051,7 +1063,9 @@
             showToast("App Link Copied!"); 
         };
 
-        .shareLink = () => {
+        // FIXED FUNCTION
+        window.shareLink = () => {
+            if(!userData) return showToast("Login first!");
             const link = `https://t.me/${BOT_USERNAME}/${APP_SHORT_NAME}?startapp=${userData.referralCode}`;
             const msg = `Join Earn Pro and earn real money! Use my code: ${userData.referralCode}`;
             const fullUrl = `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(msg)}`;
@@ -1060,6 +1074,17 @@
         };
 
         lucide.createIcons();
+
+        // SAFETY TIMER: If firebase fails to load in 10 seconds, hide loader
+        setTimeout(() => {
+            const loader = document.getElementById('loader');
+            if(loader && loader.style.display !== 'none') {
+                console.warn("Loading timed out - hiding loader");
+                loader.style.display = 'none';
+                if(!currentUser) document.getElementById('auth-section').classList.add('active');
+            }
+        }, 10000); 
+
     </script>
 </body>
-    </html>
+</html>
