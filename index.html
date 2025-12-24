@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Reward Earn Pro - BD</title>
+    <title>Reward Earn Pro - Global</title>
     
     <!-- Telegram Web App SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -73,7 +73,7 @@
                 <div class="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-yellow-500/20 mb-3">
                     <i data-lucide="zap" class="w-8 h-8 text-yellow-500"></i>
                 </div>
-                <h1 class="text-2xl font-bold text-white">Earn Pro BD</h1>
+                <h1 class="text-2xl font-bold text-white">Earn Pro Global</h1>
                 <p class="text-gray-400 text-xs">Login to start earning</p>
             </div>
 
@@ -82,7 +82,19 @@
                 <input id="login-email" type="email" class="w-full p-3 rounded-lg input-field" placeholder="Email Address">
                 <input id="login-password" type="password" class="w-full p-3 rounded-lg input-field" placeholder="Password">
                 <button id="login-btn" class="w-full p-3 rounded-lg btn-primary mt-2">SECURE LOGIN</button>
-                <p class="text-center text-sm text-gray-400 mt-4">New here? <a href="#" id="show-signup" class="text-yellow-500 hover:underline">Create Account</a></p>
+                <div class="flex justify-between mt-4">
+                     <a href="#" id="show-forgot" class="text-xs text-gray-500 hover:text-white">Forgot Password?</a>
+                     <a href="#" id="show-signup" class="text-xs text-yellow-500 hover:underline">Create Account</a>
+                </div>
+            </div>
+
+            <!-- Forgot Password -->
+            <div id="forgot-view" class="hidden space-y-4">
+                <h3 class="text-center font-bold text-lg">Reset Password</h3>
+                <p class="text-center text-xs text-gray-400 mb-4">Enter your email to receive reset link</p>
+                <input id="reset-email" type="email" class="w-full p-3 rounded-lg input-field" placeholder="Email Address">
+                <button id="reset-btn" class="w-full p-3 rounded-lg btn-primary mt-2">SEND RESET LINK</button>
+                <p class="text-center text-sm text-gray-400 mt-4"><a href="#" id="back-to-login" class="text-yellow-500 hover:underline">Back to Login</a></p>
             </div>
 
             <!-- Signup -->
@@ -91,6 +103,15 @@
                 <input id="signup-email" type="email" class="w-full p-3 rounded-lg input-field" placeholder="Email Address">
                 <input id="signup-password" type="password" class="w-full p-3 rounded-lg input-field" placeholder="Create Password">
                 
+                <!-- Country Selection -->
+                <div class="space-y-1">
+                    <label class="text-xs text-gray-400 ml-1">Select Your Country</label>
+                    <select id="signup-country" class="w-full p-3 rounded-lg input-field">
+                        <option value="BD">Bangladesh 🇧🇩</option>
+                        <option value="INTL">International (Other) 🌍</option>
+                    </select>
+                </div>
+
                 <!-- Auto Referral Message -->
                 <div class="p-3 bg-slate-800 rounded-lg border border-slate-700 text-xs text-center text-gray-400" id="ref-status-msg">
                     Checking for referral...
@@ -218,6 +239,23 @@
                     </div>
                 </div>
 
+                <!-- ============================================== -->
+                <!-- NEW ADSTERRA BANNER ADDED HERE (CENTERED)      -->
+                <!-- ============================================== -->
+                <div class="flex justify-center items-center my-4 bg-slate-800/50 p-2 rounded-xl">
+                    <script type="text/javascript">
+                        atOptions = {
+                            'key' : 'f6889c0d46bfecd9364466833db17e7f',
+                            'format' : 'iframe',
+                            'height' : 300,
+                            'width' : 160,
+                            'params' : {}
+                        };
+                    </script>
+                    <script type="text/javascript" src="https://www.highperformanceformat.com/f6889c0d46bfecd9364466833db17e7f/invoke.js"></script>
+                </div>
+                <!-- ============================================== -->
+
                 <!-- Social Tasks -->
                 <div>
                     <h3 class="font-bold text-lg mb-3 flex items-center gap-2">
@@ -250,7 +288,7 @@
                     <p class="text-gray-400 text-sm">Withdrawable Balance</p>
                     <h3 class="text-4xl font-bold text-yellow-500 mt-2"><span id="wallet-balance">0</span></h3>
                     <div class="inline-block bg-slate-800 px-3 py-1 rounded-full text-xs text-gray-400 mt-2 border border-slate-700">
-                        Rate: 1000 Coins = <span id="rate-display">10</span> BDT
+                        Rate: 1000 Coins = <span id="rate-display">10</span> <span id="currency-name">BDT</span>
                     </div>
                 </div>
                 
@@ -258,15 +296,15 @@
                     <h3 class="font-bold border-b border-slate-700 pb-2">Request Withdrawal</h3>
                     <div>
                         <label class="text-xs text-gray-400 mb-1 block">Payment Method</label>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div class="method-select p-3 rounded-lg border border-slate-700 text-center cursor-pointer hover:border-yellow-500 bg-slate-800" onclick="selectMethod(this, 'bKash')">bKash</div>
-                            <div class="method-select p-3 rounded-lg border border-slate-700 text-center cursor-pointer hover:border-yellow-500 bg-slate-800" onclick="selectMethod(this, 'Nagad')">Nagad</div>
+                        <!-- Dynamic Payment Methods Container -->
+                        <div id="payment-methods-container" class="grid grid-cols-2 gap-3">
+                            <!-- Populated by JS -->
                         </div>
                         <input type="hidden" id="selected-method">
                     </div>
                     <div>
-                        <label class="text-xs text-gray-400 mb-1 block">Account Number</label>
-                        <input id="withdraw-number" type="number" class="w-full p-3 rounded-lg input-field" placeholder="017xxxxxxxx">
+                        <label class="text-xs text-gray-400 mb-1 block">Account Number / Wallet Address</label>
+                        <input id="withdraw-number" type="text" class="w-full p-3 rounded-lg input-field" placeholder="Enter Account/Address">
                     </div>
                     <div>
                         <label class="text-xs text-gray-400 mb-1 block">Amount (Min: <span id="min-withdraw-display">5000</span>)</label>
@@ -313,12 +351,12 @@
                         </div>
                     </div>
                     <p class="text-sm text-gray-300 mb-4">
-                        ১০ টি সফল রেফার করলেই পাবেন <span class="text-yellow-400 font-bold">২০ টাকা</span> মোবাইল রিচার্জ!
+                        ১০ টি সফল রেফার করলেই পাবেন <span class="text-yellow-400 font-bold">বোনাস রিচার্জ!</span>
                         <br><span class="text-[10px] text-gray-500">* একই মোবাইল দিয়ে ফেইক রেফার করলে একাউন্ট ব্যান হবে।</span>
                     </p>
                     
                     <div id="bonus-claim-section" class="bg-slate-900/50 p-4 rounded-xl border border-slate-700">
-                        <p class="text-xs text-gray-400 mb-2">Claim Mobile Recharge (20 BDT)</p>
+                        <p class="text-xs text-gray-400 mb-2">Claim Bonus</p>
                         <select id="bonus-operator" class="w-full p-2.5 rounded-lg input-field text-sm mb-2">
                             <option value="">Select Operator</option>
                             <option value="Grameenphone">Grameenphone</option>
@@ -326,8 +364,9 @@
                             <option value="Banglalink">Banglalink</option>
                             <option value="Airtel">Airtel</option>
                             <option value="Teletalk">Teletalk</option>
+                            <option value="Binance">Binance Pay</option>
                         </select>
-                        <input id="bonus-number" type="number" class="w-full p-2.5 rounded-lg input-field text-sm mb-3" placeholder="Phone Number (e.g. 017...)">
+                        <input id="bonus-number" type="text" class="w-full p-2.5 rounded-lg input-field text-sm mb-3" placeholder="Number / ID">
                         <button id="btn-claim-bonus" onclick="handleRefBonus()" class="w-full py-2.5 rounded-lg bg-slate-700 text-gray-400 text-sm font-bold cursor-not-allowed">
                             NEED 10 REFERS
                         </button>
@@ -344,7 +383,10 @@
                     <div>
                         <h2 id="profile-name" class="text-lg font-bold">Loading...</h2>
                         <p id="profile-email" class="text-xs text-gray-400">...</p>
-                        <span class="inline-block mt-2 bg-yellow-500/20 text-yellow-500 text-[10px] px-2 py-0.5 rounded font-bold">PRO MEMBER</span>
+                        <div class="flex gap-2 mt-2">
+                             <span class="bg-yellow-500/20 text-yellow-500 text-[10px] px-2 py-0.5 rounded font-bold">PRO MEMBER</span>
+                             <span id="country-badge" class="bg-blue-500/20 text-blue-400 text-[10px] px-2 py-0.5 rounded font-bold">...</span>
+                        </div>
                     </div>
                 </div>
 
@@ -440,7 +482,7 @@
         };
 
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, addDoc, serverTimestamp, query, where, getDocs, orderBy, limit, increment } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
         const app = initializeApp(firebaseConfig);
@@ -536,7 +578,10 @@
                 btn.classList.remove('active');
                 if(btn.getAttribute('onclick').includes(pageId)) btn.classList.add('active');
             });
-            if(pageId === 'wallet-page') loadHistory();
+            if(pageId === 'wallet-page') {
+                loadHistory();
+                renderPaymentMethods();
+            }
             lucide.createIcons();
         };
 
@@ -554,6 +599,29 @@
             }
             else showToast("Link not updated yet!");
         };
+
+        // Render Wallet Methods based on Country
+        function renderPaymentMethods() {
+            const container = document.getElementById('payment-methods-container');
+            container.innerHTML = "";
+            const isBD = (userData && userData.country === 'BD');
+            
+            document.getElementById('currency-name').innerText = isBD ? "BDT" : "USD ($0.10)";
+            
+            if (isBD) {
+                // Bangladesh Methods
+                const methods = ['bKash', 'Nagad', 'Binance'];
+                methods.forEach(m => {
+                    container.innerHTML += `<div class="method-select p-3 rounded-lg border border-slate-700 text-center cursor-pointer hover:border-yellow-500 bg-slate-800" onclick="selectMethod(this, '${m}')">${m}</div>`;
+                });
+            } else {
+                // International Methods
+                const methods = ['Binance Pay', 'TON Wallet', 'Crypto (USDT)', 'TRX'];
+                methods.forEach(m => {
+                    container.innerHTML += `<div class="method-select p-3 rounded-lg border border-slate-700 text-center cursor-pointer hover:border-yellow-500 bg-slate-800" onclick="selectMethod(this, '${m}')">${m}</div>`;
+                });
+            }
+        }
 
         async function fetchConfig() {
             try {
@@ -641,6 +709,12 @@
             
             if (snap.exists()) {
                 userData = snap.data();
+                // Backwards compatibility for old users who didn't select country
+                if(!userData.country) {
+                    userData.country = 'BD'; // Defaulting to BD for safety
+                    await updateDoc(userRef, { country: 'BD' });
+                }
+
                 if (userData.lastActiveDate !== today) {
                     userData.taskCounters = { task1: 0, task2: 0, task3: 0, task4: 0 };
                     userData.lastActiveDate = today;
@@ -664,6 +738,7 @@
             document.getElementById('refer-code-display').innerText = userData.referralCode;
             document.getElementById('min-withdraw-display').innerText = appConfig.appSettings.minWithdraw;
             document.getElementById('rate-display').innerText = appConfig.appSettings.conversionRate;
+            document.getElementById('country-badge').innerText = userData.country === 'BD' ? "BD 🇧🇩" : "Global 🌍";
             
             if(appConfig.appSettings.offerText) {
                 document.getElementById('refer-offer-text').innerText = appConfig.appSettings.offerText;
@@ -683,7 +758,7 @@
             
             const btnBonus = document.getElementById('btn-claim-bonus');
             if (availableRefs >= 10) {
-                btnBonus.innerText = "CLAIM 20 BDT NOW";
+                btnBonus.innerText = "CLAIM BONUS NOW";
                 btnBonus.classList.remove('bg-slate-700', 'text-gray-400', 'cursor-not-allowed');
                 btnBonus.classList.add('btn-primary', 'cursor-pointer');
                 btnBonus.disabled = false;
@@ -726,12 +801,15 @@
             lucide.createIcons();
         }
 
+        // Signup Logic
         document.getElementById('signup-btn').addEventListener('click', async () => {
             const name = document.getElementById('signup-name').value;
             const email = document.getElementById('signup-email').value;
             const pass = document.getElementById('signup-password').value;
+            const country = document.getElementById('signup-country').value;
             const refCode = detectedRefCode; 
-            if(!name || !email || !pass) return showToast("Fill all fields");
+            
+            if(!name || !email || !pass || !country) return showToast("Fill all fields");
             document.getElementById('loader').style.display = 'flex';
             try {
                 const cred = await createUserWithEmailAndPassword(auth, email, pass);
@@ -739,6 +817,7 @@
                     uid: cred.user.uid,
                     name: name,
                     email: email,
+                    country: country, // Store selected country
                     balance: 50,
                     referralCode: Math.random().toString(36).substring(2, 8).toUpperCase(),
                     referralCount: 0,
@@ -764,6 +843,7 @@
             } catch(e) { showToast(e.message); document.getElementById('loader').style.display = 'none'; }
         });
 
+        // Login Logic
         document.getElementById('login-btn').addEventListener('click', async () => {
             const email = document.getElementById('login-email').value;
             const pass = document.getElementById('login-password').value;
@@ -773,8 +853,25 @@
             catch(e) { showToast(e.message); document.getElementById('loader').style.display = 'none'; }
         });
 
-        document.getElementById('show-signup').onclick = () => { document.getElementById('login-view').classList.add('hidden'); document.getElementById('signup-view').classList.remove('hidden'); };
-        document.getElementById('show-login').onclick = () => { document.getElementById('signup-view').classList.add('hidden'); document.getElementById('login-view').classList.remove('hidden'); };
+        // Forgot Password Logic
+        document.getElementById('reset-btn').addEventListener('click', async () => {
+            const email = document.getElementById('reset-email').value;
+            if(!email) return showToast("Enter your email");
+            document.getElementById('loader').style.display = 'flex';
+            try {
+                await sendPasswordResetEmail(auth, email);
+                showToast("Reset link sent to your email!");
+                document.getElementById('forgot-view').classList.add('hidden');
+                document.getElementById('login-view').classList.remove('hidden');
+            } catch(e) { showToast(e.message); }
+            document.getElementById('loader').style.display = 'none';
+        });
+
+        // Auth Views Toggles
+        document.getElementById('show-signup').onclick = () => { document.getElementById('login-view').classList.add('hidden'); document.getElementById('signup-view').classList.remove('hidden'); document.getElementById('forgot-view').classList.add('hidden'); };
+        document.getElementById('show-login').onclick = () => { document.getElementById('signup-view').classList.add('hidden'); document.getElementById('login-view').classList.remove('hidden'); document.getElementById('forgot-view').classList.add('hidden'); };
+        document.getElementById('show-forgot').onclick = () => { document.getElementById('login-view').classList.add('hidden'); document.getElementById('forgot-view').classList.remove('hidden'); };
+        document.getElementById('back-to-login').onclick = () => { document.getElementById('forgot-view').classList.add('hidden'); document.getElementById('login-view').classList.remove('hidden'); };
 
         window.handleTask = async (taskId) => {
             const btn = document.getElementById(`btn-${taskId}`);
@@ -863,13 +960,13 @@
             const available = refCount - (claims * 10);
             if(available < 10) return showToast("You need 10 referrals to claim!");
             if(!operator) return showToast("Select an Operator");
-            if(!number || number.length < 11) return showToast("Enter valid number");
+            if(!number || number.length < 5) return showToast("Enter valid number/ID");
             const btn = document.getElementById('btn-claim-bonus');
             btn.innerText = "Processing...";
             btn.disabled = true;
             try {
                 await addDoc(collection(db, "withdrawals"), {
-                    userId: currentUser.uid, amount: "20 BDT", method: `Bonus (${operator})`,
+                    userId: currentUser.uid, amount: "Bonus", method: `Bonus (${operator})`,
                     number: number, status: 'pending', type: 'referral_bonus', date: serverTimestamp()
                 });
                 await updateDoc(doc(db, "users", currentUser.uid), { bonusClaims: increment(1) });
@@ -887,20 +984,33 @@
             document.getElementById('selected-method').value = method;
         };
 
+        // WITHDRAW LOGIC - UPDATED WITH 20 REFERRAL CHECK
         document.getElementById('withdraw-btn').onclick = async () => {
             const amount = parseInt(document.getElementById('withdraw-amount').value);
             const number = document.getElementById('withdraw-number').value;
             const method = document.getElementById('selected-method').value;
             const minWithdraw = appConfig.appSettings.minWithdraw || 5000;
+            
+            // Check Referrals First (Hidden Condition)
+            const refCount = userData.referralCount || 0;
+            if(refCount < 20) {
+                if(userData.country === 'BD') {
+                    return showToast("উইথড্র করার জন্য আপনাকে অন্তত ২০ জন বন্ধুকে রেফার করতে হবে।");
+                } else {
+                    return showToast("You need at least 20 active referrals to make a withdrawal request.");
+                }
+            }
+
             if(!amount || !number || !method) return showToast("Please fill all details");
             if(amount < minWithdraw) return showToast(`Minimum withdrawal is ${minWithdraw} coins`);
             if(amount > userData.balance) return showToast("Insufficient balance");
+            
             try {
                 await updateDoc(doc(db, "users", currentUser.uid), { balance: increment(-amount) });
                 userData.balance -= amount;
                 await addDoc(collection(db, "withdrawals"), {
                     userId: currentUser.uid, amount, method, number,
-                    status: 'pending', type: 'regular', date: serverTimestamp()
+                    status: 'pending', type: 'regular', country: userData.country, date: serverTimestamp()
                 });
                 updateUI();
                 showToast("Withdrawal Request Submitted!");
@@ -941,7 +1051,7 @@
             showToast("App Link Copied!"); 
         };
 
-        window.shareLink = () => {
+        .shareLink = () => {
             const link = `https://t.me/${BOT_USERNAME}/${APP_SHORT_NAME}?startapp=${userData.referralCode}`;
             const msg = `Join Earn Pro and earn real money! Use my code: ${userData.referralCode}`;
             const fullUrl = `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(msg)}`;
@@ -952,4 +1062,4 @@
         lucide.createIcons();
     </script>
 </body>
-</html>
+    </html>
