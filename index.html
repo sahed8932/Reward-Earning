@@ -1,15 +1,16 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Reward Earn Pro - Global</title>
+    <title>Reward Earn Pro</title>
     
     <!-- Telegram Web App SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     
-    <!-- Monetag SDK (Correct Zone ID) -->
-    <script src='//libtl.com/sdk.js' data-zone='10352978' data-sdk='show_10352978'></script>
+    <!-- Monetag SDK (HTTPS added to prevent loading stuck) -->
+    <script src='https://libtl.com/sdk.js' data-zone='10352978' data-sdk='show_10352978'></script>
     
     <!-- Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -17,81 +18,45 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     
     <style>
-        /* CORE STYLES & RESET */
+        /* CORE STYLES */
         body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #ffffff; overflow-x: hidden; user-select: none; -webkit-tap-highlight-color: transparent; }
         ::-webkit-scrollbar { width: 0px; }
         
-        /* PREMIUM GRADIENTS & BUTTONS */
+        /* BUTTONS & CARDS */
         .btn-primary { 
             background: linear-gradient(135deg, #f59e0b, #d97706); 
-            color: white; 
-            font-weight: 800; 
-            letter-spacing: 0.5px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
-            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); 
+            color: white; font-weight: 800; letter-spacing: 0.5px;
+            transition: all 0.3s; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); 
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
-        .btn-primary:active { transform: scale(0.96); box-shadow: 0 2px 10px rgba(245, 158, 11, 0.2); }
-        .btn-disabled { background: #334155; color: #94a3b8; cursor: not-allowed; opacity: 0.7; box-shadow: none; }
+        .btn-primary:active { transform: scale(0.96); }
+        .btn-disabled { background: #334155; color: #94a3b8; cursor: not-allowed; opacity: 0.7; pointer-events: none; }
         
-        /* GLASSMORPHISM CARDS */
         .glass-card { 
-            background: rgba(30, 41, 59, 0.75); 
-            backdrop-filter: blur(16px); 
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08); 
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            background: rgba(30, 41, 59, 0.75); backdrop-filter: blur(16px); 
+            border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
         }
         
-        /* INPUT FIELDS */
-        .input-field { 
-            background-color: #1e293b; 
-            border: 1px solid #334155; 
-            color: white; 
-            font-weight: 500;
-            transition: all 0.3s ease; 
-        }
-        .input-field:focus { border-color: #f59e0b; outline: none; box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2); }
+        .input-field { background-color: #1e293b; border: 1px solid #334155; color: white; font-weight: 500; transition: all 0.3s ease; }
+        .input-field:focus { border-color: #f59e0b; outline: none; }
         
-        /* PAGE TRANSITIONS */
+        /* SECTIONS */
         .page-section { display: none; opacity: 0; transition: opacity 0.3s ease-in-out; }
         .page-section.active { display: flex; opacity: 1; }
         .sub-page { display: none; animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
         .sub-page.active { display: block; }
         
-        /* BOTTOM NAVIGATION */
-        .bottom-nav { 
-            background: rgba(15, 23, 42, 0.95); 
-            backdrop-filter: blur(20px); 
-            border-top: 1px solid rgba(255, 255, 255, 0.05); 
-            padding-bottom: env(safe-area-inset-bottom);
-        }
+        /* NAV */
+        .bottom-nav { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); border-top: 1px solid rgba(255, 255, 255, 0.05); padding-bottom: env(safe-area-inset-bottom); }
         .nav-link { color: #64748b; transition: all 0.3s ease; position: relative; }
         .nav-link.active { color: #f59e0b; transform: translateY(-4px); }
-        .nav-link.active::after {
-            content: ''; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%);
-            width: 4px; height: 4px; background: #f59e0b; border-radius: 50%;
-        }
         
-        /* SPECIAL OFFERS CARD */
-        .special-task-card {
-            background: linear-gradient(145deg, #1e293b, #0f172a);
-            border: 1px solid #334155;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-        .special-task-card:hover { border-color: #f59e0b; transform: translateY(-2px); }
-        .special-task-card::before { 
-            content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; 
-            background: linear-gradient(to bottom, #f59e0b, #d97706); 
-        }
-
-        /* PROGRESS BARS */
+        /* SPECIAL & PROGRESS */
+        .special-task-card { background: linear-gradient(145deg, #1e293b, #0f172a); border: 1px solid #334155; position: relative; overflow: hidden; }
+        .special-task-card:hover { border-color: #f59e0b; }
         .progress-bg { background: #334155; height: 6px; border-radius: 10px; overflow: hidden; width: 100%; }
         .progress-fill { height: 100%; background: linear-gradient(90deg, #f59e0b, #fbbf24); transition: width 0.5s ease; border-radius: 10px; }
 
-        /* ANIMATIONS */
         @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         .modal-animate { animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
         @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
@@ -101,13 +66,15 @@
 </head>
 <body class="max-w-md mx-auto min-h-screen relative bg-slate-900 pb-24 text-sm">
 
-    <!-- Loader -->
+    <!-- Loader (Updated with Safety Timeout) -->
     <div id="loader" class="fixed inset-0 bg-[#0f172a] z-[100] flex flex-col items-center justify-center">
         <div class="relative">
             <div class="w-16 h-16 border-4 border-slate-700 rounded-full"></div>
             <div class="w-16 h-16 border-4 border-yellow-500 rounded-full animate-spin absolute top-0 left-0 border-t-transparent"></div>
         </div>
-        <p class="text-yellow-500 font-bold text-xs tracking-[0.3em] mt-6 animate-pulse">LOADING SYSTEM...</p>
+        <p class="text-yellow-500 font-bold text-xs tracking-[0.3em] mt-6 animate-pulse">CONNECTING...</p>
+        <!-- Fail-safe button if stuck -->
+        <button onclick="document.getElementById('loader').style.display='none';document.getElementById('auth-section').classList.add('active')" class="mt-8 text-gray-600 text-[10px] underline">Click if stuck</button>
     </div>
 
     <!-- Auth Section -->
@@ -193,7 +160,7 @@
                     </div>
                 </div>
 
-                <!-- Daily Tasks (With Limits) -->
+                <!-- Daily Tasks -->
                 <div>
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="font-bold text-lg flex items-center gap-2 text-white">
@@ -267,7 +234,7 @@
                     </div>
                 </div>
 
-                <!-- SPECIAL OFFERS (Premium Design) -->
+                <!-- SPECIAL OFFERS -->
                 <div>
                     <div class="flex items-center justify-between mb-4 mt-8">
                         <h3 class="font-bold text-lg flex items-center gap-2 text-white">
@@ -277,7 +244,7 @@
                         <div class="pulse-hot bg-red-600 text-white text-[10px] px-3 py-1 rounded-full font-bold shadow-lg shadow-red-600/40">HOT</div>
                     </div>
                     
-                    <!-- Adsterra Banner Positioned Here -->
+                    <!-- Adsterra Banner -->
                     <div class="flex justify-center items-center my-4 bg-slate-800/30 p-2 rounded-2xl border border-slate-700/50">
                         <script type="text/javascript">
                             atOptions = {
@@ -292,7 +259,7 @@
                     </div>
 
                     <div id="dynamic-tasks-container" class="space-y-4">
-                        <div class="text-center py-6 text-xs text-gray-500 bg-slate-800/50 rounded-2xl border border-slate-700/50 border-dashed">Looking for offers...</div>
+                        <div class="text-center py-6 text-xs text-gray-500 bg-slate-800/50 rounded-2xl border border-slate-700/50 border-dashed">Loading offers...</div>
                     </div>
                 </div>
             </div>
@@ -320,7 +287,8 @@
                         </div>
                         <div class="space-y-1">
                             <label class="text-[10px] uppercase font-bold text-gray-500 ml-1">Amount</label>
-                            <input id="withdraw-amount" type="number" class="w-full p-4 rounded-xl input-field" placeholder="Minimum: 5000">
+                            <input id="withdraw-amount" type="number" class="w-full p-4 rounded-xl input-field" placeholder="Enter Amount">
+                            <p class="text-[10px] text-yellow-500 mt-1.5 font-bold px-1">Minimum: <span id="min-withdraw-display">5000</span> coins</p>
                         </div>
                     </div>
                     <button id="withdraw-btn" class="w-full btn-primary py-4 rounded-xl mt-2 shadow-xl shadow-yellow-500/20 text-sm tracking-wide">CONFIRM WITHDRAWAL</button>
@@ -403,7 +371,8 @@
                         </div>
                         <i data-lucide="chevron-right" class="w-5 h-5 text-gray-500 group-hover:text-blue-500 transition"></i>
                     </button>
-                    <button onclick="handleLogout()" class="w-full glass-card p-5 rounded-2xl hover:bg-red-500/10 transition flex justify-between items-center text-left group border-red-500/20">
+                    <!-- LOGOUT BUTTON -->
+                    <button id="logout-btn" onclick="handleLogout()" class="hidden w-full glass-card p-5 rounded-2xl hover:bg-red-500/10 transition flex justify-between items-center text-left group border-red-500/20">
                         <div class="flex items-center gap-4">
                             <div class="p-3 bg-red-500/20 rounded-xl text-red-400 group-hover:text-white group-hover:bg-red-500 transition"><i data-lucide="log-out" class="w-5 h-5"></i></div>
                             <span class="font-bold text-sm text-red-400 group-hover:text-red-500 transition">Logout Account</span>
@@ -411,7 +380,7 @@
                     </button>
                 </div>
                 
-                <p class="text-center text-[10px] text-gray-600 mt-10">Version 2.5.0 - Secure Build</p>
+                <p class="text-center text-[10px] text-gray-600 mt-10">Version 2.5.1 - Stable Build</p>
             </div>
 
         </main>
@@ -437,7 +406,7 @@
         </nav>
     </div>
 
-    <!-- CODE MODAL (PREMIUM) -->
+    <!-- CODE MODAL -->
     <div id="code-modal" class="fixed inset-0 bg-black/95 z-[70] hidden flex items-center justify-center p-6 backdrop-blur-md">
         <div class="bg-[#0f172a] p-8 rounded-3xl w-full max-w-xs text-center border border-yellow-500/50 modal-animate shadow-[0_0_50px_rgba(245,158,11,0.2)]">
             <div class="w-16 h-16 bg-yellow-500/10 rounded-full flex items-center justify-center mx-auto mb-5 border border-yellow-500/30">
@@ -493,22 +462,17 @@
     </div>
 
     <script type="module">
-        // --- CONFIGURATION ---
-        const BOT_USERNAME = "Reward_Earning1_bot"; 
-        const APP_SHORT_NAME = "app"; 
-        
-        const firebaseConfig = {
-          apiKey: "AIzaSyDSyXdeWqDD-3OFNZT6SMcJz0Nr7tSdTS0",
-          authDomain: "reward-earn-money-32b24.firebaseapp.com",
-          databaseURL: "https://reward-earn-money-32b24-default-rtdb.firebaseio.com",
-          projectId: "reward-earn-money-32b24",
-          storageBucket: "reward-earn-money-32b24.firebasestorage.app",
-          messagingSenderId: "647603026182",
-          appId: "1:647603026182:web:1bfe0a9dc3d8e4513f8687"
+        // --- ERROR HANDLING (KEEPS APP ALIVE) ---
+        window.onerror = function() {
+            document.getElementById('loader').style.display = 'none';
+            document.getElementById('auth-section').classList.remove('hidden');
         };
 
+        // --- CONFIGURATION ---
+        const firebaseConfig = { apiKey: "AIzaSyDSyXdeWqDD-3OFNZT6SMcJz0Nr7tSdTS0", authDomain: "reward-earn-money-32b24.firebaseapp.com", databaseURL: "https://reward-earn-money-32b24-default-rtdb.firebaseio.com", projectId: "reward-earn-money-32b24", storageBucket: "reward-earn-money-32b24.firebasestorage.app", messagingSenderId: "647603026182", appId: "1:647603026182:web:1bfe0a9dc3d8e4513f8687" };
+        
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, addDoc, serverTimestamp, query, where, getDocs, orderBy, limit, increment, arrayUnion } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
         const app = initializeApp(firebaseConfig);
@@ -516,13 +480,14 @@
         const db = getFirestore(app);
         
         let currentUser, userData, detectedRefCode, activeTask = null;
+        const BOT_USERNAME = "Reward_Earning1_bot"; const APP_SHORT_NAME = "app"; 
         let appConfig = { taskLimits: {}, taskRewards: {}, appSettings: {} };
 
         // --- UI UTILS ---
         window.showToast = (msg) => {
             const t = document.getElementById('toast');
             document.getElementById('toast-msg').innerText = msg;
-            t.style.transform = "translate(-50%, 20px)"; // Corrected position
+            t.style.transform = "translate(-50%, 20px)";
             setTimeout(() => t.style.transform = "translate(-50%, -150px)", 3000);
         };
         
@@ -558,18 +523,8 @@
             document.getElementById('loader').style.display='flex';
             try {
                 const cred = await createUserWithEmailAndPassword(auth, e, p);
-                const userObj = {
-                    uid: cred.user.uid, name: n, email: e, country: c, balance: 50,
-                    referralCode: Math.random().toString(36).substr(2,6).toUpperCase(), referralCount: 0,
-                    taskCounters: {task1:0,task2:0,task3:0,task4:0}, dailyTaskCounts: {}, completedTasks: [],
-                    lastActiveDate: new Date().toISOString().split('T')[0], createdAt: serverTimestamp()
-                };
-                await setDoc(doc(db, "users", cred.user.uid), userObj);
-                if(detectedRefCode) {
-                    const q = query(collection(db, "users"), where("referralCode", "==", detectedRefCode));
-                    const s = await getDocs(q);
-                    if(!s.empty) await updateDoc(s.docs[0].ref, { balance: increment(200), referralCount: increment(1) });
-                }
+                await setDoc(doc(db, "users", cred.user.uid), { uid:cred.user.uid, name:n, email:e, country:c, balance:50, referralCode:Math.random().toString(36).substr(2,6).toUpperCase(), referralCount:0, taskCounters:{task1:0,task2:0,task3:0,task4:0}, dailyTaskCounts:{}, completedTasks:[], lastActiveDate:new Date().toISOString().split('T')[0], createdAt:serverTimestamp() });
+                if(detectedRefCode) { const q=query(collection(db,"users"),where("referralCode","==",detectedRefCode)); const s=await getDocs(q); if(!s.empty) await updateDoc(s.docs[0].ref, {balance:increment(200), referralCount:increment(1)}); }
             } catch(e) { showToast(e.message); document.getElementById('loader').style.display='none'; }
         };
 
@@ -581,21 +536,23 @@
         };
 
         onAuthStateChanged(auth, async (u) => {
-            if(u) {
-                currentUser = u;
-                await fetchConfig(); await fetchUserData();
-                document.getElementById('auth-section').classList.remove('active');
-                document.getElementById('app-container').classList.add('active');
-                if(!sessionStorage.getItem('welcomeShown')) {
-                    const msg = userData.country==='BD' ? (appConfig.welcomeNoticeBD||appConfig.welcomeNotice) : (appConfig.welcomeNoticeGlobal||appConfig.welcomeNotice);
-                    document.getElementById('welcome-msg').innerText = msg || "Welcome to Earn Pro!";
-                    document.getElementById('welcome-modal').classList.remove('hidden');
-                    sessionStorage.setItem('welcomeShown','true');
+            try {
+                if(u) {
+                    currentUser = u;
+                    await fetchConfig(); await fetchUserData();
+                    document.getElementById('auth-section').classList.remove('active');
+                    document.getElementById('app-container').classList.add('active');
+                    if(!sessionStorage.getItem('welcomeShown')) {
+                        const msg = userData.country==='BD' ? (appConfig.welcomeNoticeBD||appConfig.welcomeNotice) : (appConfig.welcomeNoticeGlobal||appConfig.welcomeNotice);
+                        document.getElementById('welcome-msg').innerText = msg || "Welcome to Earn Pro!";
+                        document.getElementById('welcome-modal').classList.remove('hidden');
+                        sessionStorage.setItem('welcomeShown','true');
+                    }
+                } else {
+                    document.getElementById('app-container').classList.remove('active');
+                    document.getElementById('auth-section').classList.add('active');
                 }
-            } else {
-                document.getElementById('app-container').classList.remove('active');
-                document.getElementById('auth-section').classList.add('active');
-            }
+            } catch(e) { console.error(e); }
             document.getElementById('loader').style.display='none';
         });
 
@@ -605,7 +562,10 @@
                 const s = await getDoc(doc(db, "config", "main"));
                 if(s.exists()) {
                     appConfig = s.data();
-                    if(appConfig.uiSettings?.maintenanceMode) document.getElementById('maintenance-screen').style.display='flex';
+                    if(appConfig.uiSettings?.maintenanceMode) document.body.innerHTML = "<h1 style='color:white;text-align:center;margin-top:50px;'>MAINTENANCE MODE</h1>";
+                    
+                    if(appConfig.uiSettings?.showLogout) document.getElementById('logout-btn').classList.remove('hidden');
+                    else document.getElementById('logout-btn').classList.add('hidden');
                     
                     const q = query(collection(db, "dynamicTasks"), orderBy("createdAt", "desc"));
                     const snap = await getDocs(q);
@@ -614,7 +574,6 @@
                     snap.forEach(d => {
                         const t = d.data();
                         if(t.target==='ALL' || t.target===userData?.country) {
-                            
                             const isCode = t.code && t.code.length > 0;
                             const isHot = t.reward >= 100;
                             const codeArg = isCode ? `'${t.code}'` : 'null';
@@ -656,6 +615,7 @@
             const s = await getDoc(doc(db, "users", currentUser.uid));
             if(s.exists()) {
                 userData = s.data();
+                if(!userData.country) { userData.country='BD'; await updateDoc(doc(db,"users",currentUser.uid),{country:'BD'}); }
                 const today = new Date().toISOString().split('T')[0];
                 if(userData.lastActiveDate !== today) {
                     await updateDoc(doc(db, "users", currentUser.uid), { taskCounters: {task1:0,task2:0,task3:0,task4:0}, dailyTaskCounts: {}, lastActiveDate: today });
@@ -676,27 +636,26 @@
             document.getElementById('rate-display').innerText = appConfig.appSettings?.conversionRate || 10;
             document.getElementById('currency-name').innerText = userData.country==='BD'?"BDT":"USD";
             document.getElementById('country-badge').innerText = userData.country==='BD'?"BD 🇧🇩":"Global 🌍";
+            document.getElementById('total-refer-count').innerText = userData.referralCount || 0;
             
-            // --- FIXED: LIMITS UI UPDATE ---
+            document.getElementById('min-withdraw-display').innerText = appConfig.appSettings?.minWithdraw || 5000;
+
             const limits = appConfig.taskLimits || {task1:10, task2:10, task3:10, task4:1};
             ['task1', 'task2', 'task3', 'task4'].forEach(t => {
                 const count = userData.taskCounters?.[t] || 0;
                 const max = limits[t] || 10;
                 
-                // Update Text (0/10)
                 const countElem = document.getElementById(`${t}-count`);
                 if(countElem) countElem.innerText = count;
                 
-                // Update Bar Width
                 const barElem = document.getElementById(`${t}-bar`);
                 if(barElem) barElem.style.width = `${Math.min((count/max)*100, 100)}%`;
                 
-                // Disable Button if Limit Reached
                 const btn = document.getElementById(`btn-${t}`);
                 if(btn && count >= max) {
                     btn.innerText = "COMPLETED";
                     btn.disabled = true;
-                    btn.className = "w-full py-2 bg-slate-700 rounded-lg text-xs font-bold text-gray-500 cursor-not-allowed";
+                    btn.className = "w-full py-2.5 rounded-xl text-xs font-bold shadow-none transition active:scale-95 btn-disabled";
                 }
             });
 
@@ -724,7 +683,7 @@
                 setTimeout(() => document.getElementById('code-modal').classList.remove('hidden'), 2000);
             } else {
                 showToast("Wait 15 seconds...");
-                setTimeout(() => completeTask(), 15000); // 15 Sec Wait
+                setTimeout(() => completeTask(), 15000);
             }
         };
 
@@ -756,29 +715,31 @@
             const current = userData.taskCounters?.[id] || 0;
             const max = (appConfig.taskLimits?.[id]) || 10;
 
-            // 1. Check Limit
             if (current >= max) return showToast("Daily limit reached!");
 
             const btn = document.getElementById(`btn-${id}`);
-            const originalText = btn.innerText;
+            const originalText = "START WATCHING";
             btn.innerText = "LOADING...";
             btn.disabled = true;
 
-            // 2. Try Monetag SDK
-            if(typeof window.show_10352978 === 'function') {
-                try {
-                    await window.show_10352978(); // Show Ad
-                } catch(e) {
-                    // Ad failed/blocked -> Open Direct Link as Backup
-                    console.warn("Ad blocked, opening backup");
-                    window.open("https://otieu.com/4/10354231", "_blank");
+            // SAFE AD LOADING LOGIC
+            let adShown = false;
+            try {
+                if(typeof window.show_10352978 === 'function') {
+                     await window.show_10352978().then(() => {
+                        adShown = true;
+                     }).catch(e => {
+                        console.log("Ad closed or failed", e);
+                     });
                 }
-            } else {
-                // SDK not ready -> Open Direct Link
+            } catch(e) { console.log("SDK Error", e); }
+
+            // FALLBACK: If ad didn't show, open link
+            if(!adShown) {
                 window.open("https://otieu.com/4/10354231", "_blank");
             }
 
-            // 3. Reward Logic (Wait 15s to simulate watch)
+            // Reward Logic (Wait 15s)
             btn.innerText = "WAIT 15s...";
             setTimeout(async () => {
                 await updateDoc(doc(db, "users", currentUser.uid), { 
@@ -793,7 +754,6 @@
                 updateUI(); 
                 showToast("+50 Coins Added!");
                 
-                // Reset Button
                 btn.innerText = originalText;
                 btn.disabled = false;
             }, 15000); 
@@ -826,9 +786,10 @@
 
         document.getElementById('withdraw-btn').onclick = async () => {
             const amt=parseInt(document.getElementById('withdraw-amount').value), num=document.getElementById('withdraw-number').value, met=document.getElementById('selected-method').value;
-            const target = (userData.customRefThreshold !== undefined) ? userData.customRefThreshold : (appConfig.appSettings?.referralThreshold || 20);
+            const globalT = appConfig.appSettings?.referralThreshold || 20;
+            const userT = userData.customRefThreshold !== undefined ? userData.customRefThreshold : globalT;
             
-            if(target > 0 && (userData.referralCount||0) < target) return showToast(`You need ${target} Referrals to withdraw!`);
+            if(userT > 0 && (userData.referralCount||0) < userT) return showToast(`You need ${userT} Referrals to withdraw!`);
             if(!amt || !num || !met) return showToast("Please fill all details");
             if(amt < (appConfig.appSettings?.minWithdraw||5000)) return showToast("Minimum amount not reached");
             if(amt > userData.balance) return showToast("Insufficient balance");
@@ -859,7 +820,14 @@
         window.openSocialLink = (t) => window.open(appConfig.socialLinks?.[t]||"#", "_blank");
         window.handleLogout = () => signOut(auth);
         
-        setTimeout(()=>{ if(document.getElementById('loader').style.display!=='none') { document.getElementById('loader').style.display='none'; document.getElementById('auth-section').classList.add('active'); } }, 10000);
+        // --- FORCE LOADER HIDE AFTER 10 SECONDS (SAFETY NET) ---
+        setTimeout(()=>{ 
+            if(document.getElementById('loader').style.display!=='none') { 
+                document.getElementById('loader').style.display='none'; 
+                document.getElementById('auth-section').classList.add('active'); 
+            } 
+        }, 8000);
+        
         lucide.createIcons();
     </script>
 </body>
