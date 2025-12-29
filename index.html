@@ -7,119 +7,152 @@
     
     <!-- Telegram Web App SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <!-- Ad Code (Monetag) -->
+    
+    <!-- Monetag SDK (Correct Zone ID) -->
     <script src='//libtl.com/sdk.js' data-zone='10352978' data-sdk='show_10352978'></script>
     
     <!-- Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     
     <style>
+        /* CORE STYLES & RESET */
         body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #ffffff; overflow-x: hidden; user-select: none; -webkit-tap-highlight-color: transparent; }
         ::-webkit-scrollbar { width: 0px; }
-        .btn-primary { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; font-weight: bold; transition: all 0.2s; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3); }
-        .btn-primary:active { transform: scale(0.96); }
-        .btn-success { background: linear-gradient(135deg, #22c55e, #16a34a); color: white; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3); }
-        .btn-disabled { background: #334155; color: #94a3b8; cursor: not-allowed; }
-        .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
-        .input-field { background-color: #1e293b; border: 1px solid #334155; color: white; transition: all 0.3s ease; }
-        .input-field:focus { border-color: #f59e0b; outline: none; }
+        
+        /* PREMIUM GRADIENTS & BUTTONS */
+        .btn-primary { 
+            background: linear-gradient(135deg, #f59e0b, #d97706); 
+            color: white; 
+            font-weight: 800; 
+            letter-spacing: 0.5px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); 
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .btn-primary:active { transform: scale(0.96); box-shadow: 0 2px 10px rgba(245, 158, 11, 0.2); }
+        .btn-disabled { background: #334155; color: #94a3b8; cursor: not-allowed; opacity: 0.7; box-shadow: none; }
+        
+        /* GLASSMORPHISM CARDS */
+        .glass-card { 
+            background: rgba(30, 41, 59, 0.75); 
+            backdrop-filter: blur(16px); 
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+        
+        /* INPUT FIELDS */
+        .input-field { 
+            background-color: #1e293b; 
+            border: 1px solid #334155; 
+            color: white; 
+            font-weight: 500;
+            transition: all 0.3s ease; 
+        }
+        .input-field:focus { border-color: #f59e0b; outline: none; box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2); }
+        
+        /* PAGE TRANSITIONS */
         .page-section { display: none; opacity: 0; transition: opacity 0.3s ease-in-out; }
         .page-section.active { display: flex; opacity: 1; }
-        .sub-page { display: none; animation: slideUp 0.3s ease-out; }
+        .sub-page { display: none; animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
         .sub-page.active { display: block; }
-        .bottom-nav { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); border-top: 1px solid #334155; }
-        .nav-link.active { color: #f59e0b; }
-        .nav-link.active i { transform: translateY(-3px); }
-        @keyframes slideUp { from { transform: translateY(10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .progress-bar { transition: width 0.5s ease-in-out; }
-        .modal-animate { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        
+        /* BOTTOM NAVIGATION */
+        .bottom-nav { 
+            background: rgba(15, 23, 42, 0.95); 
+            backdrop-filter: blur(20px); 
+            border-top: 1px solid rgba(255, 255, 255, 0.05); 
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        .nav-link { color: #64748b; transition: all 0.3s ease; position: relative; }
+        .nav-link.active { color: #f59e0b; transform: translateY(-4px); }
+        .nav-link.active::after {
+            content: ''; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%);
+            width: 4px; height: 4px; background: #f59e0b; border-radius: 50%;
+        }
+        
+        /* SPECIAL OFFERS CARD */
+        .special-task-card {
+            background: linear-gradient(145deg, #1e293b, #0f172a);
+            border: 1px solid #334155;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .special-task-card:hover { border-color: #f59e0b; transform: translateY(-2px); }
+        .special-task-card::before { 
+            content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; 
+            background: linear-gradient(to bottom, #f59e0b, #d97706); 
+        }
+
+        /* PROGRESS BARS */
+        .progress-bg { background: #334155; height: 6px; border-radius: 10px; overflow: hidden; width: 100%; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #f59e0b, #fbbf24); transition: width 0.5s ease; border-radius: 10px; }
+
+        /* ANIMATIONS */
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .modal-animate { animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .pulse-hot { animation: pulseRed 2s infinite; }
+        @keyframes pulseRed { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
     </style>
 </head>
-<body class="max-w-md mx-auto min-h-screen relative bg-slate-900 pb-20">
+<body class="max-w-md mx-auto min-h-screen relative bg-slate-900 pb-24 text-sm">
 
     <!-- Loader -->
-    <div id="loader" class="fixed inset-0 bg-slate-900 z-[100] flex flex-col items-center justify-center">
-        <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-yellow-500 mb-4"></div>
-        <p class="text-yellow-500 font-bold text-sm tracking-widest animate-pulse">CONNECTING...</p>
-        <p id="loading-text" class="text-gray-500 text-xs mt-2">Please wait...</p>
-    </div>
-
-    <!-- Maintenance Screen -->
-    <div id="maintenance-screen" class="fixed inset-0 bg-slate-900 z-[200] hidden flex-col items-center justify-center p-6 text-center">
-        <div class="w-20 h-20 bg-yellow-500/20 rounded-full flex items-center justify-center mb-6">
-            <i data-lucide="wrench" class="w-10 h-10 text-yellow-500"></i>
+    <div id="loader" class="fixed inset-0 bg-[#0f172a] z-[100] flex flex-col items-center justify-center">
+        <div class="relative">
+            <div class="w-16 h-16 border-4 border-slate-700 rounded-full"></div>
+            <div class="w-16 h-16 border-4 border-yellow-500 rounded-full animate-spin absolute top-0 left-0 border-t-transparent"></div>
         </div>
-        <h1 class="text-2xl font-bold text-white mb-2">MAINTENANCE</h1>
-        <p class="text-gray-400">The app is currently under maintenance. Please check back later.</p>
-    </div>
-
-    <!-- Banned Screen -->
-    <div id="banned-screen" class="fixed inset-0 bg-slate-900 z-[200] hidden flex-col items-center justify-center p-6 text-center">
-        <div class="w-20 h-20 bg-red-500/20 rounded-full flex items-center justify-center mb-6">
-            <i data-lucide="ban" class="w-10 h-10 text-red-500"></i>
-        </div>
-        <h1 class="text-2xl font-bold text-white mb-2">ACCESS DENIED</h1>
-        <p class="text-gray-400">Your account or IP has been suspended by the administrator.</p>
-        <p class="mt-4 text-xs text-slate-600 font-mono" id="my-ip-display">IP: ...</p>
+        <p class="text-yellow-500 font-bold text-xs tracking-[0.3em] mt-6 animate-pulse">LOADING SYSTEM...</p>
     </div>
 
     <!-- Auth Section -->
-    <div id="auth-section" class="min-h-screen flex-col justify-center items-center page-section z-50 p-6">
-        <div class="glass-card p-8 rounded-2xl w-full max-w-sm shadow-2xl relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-yellow-500 to-transparent"></div>
-            <div class="text-center mb-8">
-                <div class="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-yellow-500/20 mb-3">
+    <div id="auth-section" class="min-h-screen flex-col justify-center items-center page-section z-50 p-6 bg-[#0f172a]">
+        <div class="glass-card p-8 rounded-3xl w-full max-w-sm shadow-2xl relative overflow-hidden border-t-4 border-yellow-500">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-yellow-500/10 rounded-full blur-3xl -mr-10 -mt-10"></div>
+            <div class="text-center mb-8 relative z-10">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-yellow-500/20 mb-4 border border-yellow-500/30 shadow-[0_0_20px_rgba(245,158,11,0.2)]">
                     <i data-lucide="zap" class="w-8 h-8 text-yellow-500"></i>
                 </div>
-                <h1 class="text-2xl font-bold text-white">Earn Pro Global</h1>
-                <p class="text-gray-400 text-xs">Login to start earning</p>
+                <h1 class="text-3xl font-extrabold text-white tracking-tight">Earn Pro</h1>
+                <p class="text-gray-400 text-xs mt-2 font-medium">Your Gateway to Real Rewards</p>
             </div>
 
             <!-- Login -->
-            <div id="login-view" class="space-y-4">
-                <input id="login-email" type="email" class="w-full p-3 rounded-lg input-field" placeholder="Email Address">
-                <input id="login-password" type="password" class="w-full p-3 rounded-lg input-field" placeholder="Password">
-                <button id="login-btn" class="w-full p-3 rounded-lg btn-primary mt-2">SECURE LOGIN</button>
-                <div class="flex justify-between mt-4">
-                     <a href="#" id="show-forgot" class="text-xs text-gray-500 hover:text-white">Forgot Password?</a>
-                     <a href="#" id="show-signup" class="text-xs text-yellow-500 hover:underline">Create Account</a>
+            <div id="login-view" class="space-y-4 relative z-10">
+                <div class="space-y-1">
+                    <label class="text-[10px] uppercase font-bold text-gray-500 ml-1">Email Address</label>
+                    <input id="login-email" type="email" class="w-full p-4 rounded-xl input-field" placeholder="name@example.com">
                 </div>
-            </div>
-
-            <!-- Forgot Password -->
-            <div id="forgot-view" class="hidden space-y-4">
-                <h3 class="text-center font-bold text-lg">Reset Password</h3>
-                <p class="text-center text-xs text-gray-400 mb-4">Enter your email to receive reset link</p>
-                <input id="reset-email" type="email" class="w-full p-3 rounded-lg input-field" placeholder="Email Address">
-                <button id="reset-btn" class="w-full p-3 rounded-lg btn-primary mt-2">SEND RESET LINK</button>
-                <p class="text-center text-sm text-gray-400 mt-4"><a href="#" id="back-to-login" class="text-yellow-500 hover:underline">Back to Login</a></p>
+                <div class="space-y-1">
+                    <label class="text-[10px] uppercase font-bold text-gray-500 ml-1">Password</label>
+                    <input id="login-password" type="password" class="w-full p-4 rounded-xl input-field" placeholder="••••••••">
+                </div>
+                <button onclick="handleLogin()" class="w-full p-4 rounded-xl btn-primary mt-2 shadow-lg hover:shadow-yellow-500/20">ACCESS ACCOUNT</button>
+                <div class="flex justify-between mt-6 pt-4 border-t border-slate-700/50">
+                     <a href="#" class="text-xs text-gray-500 hover:text-white transition">Forgot Password?</a>
+                     <a href="#" onclick="switchAuth('signup')" class="text-xs text-yellow-500 font-bold hover:underline">Create New Account</a>
+                </div>
             </div>
 
             <!-- Signup -->
-            <div id="signup-view" class="hidden space-y-4">
-                <input id="signup-name" type="text" class="w-full p-3 rounded-lg input-field" placeholder="Full Name">
-                <input id="signup-email" type="email" class="w-full p-3 rounded-lg input-field" placeholder="Email Address">
-                <input id="signup-password" type="password" class="w-full p-3 rounded-lg input-field" placeholder="Create Password">
-                
-                <!-- Country Selection -->
+            <div id="signup-view" class="hidden space-y-4 relative z-10">
+                <input id="signup-name" type="text" class="w-full p-4 rounded-xl input-field" placeholder="Full Legal Name">
+                <input id="signup-email" type="email" class="w-full p-4 rounded-xl input-field" placeholder="Email Address">
+                <input id="signup-password" type="password" class="w-full p-4 rounded-xl input-field" placeholder="Strong Password">
                 <div class="space-y-1">
-                    <label class="text-xs text-gray-400 ml-1">Select Your Country</label>
-                    <select id="signup-country" class="w-full p-3 rounded-lg input-field">
-                        <option value="BD">Bangladesh 🇧🇩</option>
-                        <option value="INTL">International (Other) 🌍</option>
+                    <label class="text-[10px] uppercase font-bold text-gray-500 ml-1">Select Region</label>
+                    <select id="signup-country" class="w-full p-4 rounded-xl input-field">
+                        <option value="BD">Bangladesh (BDT) 🇧🇩</option>
+                        <option value="INTL">Global (USD) 🌍</option>
                     </select>
                 </div>
-
-                <!-- Auto Referral Message -->
-                <div class="p-3 bg-slate-800 rounded-lg border border-slate-700 text-xs text-center text-gray-400" id="ref-status-msg">
-                    Checking for referral...
-                </div>
-                
-                <button id="signup-btn" class="w-full p-3 rounded-lg btn-primary mt-2">REGISTER ACCOUNT</button>
-                <p class="text-center text-sm text-gray-400 mt-4">Have account? <a href="#" id="show-login" class="text-yellow-500 hover:underline">Login</a></p>
+                <button onclick="handleSignup()" class="w-full p-4 rounded-xl btn-primary mt-2">REGISTER NOW</button>
+                <p class="text-center text-sm text-gray-400 mt-4">Already have an account? <a href="#" onclick="switchAuth('login')" class="text-yellow-500 font-bold hover:underline">Login</a></p>
             </div>
         </div>
     </div>
@@ -127,359 +160,343 @@
     <!-- Main App -->
     <div id="app-container" class="min-h-screen flex-col page-section relative z-10">
         <!-- Header -->
-        <header class="flex items-center justify-between p-5 sticky top-0 bg-slate-900/90 backdrop-blur-md z-40 border-b border-slate-800">
+        <header class="flex items-center justify-between px-6 py-5 sticky top-0 bg-[#0f172a]/95 backdrop-blur-xl z-40 border-b border-slate-800 shadow-sm">
             <div class="flex items-center gap-3">
-                <div class="w-8 h-8 bg-yellow-500 rounded-lg flex items-center justify-center font-bold text-slate-900">P</div>
+                <div class="w-10 h-10 bg-gradient-to-tr from-yellow-400 to-orange-600 rounded-xl flex items-center justify-center font-bold text-slate-900 shadow-lg text-lg">P</div>
                 <div>
-                    <h1 class="text-sm font-bold text-white">Earn Pro</h1>
-                    <p class="text-[10px] text-gray-400" id="header-user-name">Welcome</p>
+                    <h1 class="text-sm font-bold text-white tracking-wide">EARN PRO</h1>
+                    <p class="text-[10px] text-gray-400 font-medium" id="header-user-name">...</p>
                 </div>
             </div>
-            <div class="bg-slate-800 px-3 py-1.5 rounded-full border border-slate-700 flex items-center gap-2">
+            <div class="bg-slate-800/80 px-4 py-2 rounded-full border border-slate-700 flex items-center gap-2 shadow-inner">
+                <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
                 <i data-lucide="coins" class="w-4 h-4 text-yellow-500"></i>
-                <span id="header-balance" class="font-bold text-sm">0</span>
+                <span id="header-balance" class="font-bold text-sm text-white tracking-wide">0</span>
             </div>
         </header>
 
-        <main class="flex-grow p-4">
+        <main class="flex-grow p-5 space-y-8">
             
-            <!-- Home Dashboard -->
-            <div id="home-page" class="sub-page active space-y-6">
+            <!-- HOME PAGE -->
+            <div id="home-page" class="sub-page active space-y-8">
                 <!-- Balance Card -->
-                <div class="bg-gradient-to-br from-slate-800 to-slate-900 p-6 rounded-2xl border border-slate-700 relative overflow-hidden shadow-xl">
-                    <div class="absolute right-[-20px] top-[-20px] w-32 h-32 bg-yellow-500/10 rounded-full blur-2xl"></div>
-                    <p class="text-gray-400 text-xs uppercase tracking-wider">Current Balance</p>
-                    <div class="flex items-end gap-2 mt-1">
-                        <h2 class="text-4xl font-bold text-white" id="main-balance">0.00</h2>
-                        <span class="text-yellow-500 font-medium mb-1">Coins</span>
+                <div class="bg-gradient-to-br from-slate-800 to-[#020617] p-7 rounded-3xl border border-slate-700 relative overflow-hidden shadow-2xl group">
+                    <div class="absolute right-[-30px] top-[-30px] w-48 h-48 bg-yellow-500/10 rounded-full blur-3xl group-hover:bg-yellow-500/15 transition duration-500"></div>
+                    <p class="text-gray-400 text-xs uppercase tracking-widest font-bold">Available Balance</p>
+                    <div class="flex items-baseline gap-2 mt-2">
+                        <h2 class="text-5xl font-black text-white tracking-tight" id="main-balance">0.00</h2>
+                        <span class="text-yellow-500 font-bold text-sm bg-yellow-500/10 px-2 py-1 rounded">COINS</span>
                     </div>
-                    <div class="mt-4 flex gap-3">
-                        <button onclick="navigateTo('wallet-page')" class="flex-1 bg-yellow-500 hover:bg-yellow-400 text-slate-900 py-2 rounded-lg text-sm font-bold">Withdraw</button>
-                        <button onclick="navigateTo('refer-page')" class="flex-1 bg-slate-700 hover:bg-slate-600 text-white py-2 rounded-lg text-sm font-bold">Invite</button>
+                    <div class="mt-6 flex gap-3">
+                        <button onclick="navigateTo('wallet-page')" class="flex-1 bg-yellow-500 hover:bg-yellow-400 text-slate-900 py-3 rounded-xl text-xs font-extrabold uppercase tracking-wide shadow-lg shadow-yellow-500/20 transition transform active:scale-95">Withdraw</button>
+                        <button onclick="navigateTo('refer-page')" class="flex-1 bg-slate-700/50 border border-slate-600 hover:bg-slate-700 text-white py-3 rounded-xl text-xs font-extrabold uppercase tracking-wide transition transform active:scale-95">Invite Friend</button>
                     </div>
                 </div>
 
-                <!-- Daily Tasks Grid -->
+                <!-- Daily Tasks (With Limits) -->
                 <div>
-                    <h3 class="font-bold text-lg mb-3 flex items-center gap-2">
-                        <i data-lucide="target" class="text-yellow-500 w-5 h-5"></i> Daily Tasks
-                    </h3>
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-bold text-lg flex items-center gap-2 text-white">
+                            <span class="bg-blue-500/20 p-1.5 rounded-lg"><i data-lucide="calendar-check" class="text-blue-500 w-5 h-5"></i></span> 
+                            Daily Tasks
+                        </h3>
+                        <span class="text-[10px] text-gray-400 bg-slate-800 px-2 py-1 rounded-full border border-slate-700">Reset at 12:00 AM</span>
+                    </div>
+                    
                     <div class="grid grid-cols-1 gap-4">
                         
-                        <!-- Task 1 (Ad) -->
-                        <div class="glass-card p-4 rounded-xl border-l-4 border-l-blue-500">
-                            <div class="flex justify-between items-start mb-2">
-                                <div>
-                                    <h4 class="font-bold">Ad Task 1</h4>
-                                    <p class="text-xs text-gray-400">Watch full ad to claim <span id="reward-text-task1" class="text-yellow-500"></span></p>
+                        <!-- Task 1 -->
+                        <div class="glass-card p-4 rounded-2xl border-l-4 border-l-blue-500 relative">
+                            <div class="flex justify-between items-center mb-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="p-2 bg-blue-500/20 rounded-lg"><i data-lucide="play-circle" class="w-6 h-6 text-blue-400"></i></div>
+                                    <div><h4 class="font-bold text-sm">Watch Ad 1</h4><span class="text-[10px] text-yellow-500 font-bold bg-yellow-500/10 px-1.5 py-0.5 rounded">+50 Coins</span></div>
                                 </div>
-                                <span class="bg-slate-800 text-blue-400 text-xs px-2 py-1 rounded font-mono">
-                                    <span id="task1-count">0</span>/<span id="limit-task1">10</span>
-                                </span>
+                                <div class="text-right">
+                                    <span class="text-xs font-mono font-bold text-gray-300"><span id="task1-count">0</span>/10</span>
+                                </div>
                             </div>
-                            <div class="w-full bg-slate-800 h-1.5 rounded-full mb-3">
-                                <div id="task1-progress" class="bg-blue-500 h-1.5 rounded-full progress-bar" style="width: 0%"></div>
-                            </div>
-                            <button id="btn-task1" onclick="handleTask('task1')" class="w-full py-2.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold">START TASK</button>
+                            <div class="progress-bg mb-3"><div id="task1-bar" class="progress-fill" style="width: 0%"></div></div>
+                            <button id="btn-task1" onclick="handleTask('task1')" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 rounded-xl text-xs font-bold text-white shadow-lg shadow-blue-600/20 transition active:scale-95">START WATCHING</button>
                         </div>
 
-                        <!-- Task 2 (Ad) -->
-                        <div class="glass-card p-4 rounded-xl border-l-4 border-l-purple-500">
-                            <div class="flex justify-between items-start mb-2">
-                                <div>
-                                    <h4 class="font-bold">Ad Task 2</h4>
-                                    <p class="text-xs text-gray-400">Interact and earn <span id="reward-text-task2" class="text-yellow-500"></span></p>
+                        <!-- Task 2 -->
+                        <div class="glass-card p-4 rounded-2xl border-l-4 border-l-purple-500 relative">
+                            <div class="flex justify-between items-center mb-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="p-2 bg-purple-500/20 rounded-lg"><i data-lucide="monitor-play" class="w-6 h-6 text-purple-400"></i></div>
+                                    <div><h4 class="font-bold text-sm">Watch Ad 2</h4><span class="text-[10px] text-yellow-500 font-bold bg-yellow-500/10 px-1.5 py-0.5 rounded">+50 Coins</span></div>
                                 </div>
-                                <span class="bg-slate-800 text-purple-400 text-xs px-2 py-1 rounded font-mono">
-                                    <span id="task2-count">0</span>/<span id="limit-task2">10</span>
-                                </span>
+                                <div class="text-right">
+                                    <span class="text-xs font-mono font-bold text-gray-300"><span id="task2-count">0</span>/10</span>
+                                </div>
                             </div>
-                            <div class="w-full bg-slate-800 h-1.5 rounded-full mb-3">
-                                <div id="task2-progress" class="bg-purple-500 h-1.5 rounded-full progress-bar" style="width: 0%"></div>
-                            </div>
-                            <button id="btn-task2" onclick="handleTask('task2')" class="w-full py-2.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-white text-sm font-bold">START TASK</button>
+                            <div class="progress-bg mb-3"><div id="task2-bar" class="progress-fill" style="width: 0%"></div></div>
+                            <button id="btn-task2" onclick="handleTask('task2')" class="w-full py-2.5 bg-purple-600 hover:bg-purple-500 rounded-xl text-xs font-bold text-white shadow-lg shadow-purple-600/20 transition active:scale-95">START WATCHING</button>
                         </div>
 
-                         <!-- Task 3 (Math) -->
-                         <div class="glass-card p-4 rounded-xl border-l-4 border-l-green-500">
-                            <div class="flex justify-between items-start mb-2">
-                                <div>
-                                    <h4 class="font-bold">Math Quiz</h4>
-                                    <p class="text-xs text-gray-400">Solve & Watch Ad <span id="reward-text-task3" class="text-yellow-500"></span></p>
+                        <!-- Math Task -->
+                        <div class="glass-card p-4 rounded-2xl border-l-4 border-l-green-500 relative">
+                            <div class="flex justify-between items-center mb-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="p-2 bg-green-500/20 rounded-lg"><i data-lucide="calculator" class="w-6 h-6 text-green-400"></i></div>
+                                    <div><h4 class="font-bold text-sm">Math Quiz</h4><span class="text-[10px] text-yellow-500 font-bold bg-yellow-500/10 px-1.5 py-0.5 rounded">+50 Coins</span></div>
                                 </div>
-                                <span class="bg-slate-800 text-green-400 text-xs px-2 py-1 rounded font-mono">
-                                    <span id="task3-count">0</span>/<span id="limit-task3">10</span>
-                                </span>
+                                <div class="text-right">
+                                    <span class="text-xs font-mono font-bold text-gray-300"><span id="task3-count">0</span>/10</span>
+                                </div>
                             </div>
-                            <div class="w-full bg-slate-800 h-1.5 rounded-full mb-3">
-                                <div id="task3-progress" class="bg-green-500 h-1.5 rounded-full progress-bar" style="width: 0%"></div>
-                            </div>
-                            <button id="btn-task3" onclick="handleMathTask()" class="w-full py-2.5 rounded-lg bg-green-600 hover:bg-green-500 text-white text-sm font-bold">START QUIZ</button>
+                            <div class="progress-bg mb-3"><div id="task3-bar" class="progress-fill" style="width: 0%"></div></div>
+                            <button id="btn-task3" onclick="handleMathTask()" class="w-full py-2.5 bg-green-600 hover:bg-green-500 rounded-xl text-xs font-bold text-white shadow-lg shadow-green-600/20 transition active:scale-95">SOLVE QUIZ</button>
                         </div>
 
-                         <!-- Task 4 (Spin) -->
-                         <div class="glass-card p-4 rounded-xl border-l-4 border-l-pink-500 bg-gradient-to-r from-slate-800 to-pink-900/20">
-                            <div class="flex justify-between items-start mb-2">
-                                <div>
-                                    <h4 class="font-bold text-pink-400">Lucky Spin</h4>
-                                    <p class="text-xs text-gray-400">Try your luck <span id="reward-text-task4" class="text-yellow-500"></span></p>
+                        <!-- Spin Task -->
+                        <div class="glass-card p-4 rounded-2xl border-l-4 border-l-pink-500 relative">
+                            <div class="flex justify-between items-center mb-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="p-2 bg-pink-500/20 rounded-lg"><i data-lucide="dices" class="w-6 h-6 text-pink-400"></i></div>
+                                    <div><h4 class="font-bold text-sm">Lucky Spin</h4><span class="text-[10px] text-yellow-500 font-bold bg-yellow-500/10 px-1.5 py-0.5 rounded">+100 Coins</span></div>
                                 </div>
-                                <span class="bg-slate-800 text-pink-400 text-xs px-2 py-1 rounded font-mono">
-                                    <span id="task4-count">0</span>/<span id="limit-task4">1</span>
-                                </span>
+                                <div class="text-right">
+                                    <span class="text-xs font-mono font-bold text-gray-300"><span id="task4-count">0</span>/1</span>
+                                </div>
                             </div>
-                            <div class="w-full bg-slate-800 h-1.5 rounded-full mb-3">
-                                <div id="task4-progress" class="bg-pink-500 h-1.5 rounded-full progress-bar" style="width: 0%"></div>
-                            </div>
-                            <button id="btn-task4" onclick="handleDirectLinkTask('task4')" class="w-full py-2.5 rounded-lg bg-pink-600 hover:bg-pink-500 text-white text-sm font-bold">SPIN NOW</button>
+                            <div class="progress-bg mb-3"><div id="task4-bar" class="progress-fill" style="width: 0%"></div></div>
+                            <button id="btn-task4" onclick="handleDirectLinkTask('task4')" class="w-full py-2.5 bg-pink-600 hover:bg-pink-500 rounded-xl text-xs font-bold text-white shadow-lg shadow-pink-600/20 transition active:scale-95">SPIN WHEEL</button>
                         </div>
-
-                        <!-- Dynamic Tasks Container (Admin Added) -->
-                        <div id="dynamic-tasks-container" class="space-y-4"></div>
-
                     </div>
                 </div>
 
-                <!-- Adsterra Banner -->
-                <div class="flex justify-center items-center my-4 bg-slate-800/50 p-2 rounded-xl">
-                    <script type="text/javascript">
-                        atOptions = {
-                            'key' : 'f6889c0d46bfecd9364466833db17e7f',
-                            'format' : 'iframe',
-                            'height' : 300,
-                            'width' : 160,
-                            'params' : {}
-                        };
-                    </script>
-                    <script type="text/javascript" src="https://www.highperformanceformat.com/f6889c0d46bfecd9364466833db17e7f/invoke.js"></script>
-                </div>
-
-                <!-- Social Tasks -->
+                <!-- SPECIAL OFFERS (Premium Design) -->
                 <div>
-                    <h3 class="font-bold text-lg mb-3 flex items-center gap-2">
-                        <i data-lucide="thumbs-up" class="text-blue-500 w-5 h-5"></i> Social Tasks
-                    </h3>
-                    <div class="grid grid-cols-2 gap-3">
-                        <div onclick="openSocialLink('youtube')" class="glass-card p-3 rounded-xl flex items-center gap-2 cursor-pointer hover:bg-slate-800">
-                            <i data-lucide="youtube" class="text-red-500"></i>
-                            <span class="text-sm font-bold">Subscribe</span>
-                        </div>
-                        <div onclick="openSocialLink('telegram')" class="glass-card p-3 rounded-xl flex items-center gap-2 cursor-pointer hover:bg-slate-800">
-                            <i data-lucide="send" class="text-blue-500"></i>
-                            <span class="text-sm font-bold">Join TG</span>
-                        </div>
-                        <div onclick="openDirectLink()" class="glass-card p-3 rounded-xl flex items-center gap-2 cursor-pointer hover:bg-slate-800">
-                            <i data-lucide="instagram" class="text-pink-500"></i>
-                            <span class="text-sm font-bold">Follow</span>
-                        </div>
-                         <div onclick="openDirectLink()" class="glass-card p-3 rounded-xl flex items-center gap-2 cursor-pointer hover:bg-slate-800">
-                            <i data-lucide="music-2" class="text-black bg-white rounded-full p-0.5 w-5 h-5"></i>
-                            <span class="text-sm font-bold">Follow</span>
-                        </div>
+                    <div class="flex items-center justify-between mb-4 mt-8">
+                        <h3 class="font-bold text-lg flex items-center gap-2 text-white">
+                            <span class="bg-red-500/20 p-1.5 rounded-lg"><i data-lucide="flame" class="text-red-500 w-5 h-5 fill-red-500"></i></span>
+                            Special Offers
+                        </h3>
+                        <div class="pulse-hot bg-red-600 text-white text-[10px] px-3 py-1 rounded-full font-bold shadow-lg shadow-red-600/40">HOT</div>
+                    </div>
+                    
+                    <!-- Adsterra Banner Positioned Here -->
+                    <div class="flex justify-center items-center my-4 bg-slate-800/30 p-2 rounded-2xl border border-slate-700/50">
+                        <script type="text/javascript">
+                            atOptions = {
+                                'key' : 'f6889c0d46bfecd9364466833db17e7f',
+                                'format' : 'iframe',
+                                'height' : 300,
+                                'width' : 160,
+                                'params' : {}
+                            };
+                        </script>
+                        <script type="text/javascript" src="https://www.highperformanceformat.com/f6889c0d46bfecd9364466833db17e7f/invoke.js"></script>
+                    </div>
+
+                    <div id="dynamic-tasks-container" class="space-y-4">
+                        <div class="text-center py-6 text-xs text-gray-500 bg-slate-800/50 rounded-2xl border border-slate-700/50 border-dashed">Looking for offers...</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Wallet Page -->
+            <!-- WALLET PAGE -->
             <div id="wallet-page" class="sub-page space-y-6">
-                <div class="text-center py-6">
-                    <p class="text-gray-400 text-sm">Withdrawable Balance</p>
-                    <h3 class="text-4xl font-bold text-yellow-500 mt-2"><span id="wallet-balance">0</span></h3>
-                    <div class="inline-block bg-slate-800 px-3 py-1 rounded-full text-xs text-gray-400 mt-2 border border-slate-700">
-                        Rate: 1000 Coins = <span id="rate-display">10</span> <span id="currency-name">BDT</span>
+                <div class="text-center py-8">
+                    <p class="text-gray-400 text-xs uppercase tracking-widest font-bold">Withdrawable Funds</p>
+                    <h3 class="text-5xl font-black text-yellow-500 mt-2 tracking-tighter"><span id="wallet-balance">0</span></h3>
+                    <div class="inline-block bg-slate-800 px-4 py-1.5 rounded-full text-[10px] font-bold text-gray-400 mt-4 border border-slate-700 shadow-inner">
+                        RATE: 1000 COINS = <span id="rate-display" class="text-white">10</span> <span id="currency-name" class="text-white">BDT</span>
                     </div>
                 </div>
                 
-                <div class="glass-card p-5 rounded-xl space-y-4">
-                    <h3 class="font-bold border-b border-slate-700 pb-2">Request Withdrawal</h3>
+                <div class="glass-card p-6 rounded-3xl space-y-6 shadow-2xl">
+                    <h3 class="font-bold border-b border-slate-700 pb-3 text-white flex items-center gap-2"><i data-lucide="credit-card" class="w-4 h-4 text-blue-400"></i> Withdraw Method</h3>
                     <div>
-                        <label class="text-xs text-gray-400 mb-1 block">Payment Method</label>
-                        <!-- Dynamic Payment Methods Container -->
-                        <div id="payment-methods-container" class="grid grid-cols-2 gap-3">
-                            <!-- Populated by JS -->
-                        </div>
+                        <div id="payment-methods-container" class="grid grid-cols-2 gap-3"></div>
                         <input type="hidden" id="selected-method">
                     </div>
-                    <div>
-                        <label class="text-xs text-gray-400 mb-1 block">Account Number / Wallet Address</label>
-                        <input id="withdraw-number" type="text" class="w-full p-3 rounded-lg input-field" placeholder="Enter Account/Address">
+                    <div class="space-y-4">
+                        <div class="space-y-1">
+                            <label class="text-[10px] uppercase font-bold text-gray-500 ml-1">Account Number</label>
+                            <input id="withdraw-number" type="text" class="w-full p-4 rounded-xl input-field" placeholder="017xxxxxxxx / Wallet ID">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[10px] uppercase font-bold text-gray-500 ml-1">Amount</label>
+                            <input id="withdraw-amount" type="number" class="w-full p-4 rounded-xl input-field" placeholder="Minimum: 5000">
+                        </div>
                     </div>
-                    <div>
-                        <label class="text-xs text-gray-400 mb-1 block">Amount (Min: <span id="min-withdraw-display">5000</span>)</label>
-                        <input id="withdraw-amount" type="number" class="w-full p-3 rounded-lg input-field" placeholder="Enter Coins">
-                    </div>
-                    <button id="withdraw-btn" class="w-full btn-primary py-3 rounded-lg mt-2">CONFIRM WITHDRAW</button>
+                    <button id="withdraw-btn" class="w-full btn-primary py-4 rounded-xl mt-2 shadow-xl shadow-yellow-500/20 text-sm tracking-wide">CONFIRM WITHDRAWAL</button>
                 </div>
 
                 <div>
-                    <h3 class="font-bold mb-3 text-sm text-gray-400">Transaction History</h3>
-                    <div id="history-list" class="space-y-3 pb-4">
-                        <p class="text-center text-xs text-gray-500">Loading history...</p>
+                    <h3 class="font-bold mb-4 text-sm text-gray-400 px-2 flex items-center gap-2"><i data-lucide="history" class="w-4 h-4"></i> History</h3>
+                    <div id="history-list" class="space-y-3 pb-4 px-1">
+                        <p class="text-center text-xs text-gray-500 py-4">No recent transactions.</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Refer Page -->
+            <!-- REFER PAGE -->
             <div id="refer-page" class="sub-page space-y-6">
-                <div class="glass-card p-6 rounded-2xl border border-dashed border-yellow-500/30 text-center">
-                    <div class="w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-3 shadow-lg shadow-yellow-500/20">
-                        <i data-lucide="share-2" class="w-6 h-6 text-white"></i>
+                <div class="glass-card p-8 rounded-3xl border border-dashed border-yellow-500/30 text-center relative overflow-hidden group">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-yellow-500/50 to-transparent"></div>
+                    <div class="w-20 h-20 bg-gradient-to-br from-yellow-400 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-5 shadow-2xl shadow-orange-500/30 group-hover:scale-110 transition duration-500">
+                        <i data-lucide="share-2" class="w-10 h-10 text-white"></i>
                     </div>
-                    <h2 class="text-xl font-bold">Invite Friends</h2>
-                    <p class="text-gray-400 text-xs mt-1 mb-4" id="refer-offer-text">Earn <span class="text-yellow-500 font-bold">200 Coins</span> for every successful referral.</p>
+                    <h2 class="text-2xl font-black text-white">Invite & Earn</h2>
+                    <p class="text-gray-400 text-sm mt-2 mb-6" id="refer-offer-text">Earn huge rewards for every friend!</p>
                     
-                    <div class="bg-slate-900 p-3 rounded-xl border border-slate-700 mb-3">
-                        <p class="text-[10px] text-gray-500 mb-1 uppercase">Your Referral Code</p>
-                        <div class="flex items-center justify-center gap-3">
-                            <span id="refer-code-display" class="text-2xl font-mono font-bold text-white tracking-widest">...</span>
-                            <button onclick="copyCode()" class="text-yellow-500 hover:text-white transition"><i data-lucide="copy" class="w-5 h-5"></i></button>
+                    <div class="bg-slate-900/80 p-5 rounded-2xl border border-slate-700 mb-5 flex justify-between items-center shadow-inner">
+                        <span class="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Your Code</span>
+                        <div class="flex items-center gap-4">
+                            <span id="refer-code-display" class="text-xl font-mono font-bold text-yellow-500 tracking-widest">LOADING</span>
+                            <button onclick="copyCode()" class="text-gray-400 hover:text-white transition p-2 hover:bg-slate-800 rounded-lg"><i data-lucide="copy" class="w-5 h-5"></i></button>
                         </div>
                     </div>
                     
-                    <button onclick="shareLink()" class="w-full btn-primary py-2.5 rounded-lg font-bold text-sm">INVITE FRIENDS</button>
+                    <button onclick="shareLink()" class="w-full btn-primary py-3.5 rounded-xl font-bold text-sm shadow-xl shadow-yellow-500/20 active:scale-95 transition">INVITE NOW</button>
                 </div>
 
-                <div class="glass-card p-5 rounded-2xl border-l-4 border-l-red-500 bg-gradient-to-r from-slate-800 to-red-900/20">
-                    <div class="flex justify-between items-center mb-3">
-                        <h3 class="font-bold text-white flex items-center gap-2">
-                            <i data-lucide="gift" class="text-red-500 w-5 h-5"></i> SPECIAL OFFER
+                <div class="glass-card p-6 rounded-3xl border-l-4 border-l-red-500 bg-gradient-to-r from-slate-800 to-red-900/10 relative overflow-hidden">
+                    <div class="absolute right-[-10px] top-[-10px] w-20 h-20 bg-red-500/10 rounded-full blur-xl"></div>
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold text-white flex items-center gap-2 text-lg">
+                            <i data-lucide="gift" class="text-red-500 w-6 h-6"></i> BONUS
                         </h3>
-                        <div class="bg-slate-900 px-3 py-1 rounded text-xs font-mono">
-                            <span id="total-refer-count" class="text-green-400 font-bold">0</span> Refers
+                        <div class="bg-slate-900 px-3 py-1.5 rounded-lg text-xs font-mono border border-slate-700 font-bold">
+                            <span id="total-refer-count" class="text-green-400">0</span> Invites
                         </div>
                     </div>
-                    <p class="text-sm text-gray-300 mb-4">
-                        ১০ টি সফল রেফার করলেই পাবেন <span class="text-yellow-400 font-bold">বোনাস রিচার্জ!</span>
-                        <br><span class="text-[10px] text-gray-500">* একই মোবাইল দিয়ে ফেইক রেফার করলে একাউন্ট ব্যান হবে।</span>
+                    <p class="text-sm text-gray-300 mb-5 leading-relaxed">
+                        Complete <span class="text-yellow-400 font-bold">10 Referrals</span> to unlock a special bonus reward immediately!
                     </p>
                     
-                    <div id="bonus-claim-section" class="bg-slate-900/50 p-4 rounded-xl border border-slate-700">
-                        <p class="text-xs text-gray-400 mb-2">Claim Bonus</p>
-                        <select id="bonus-operator" class="w-full p-2.5 rounded-lg input-field text-sm mb-2">
-                            <option value="">Select Operator</option>
-                            <option value="Grameenphone">Grameenphone</option>
-                            <option value="Robi">Robi</option>
-                            <option value="Banglalink">Banglalink</option>
-                            <option value="Airtel">Airtel</option>
-                            <option value="Teletalk">Teletalk</option>
-                            <option value="Binance">Binance Pay</option>
-                        </select>
-                        <input id="bonus-number" type="text" class="w-full p-2.5 rounded-lg input-field text-sm mb-3" placeholder="Number / ID">
-                        <button id="btn-claim-bonus" onclick="handleRefBonus()" class="w-full py-2.5 rounded-lg bg-slate-700 text-gray-400 text-sm font-bold cursor-not-allowed">
+                    <div id="bonus-claim-section" class="bg-slate-900/50 p-4 rounded-2xl border border-slate-700">
+                        <input id="bonus-number" type="text" class="w-full p-3 rounded-xl input-field text-sm mb-3" placeholder="Enter Number for Bonus">
+                        <button id="btn-claim-bonus" onclick="handleRefBonus()" class="w-full py-3 rounded-xl bg-slate-700 text-gray-400 text-xs font-bold cursor-not-allowed uppercase tracking-wide">
                             NEED 10 REFERS
                         </button>
                     </div>
                 </div>
             </div>
 
-            <!-- Profile Page -->
-            <div id="profile-page" class="sub-page space-y-5">
-                <div class="glass-card p-6 rounded-2xl flex items-center gap-4">
-                    <div class="w-16 h-16 rounded-full bg-slate-800 border-2 border-yellow-500 overflow-hidden">
-                        <img id="profile-img" src="https://via.placeholder.com/150" class="w-full h-full object-cover">
+            <!-- PROFILE PAGE -->
+            <div id="profile-page" class="sub-page space-y-6">
+                <div class="glass-card p-6 rounded-3xl flex items-center gap-6 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-full h-1 bg-gradient-to-l from-yellow-500 to-transparent opacity-50"></div>
+                    <div class="w-20 h-20 rounded-full bg-slate-800 border-4 border-yellow-500 flex items-center justify-center text-3xl font-bold text-yellow-500 shadow-xl">
+                        <i data-lucide="user"></i>
                     </div>
                     <div>
-                        <h2 id="profile-name" class="text-lg font-bold">Loading...</h2>
-                        <p id="profile-email" class="text-xs text-gray-400">...</p>
-                        <div class="flex gap-2 mt-2">
-                             <span class="bg-yellow-500/20 text-yellow-500 text-[10px] px-2 py-0.5 rounded font-bold">PRO MEMBER</span>
-                             <span id="country-badge" class="bg-blue-500/20 text-blue-400 text-[10px] px-2 py-0.5 rounded font-bold">...</span>
+                        <h2 id="profile-name" class="text-xl font-bold text-white">Loading...</h2>
+                        <p id="profile-email" class="text-xs text-gray-400 font-medium">...</p>
+                        <div class="flex gap-2 mt-3">
+                             <span class="bg-yellow-500/10 text-yellow-500 text-[10px] px-3 py-1 rounded-full border border-yellow-500/20 font-bold uppercase tracking-wide">PRO</span>
+                             <span id="country-badge" class="bg-blue-500/10 text-blue-400 text-[10px] px-3 py-1 rounded-full border border-blue-500/20 font-bold uppercase tracking-wide">...</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="space-y-2">
-                    <button id="tg-join-btn" onclick="openSocialLink('telegram')" class="w-full glass-card p-4 rounded-xl hover:bg-slate-800 transition flex justify-between items-center text-left">
-                        <div class="flex items-center gap-3">
-                            <i data-lucide="send" class="w-5 h-5 text-blue-400"></i>
-                            <span>Join Telegram</span>
+                <div class="space-y-3">
+                    <button onclick="openSocialLink('telegram')" class="w-full glass-card p-5 rounded-2xl hover:bg-slate-800 transition flex justify-between items-center text-left group">
+                        <div class="flex items-center gap-4">
+                            <div class="p-3 bg-blue-500/20 rounded-xl text-blue-400 group-hover:text-white group-hover:bg-blue-500 transition"><i data-lucide="send" class="w-5 h-5"></i></div>
+                            <span class="font-bold text-sm">Join Telegram Channel</span>
                         </div>
-                        <i data-lucide="chevron-right" class="w-4 h-4 text-gray-500"></i>
+                        <i data-lucide="chevron-right" class="w-5 h-5 text-gray-500 group-hover:text-blue-500 transition"></i>
                     </button>
-                    <button id="logout-btn" onclick="handleLogout()" class="w-full glass-card p-4 rounded-xl hover:bg-red-500/10 transition flex justify-between items-center text-red-400">
-                        <div class="flex items-center gap-3">
-                            <i data-lucide="log-out" class="w-5 h-5"></i>
-                            <span>Logout Account</span>
+                    <button onclick="handleLogout()" class="w-full glass-card p-5 rounded-2xl hover:bg-red-500/10 transition flex justify-between items-center text-left group border-red-500/20">
+                        <div class="flex items-center gap-4">
+                            <div class="p-3 bg-red-500/20 rounded-xl text-red-400 group-hover:text-white group-hover:bg-red-500 transition"><i data-lucide="log-out" class="w-5 h-5"></i></div>
+                            <span class="font-bold text-sm text-red-400 group-hover:text-red-500 transition">Logout Account</span>
                         </div>
                     </button>
                 </div>
+                
+                <p class="text-center text-[10px] text-gray-600 mt-10">Version 2.5.0 - Secure Build</p>
             </div>
 
         </main>
 
         <!-- Bottom Navigation -->
-        <nav class="bottom-nav fixed bottom-0 w-full max-w-md left-1/2 -translate-x-1/2 grid grid-cols-4 py-3 z-50">
-            <button class="nav-link active flex flex-col items-center gap-1" onclick="navigateTo('home-page')">
-                <i data-lucide="layout-grid" class="w-6 h-6"></i>
-                <span class="text-[10px] font-medium">HOME</span>
+        <nav class="bottom-nav fixed bottom-0 w-full max-w-md left-1/2 -translate-x-1/2 grid grid-cols-4 py-4 z-50 rounded-t-3xl shadow-[0_-5px_20px_rgba(0,0,0,0.5)]">
+            <button class="nav-link active flex flex-col items-center gap-1.5" onclick="navigateTo('home-page')">
+                <i data-lucide="home" class="w-6 h-6 transition-transform active:scale-90"></i>
+                <span class="text-[10px] font-bold">Home</span>
             </button>
-            <button class="nav-link flex flex-col items-center gap-1" onclick="navigateTo('wallet-page')">
-                <i data-lucide="wallet" class="w-6 h-6"></i>
-                <span class="text-[10px] font-medium">WALLET</span>
+            <button class="nav-link flex flex-col items-center gap-1.5" onclick="navigateTo('wallet-page')">
+                <i data-lucide="wallet" class="w-6 h-6 transition-transform active:scale-90"></i>
+                <span class="text-[10px] font-bold">Wallet</span>
             </button>
-            <button class="nav-link flex flex-col items-center gap-1" onclick="navigateTo('refer-page')">
-                <i data-lucide="users" class="w-6 h-6"></i>
-                <span class="text-[10px] font-medium">INVITE</span>
+            <button class="nav-link flex flex-col items-center gap-1.5" onclick="navigateTo('refer-page')">
+                <i data-lucide="users" class="w-6 h-6 transition-transform active:scale-90"></i>
+                <span class="text-[10px] font-bold">Refer</span>
             </button>
-            <button class="nav-link flex flex-col items-center gap-1" onclick="navigateTo('profile-page')">
-                <i data-lucide="user-circle" class="w-6 h-6"></i>
-                <span class="text-[10px] font-medium">PROFILE</span>
+            <button class="nav-link flex flex-col items-center gap-1.5" onclick="navigateTo('profile-page')">
+                <i data-lucide="user-circle" class="w-6 h-6 transition-transform active:scale-90"></i>
+                <span class="text-[10px] font-bold">Profile</span>
             </button>
         </nav>
     </div>
 
-    <!-- Math Quiz Modal -->
-    <div id="math-modal" class="fixed inset-0 bg-black/90 z-[60] hidden flex items-center justify-center p-6 backdrop-blur-sm">
-        <div class="bg-slate-800 rounded-2xl p-6 w-full max-w-xs text-center border border-slate-700 animate-bounce-in">
-            <h3 class="text-xl font-bold mb-4 text-white">Solve to Earn</h3>
-            <div class="bg-slate-900 p-4 rounded-lg mb-4 text-2xl font-mono font-bold text-yellow-500 border border-slate-700">
-                <span id="math-q">5 + 3</span> = ?
+    <!-- CODE MODAL (PREMIUM) -->
+    <div id="code-modal" class="fixed inset-0 bg-black/95 z-[70] hidden flex items-center justify-center p-6 backdrop-blur-md">
+        <div class="bg-[#0f172a] p-8 rounded-3xl w-full max-w-xs text-center border border-yellow-500/50 modal-animate shadow-[0_0_50px_rgba(245,158,11,0.2)]">
+            <div class="w-16 h-16 bg-yellow-500/10 rounded-full flex items-center justify-center mx-auto mb-5 border border-yellow-500/30">
+                <i data-lucide="key" class="w-8 h-8 text-yellow-500"></i>
             </div>
-            <input type="number" id="math-ans" class="w-full p-3 rounded-lg bg-slate-700 text-white text-center mb-4 focus:outline-none focus:ring-2 focus:ring-yellow-500" placeholder="Enter Answer">
+            <h3 class="text-xl font-black mb-2 text-white uppercase tracking-wide">Verification</h3>
+            <p class="text-xs text-gray-400 mb-6 leading-relaxed">Complete the link task to reveal the code. <br>Enter the secret code below.</p>
+            <input type="text" id="verify-input" class="w-full p-4 rounded-xl bg-[#0b1120] border border-slate-700 text-center text-white font-mono text-lg tracking-[0.3em] mb-5 focus:border-yellow-500 outline-none uppercase placeholder-gray-700" placeholder="XXXXXX">
             <div class="grid grid-cols-2 gap-3">
-                <button onclick="closeMathModal()" class="bg-slate-600 text-white py-2 rounded-lg font-bold">Cancel</button>
-                <button onclick="submitMath()" class="btn-primary py-2 rounded-lg">Submit</button>
+                <button onclick="document.getElementById('code-modal').classList.add('hidden')" class="py-3.5 rounded-xl bg-slate-800 text-gray-400 font-bold text-xs hover:bg-slate-700 transition">CANCEL</button>
+                <button onclick="submitVerifyCode()" class="py-3.5 rounded-xl bg-yellow-500 text-black font-bold text-xs hover:bg-yellow-400 transition shadow-lg shadow-yellow-500/20">VERIFY</button>
             </div>
-        </div>
-    </div>
-    
-    <!-- Welcome Notice Modal -->
-    <div id="welcome-modal" class="fixed inset-0 bg-black/90 z-[80] hidden flex items-center justify-center p-6 backdrop-blur-sm">
-        <div class="bg-slate-800 rounded-2xl p-6 w-full max-w-sm text-center border border-yellow-500/50 relative modal-animate">
-            <div class="w-16 h-16 bg-yellow-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <i data-lucide="bell-ring" class="w-8 h-8 text-yellow-500"></i>
-            </div>
-            <h3 class="text-xl font-bold mb-2 text-white">নোটিশ</h3>
-            <p id="welcome-msg" class="text-gray-300 text-sm mb-6 leading-relaxed whitespace-pre-line">Loading...</p>
-            <button onclick="closeWelcomeModal()" class="w-full btn-primary py-3 rounded-xl font-bold">ঠিক আছে</button>
         </div>
     </div>
 
-    <!-- Toast Notification -->
-    <div id="toast" class="fixed top-5 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-6 py-3 rounded-full shadow-2xl border border-slate-700 flex items-center gap-3 z-[100] translate-y-[-100px] transition-all duration-300">
-        <i data-lucide="info" class="text-yellow-500 w-5 h-5"></i>
-        <span id="toast-msg" class="text-sm font-medium">Notification</span>
+    <!-- MATH MODAL -->
+    <div id="math-modal" class="fixed inset-0 bg-black/90 z-[60] hidden flex items-center justify-center p-6 backdrop-blur-sm">
+        <div class="bg-[#0f172a] p-8 rounded-3xl w-full max-w-xs text-center border border-slate-700 modal-animate shadow-2xl">
+            <h3 class="text-xl font-bold mb-6 text-white flex items-center justify-center gap-2"><i data-lucide="brain-circuit" class="w-5 h-5 text-blue-500"></i> Human Verify</h3>
+            <div class="bg-slate-800 p-5 rounded-2xl mb-6 text-4xl font-mono font-black text-yellow-500 border border-slate-700 tracking-widest relative overflow-hidden">
+                <span id="math-q">5 + 3</span>
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+            </div>
+            <input type="number" id="math-ans" class="w-full p-4 rounded-xl bg-[#0b1120] border border-slate-700 text-center text-white mb-5 focus:border-blue-500 outline-none text-lg font-bold" placeholder="Your Answer">
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="document.getElementById('math-modal').classList.add('hidden')" class="bg-slate-700 hover:bg-slate-600 text-white py-3 rounded-xl font-bold text-xs">CANCEL</button>
+                <button onclick="submitMath()" class="btn-primary py-3 rounded-xl text-xs shadow-lg">SUBMIT</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- WELCOME MODAL -->
+    <div id="welcome-modal" class="fixed inset-0 bg-black/95 z-[80] hidden flex items-center justify-center p-6 backdrop-blur-md">
+        <div class="bg-[#0f172a] p-8 rounded-3xl w-full max-w-sm text-center border border-slate-700 shadow-2xl modal-animate relative">
+            <div class="absolute -top-10 left-1/2 -translate-x-1/2 w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center border-4 border-[#0f172a] shadow-xl">
+                <i data-lucide="bell-ring" class="w-10 h-10 text-white"></i>
+            </div>
+            <h3 class="text-xl font-black mb-2 text-white mt-8 tracking-wide">IMPORTANT NOTICE</h3>
+            <div class="w-12 h-1 bg-blue-600 mx-auto rounded-full mb-6"></div>
+            <div class="bg-slate-800/50 p-4 rounded-2xl border border-slate-700/50 mb-6">
+                <p id="welcome-msg" class="text-gray-300 text-sm whitespace-pre-line leading-relaxed text-left">Loading...</p>
+            </div>
+            <button onclick="document.getElementById('welcome-modal').classList.add('hidden')" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-4 rounded-xl font-bold transition shadow-lg shadow-blue-600/20 text-sm tracking-widest">I UNDERSTAND</button>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div id="toast" class="fixed top-5 left-1/2 -translate-x-1/2 bg-slate-800/90 backdrop-blur-xl text-white px-6 py-4 rounded-2xl shadow-2xl border border-slate-600 flex items-center gap-4 z-[100] translate-y-[-150px] transition-all duration-300 whitespace-nowrap min-w-[300px]">
+        <div class="w-8 h-8 bg-gradient-to-tr from-yellow-400 to-orange-500 rounded-full flex items-center justify-center text-black font-bold shadow-lg">
+            <i data-lucide="check" class="w-5 h-5"></i>
+        </div>
+        <span id="toast-msg" class="text-sm font-bold tracking-wide">Notification</span>
     </div>
 
     <script type="module">
-        // Debug Error Handler
-        window.onerror = function(message, source, lineno, colno, error) {
-            console.error("Global Error:", message);
-            document.getElementById('loading-text').innerText = "Error: " + message;
-            setTimeout(() => {
-                 document.getElementById('loader').style.display = 'none';
-                 // Force show auth if error occurs early
-                 if(document.getElementById('auth-section')) document.getElementById('auth-section').classList.add('active');
-            }, 3000);
-        };
-
-        // ============================================
-        // CONFIGURATION (Auto-Filled)
-        // ============================================
+        // --- CONFIGURATION ---
         const BOT_USERNAME = "Reward_Earning1_bot"; 
         const APP_SHORT_NAME = "app"; 
-        // ============================================
-
+        
         const firebaseConfig = {
           apiKey: "AIzaSyDSyXdeWqDD-3OFNZT6SMcJz0Nr7tSdTS0",
           authDomain: "reward-earn-money-32b24.firebaseapp.com",
@@ -498,288 +515,154 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
         
-        let detectedRefCode = null;
-        let clientIP = "Unknown";
+        let currentUser, userData, detectedRefCode, activeTask = null;
+        let appConfig = { taskLimits: {}, taskRewards: {}, appSettings: {} };
 
-        // Security
-        async function checkSecurity() {
-            try {
-                if (window.Telegram && window.Telegram.WebApp) {
-                    window.Telegram.WebApp.expand();
-                    window.Telegram.WebApp.enableClosingConfirmation();
-                }
-                const res = await fetch('https://api.ipify.org?format=json');
-                const data = await res.json();
-                clientIP = data.ip;
-                
-                const secSnap = await getDoc(doc(db, "config", "security"));
-                if(secSnap.exists()) {
-                    const banned = secSnap.data().bannedIps || [];
-                    if(banned.includes(clientIP)) {
-                        blockUser();
-                        return false;
-                    }
-                }
-                return true;
-            } catch(e) { console.log("Security Check Error", e); return true; }
-        }
-
-        function blockUser() {
-            document.getElementById('banned-screen').classList.remove('hidden');
-            document.getElementById('banned-screen').style.display = 'flex';
-            document.getElementById('my-ip-display').innerText = `IP: ${clientIP}`;
-            document.getElementById('loader').style.display = 'none';
-        }
-
-        function detectReferral() {
-            if(window.Telegram && window.Telegram.WebApp) {
-                const initData = window.Telegram.WebApp.initDataUnsafe;
-                if(initData && initData.start_param) {
-                    detectedRefCode = initData.start_param.toUpperCase();
-                }
-            }
-            if(!detectedRefCode) {
-                const urlParams = new URLSearchParams(window.location.search);
-                detectedRefCode = urlParams.get('tgWebAppStartParam') || urlParams.get('startapp') || urlParams.get('ref');
-                if(detectedRefCode) detectedRefCode = detectedRefCode.toUpperCase();
-            }
-            if(detectedRefCode) {
-                document.getElementById('ref-status-msg').innerText = `Referral Applied: ${detectedRefCode}`;
-                document.getElementById('ref-status-msg').classList.replace('text-gray-400', 'text-green-400');
-            } else {
-                document.getElementById('ref-status-msg').innerText = `No Referral Code Detected`;
-            }
-        }
-
-        (async () => {
-            const allowed = await checkSecurity();
-            if(allowed) detectReferral();
-        })();
-
-        let currentUser = null;
-        let userData = null;
-        let mathAnswer = 0;
-        let appConfig = {
-            taskLimits: { task1: 10, task2: 10, task3: 10, task4: 1 },
-            taskRewards: { task1: 50, task2: 50, task3: 50, task4: 100 },
-            appSettings: { minWithdraw: 5000, conversionRate: 10, offerText: "Earn 200 Coins for every invite" },
-            socialLinks: { telegram: '#', youtube: '#' },
-            welcomeNotice: "Welcome to Earn Pro!",
-            welcomeNoticeBD: "Welcome Bangladesh Users!",
-            welcomeNoticeGlobal: "Welcome Global Users!",
-            uiSettings: { showLogout: true, showTelegram: true, maintenanceMode: false }
-        };
-
-        window.handleLogout = async () => {
-            try { await signOut(auth); showToast("Logged out successfully"); } 
-            catch (error) { showToast("Error logging out"); }
-        };
-
+        // --- UI UTILS ---
         window.showToast = (msg) => {
-            const toast = document.getElementById('toast');
+            const t = document.getElementById('toast');
             document.getElementById('toast-msg').innerText = msg;
-            toast.style.transform = "translate(-50%, 0)";
-            setTimeout(() => toast.style.transform = "translate(-50%, -100px)", 3000);
+            t.style.transform = "translate(-50%, 20px)"; // Corrected position
+            setTimeout(() => t.style.transform = "translate(-50%, -150px)", 3000);
         };
-
+        
         window.navigateTo = (pageId) => {
             document.querySelectorAll('.sub-page').forEach(p => p.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
+            
             document.querySelectorAll('.nav-link').forEach(btn => {
                 btn.classList.remove('active');
-                if(btn.getAttribute('onclick').includes(pageId)) btn.classList.add('active');
+                btn.style.color = "#64748b";
             });
-            if(pageId === 'wallet-page') {
-                loadHistory();
-                renderPaymentMethods();
+            
+            const activeBtn = Array.from(document.querySelectorAll('.nav-link')).find(b => b.getAttribute('onclick').includes(pageId));
+            if(activeBtn) {
+                activeBtn.classList.add('active');
+                activeBtn.style.color = "#f59e0b";
             }
+
+            if(pageId === 'wallet-page') { loadHistory(); renderPaymentMethods(); }
             lucide.createIcons();
         };
 
-        window.closeWelcomeModal = () => document.getElementById('welcome-modal').classList.add('hidden');
-        window.openDirectLink = () => window.open("https://otieu.com/4/10354231", "_blank");
-
-        window.openSocialLink = (type) => {
-            const url = appConfig.socialLinks ? appConfig.socialLinks[type] : "#";
-            if(url && url.length > 5) {
-                if(window.Telegram && window.Telegram.WebApp && type === 'telegram') {
-                    window.Telegram.WebApp.openTelegramLink(url);
-                } else {
-                    window.open(url, "_blank");
-                }
-            }
-            else showToast("Link not updated yet!");
+        window.switchAuth = (view) => {
+            document.getElementById('login-view').classList.add('hidden');
+            document.getElementById('signup-view').classList.add('hidden');
+            document.getElementById(`${view}-view`).classList.remove('hidden');
         };
 
-        // Render Wallet Methods based on Country
-        function renderPaymentMethods() {
-            const container = document.getElementById('payment-methods-container');
-            container.innerHTML = "";
-            const isBD = (userData && userData.country === 'BD');
-            
-            document.getElementById('currency-name').innerText = isBD ? "BDT" : "USD ($0.10)";
-            
-            if (isBD) {
-                // Bangladesh Methods
-                const methods = ['bKash', 'Nagad', 'Binance'];
-                methods.forEach(m => {
-                    container.innerHTML += `<div class="method-select p-3 rounded-lg border border-slate-700 text-center cursor-pointer hover:border-yellow-500 bg-slate-800" onclick="selectMethod(this, '${m}')">${m}</div>`;
-                });
-            } else {
-                // International Methods
-                const methods = ['Binance Pay', 'TON Wallet', 'Crypto (USDT)', 'TRX'];
-                methods.forEach(m => {
-                    container.innerHTML += `<div class="method-select p-3 rounded-lg border border-slate-700 text-center cursor-pointer hover:border-yellow-500 bg-slate-800" onclick="selectMethod(this, '${m}')">${m}</div>`;
-                });
-            }
-        }
-
-        async function fetchConfig() {
+        // --- AUTH ---
+        window.handleSignup = async () => {
+            const n = document.getElementById('signup-name').value, e = document.getElementById('signup-email').value, p = document.getElementById('signup-password').value, c = document.getElementById('signup-country').value;
+            if(!n || !e || !p) return showToast("Please fill all fields");
+            document.getElementById('loader').style.display='flex';
             try {
-                const snap = await getDoc(doc(db, "config", "main"));
-                if(snap.exists()) {
-                    const data = snap.data();
-                    if(data.taskLimits) appConfig.taskLimits = data.taskLimits;
-                    if(data.taskRewards) appConfig.taskRewards = data.taskRewards;
-                    if(data.appSettings) appConfig.appSettings = data.appSettings;
-                    if(data.socialLinks) appConfig.socialLinks = data.socialLinks;
-                    if(data.welcomeNotice) appConfig.welcomeNotice = data.welcomeNotice;
-                    if(data.welcomeNoticeBD) appConfig.welcomeNoticeBD = data.welcomeNoticeBD;
-                    if(data.welcomeNoticeGlobal) appConfig.welcomeNoticeGlobal = data.welcomeNoticeGlobal;
-                    if(data.uiSettings) appConfig.uiSettings = data.uiSettings;
-
-                    // Maintenance Check
-                    if(appConfig.uiSettings.maintenanceMode) {
-                        document.getElementById('maintenance-screen').classList.remove('hidden');
-                        document.getElementById('maintenance-screen').style.display = 'flex';
-                        document.getElementById('app-container').style.display = 'none';
-                    }
+                const cred = await createUserWithEmailAndPassword(auth, e, p);
+                const userObj = {
+                    uid: cred.user.uid, name: n, email: e, country: c, balance: 50,
+                    referralCode: Math.random().toString(36).substr(2,6).toUpperCase(), referralCount: 0,
+                    taskCounters: {task1:0,task2:0,task3:0,task4:0}, dailyTaskCounts: {}, completedTasks: [],
+                    lastActiveDate: new Date().toISOString().split('T')[0], createdAt: serverTimestamp()
+                };
+                await setDoc(doc(db, "users", cred.user.uid), userObj);
+                if(detectedRefCode) {
+                    const q = query(collection(db, "users"), where("referralCode", "==", detectedRefCode));
+                    const s = await getDocs(q);
+                    if(!s.empty) await updateDoc(s.docs[0].ref, { balance: increment(200), referralCount: increment(1) });
                 }
-                loadDynamicTasks();
-            } catch(e) { console.log("Config load error - using default"); }
-        }
-
-        async function loadDynamicTasks() {
-            const container = document.getElementById('dynamic-tasks-container');
-            const q = query(collection(db, "dynamicTasks"), orderBy("createdAt", "desc"));
-            const snap = await getDocs(q);
-            container.innerHTML = "";
-            snap.forEach(d => {
-                const t = d.data();
-                if(t.target === 'ALL' || t.target === userData.country) {
-                    const typeBadge = t.type === 'onetime' 
-                        ? '<span class="text-[10px] bg-purple-600 text-white px-1 py-0.5 rounded ml-2">ONE-TIME</span>' 
-                        : '';
-
-                    container.innerHTML += `
-                    <div class="glass-card p-4 rounded-xl border-l-4 border-l-yellow-500">
-                        <div class="flex justify-between items-start mb-2">
-                            <div>
-                                <h4 class="font-bold flex items-center">${t.title} ${typeBadge}</h4>
-                                <p class="text-xs text-gray-400">Reward: <span class="text-yellow-500">${t.reward}</span> Coins</p>
-                            </div>
-                        </div>
-                        <button onclick="handleDynamicTask('${d.id}', '${t.reward}', '${t.link}', '${t.type}', ${t.limit})" class="w-full py-2.5 rounded-lg bg-yellow-600 hover:bg-yellow-500 text-white text-sm font-bold">START TASK</button>
-                    </div>`;
-                }
-            });
-        }
-
-        // Updated Handle Dynamic Task Logic (One Time vs Daily)
-        window.handleDynamicTask = async (taskId, reward, link, type, limit) => {
-            // Check One Time
-            if (type === 'onetime') {
-                if (userData.completedTasks && userData.completedTasks.includes(taskId)) {
-                    return showToast("Already Completed (Life time limit reached)");
-                }
-            }
-
-            // Check Daily
-            if (type === 'daily') {
-                const count = userData.dailyTaskCounts ? (userData.dailyTaskCounts[taskId] || 0) : 0;
-                if (count >= limit) {
-                    return showToast("Daily limit reached for this task!");
-                }
-            }
-
-            if(link && link.length > 5) window.open(link, "_blank");
-            showToast("Wait 10 seconds...");
-
-            setTimeout(async () => {
-                const userRef = doc(db, "users", currentUser.uid);
-                const updates = { balance: increment(parseInt(reward)) };
-
-                if (type === 'onetime') {
-                    updates.completedTasks = arrayUnion(taskId);
-                    if(!userData.completedTasks) userData.completedTasks = [];
-                    userData.completedTasks.push(taskId);
-                } else {
-                    updates[`dailyTaskCounts.${taskId}`] = increment(1);
-                    if(!userData.dailyTaskCounts) userData.dailyTaskCounts = {};
-                    userData.dailyTaskCounts[taskId] = (userData.dailyTaskCounts[taskId] || 0) + 1;
-                }
-
-                await updateDoc(userRef, updates);
-                userData.balance += parseInt(reward);
-                updateUI();
-                showToast(`+${reward} Coins Added!`);
-            }, 10000);
+            } catch(e) { showToast(e.message); document.getElementById('loader').style.display='none'; }
         };
 
-        onAuthStateChanged(auth, async (user) => {
-            const loader = document.getElementById('loader');
-            if (user) {
-                currentUser = user;
-                try {
-                    await fetchConfig(); 
-                    await fetchUserData(); 
-                    document.getElementById('auth-section').classList.remove('active');
-                    document.getElementById('app-container').classList.add('active');
-                    
-                    if(!sessionStorage.getItem('welcomeShown')) {
-                        // Show specific notice based on country
-                        const notice = userData.country === 'BD' ? (appConfig.welcomeNoticeBD || appConfig.welcomeNotice) : (appConfig.welcomeNoticeGlobal || appConfig.welcomeNotice);
-                        
-                        document.getElementById('welcome-msg').innerText = notice;
-                        document.getElementById('welcome-modal').classList.remove('hidden');
-                        sessionStorage.setItem('welcomeShown', 'true');
-                    }
-                } catch(e) { 
-                    console.error(e); 
-                    showToast("Error loading user data.");
+        window.handleLogin = async () => {
+            try { 
+                document.getElementById('loader').style.display='flex';
+                await signInWithEmailAndPassword(auth, document.getElementById('login-email').value, document.getElementById('login-password').value);
+            } catch(e) { showToast(e.message); document.getElementById('loader').style.display='none'; }
+        };
+
+        onAuthStateChanged(auth, async (u) => {
+            if(u) {
+                currentUser = u;
+                await fetchConfig(); await fetchUserData();
+                document.getElementById('auth-section').classList.remove('active');
+                document.getElementById('app-container').classList.add('active');
+                if(!sessionStorage.getItem('welcomeShown')) {
+                    const msg = userData.country==='BD' ? (appConfig.welcomeNoticeBD||appConfig.welcomeNotice) : (appConfig.welcomeNoticeGlobal||appConfig.welcomeNotice);
+                    document.getElementById('welcome-msg').innerText = msg || "Welcome to Earn Pro!";
+                    document.getElementById('welcome-modal').classList.remove('hidden');
+                    sessionStorage.setItem('welcomeShown','true');
                 }
             } else {
-                currentUser = null;
                 document.getElementById('app-container').classList.remove('active');
                 document.getElementById('auth-section').classList.add('active');
-                if(detectedRefCode) document.getElementById('show-signup').click();
             }
-            if(loader) loader.style.display = 'none';
+            document.getElementById('loader').style.display='none';
         });
 
-        async function fetchUserData() {
-            if (!currentUser) return;
-            const userRef = doc(db, "users", currentUser.uid);
-            const snap = await getDoc(userRef);
-            const today = new Date().toISOString().split('T')[0];
-            
-            if (snap.exists()) {
-                userData = snap.data();
-                if(!userData.country) {
-                    userData.country = 'BD'; 
-                    await updateDoc(userRef, { country: 'BD' });
-                }
+        // --- DATA LOAD ---
+        async function fetchConfig() {
+            try {
+                const s = await getDoc(doc(db, "config", "main"));
+                if(s.exists()) {
+                    appConfig = s.data();
+                    if(appConfig.uiSettings?.maintenanceMode) document.getElementById('maintenance-screen').style.display='flex';
+                    
+                    const q = query(collection(db, "dynamicTasks"), orderBy("createdAt", "desc"));
+                    const snap = await getDocs(q);
+                    const con = document.getElementById('dynamic-tasks-container');
+                    con.innerHTML = "";
+                    snap.forEach(d => {
+                        const t = d.data();
+                        if(t.target==='ALL' || t.target===userData?.country) {
+                            
+                            const isCode = t.code && t.code.length > 0;
+                            const isHot = t.reward >= 100;
+                            const codeArg = isCode ? `'${t.code}'` : 'null';
+                            
+                            let badgeHTML = '';
+                            if(isCode) badgeHTML = `<span class="bg-blue-500/20 text-blue-400 text-[10px] px-2 py-0.5 rounded border border-blue-500/30 flex items-center gap-1 font-bold"><i data-lucide="key" class="w-3 h-3"></i> CODE</span>`;
+                            else badgeHTML = `<span class="bg-green-500/20 text-green-400 text-[10px] px-2 py-0.5 rounded border border-green-500/30 flex items-center gap-1 font-bold"><i data-lucide="timer" class="w-3 h-3"></i> INSTANT</span>`;
+                            
+                            const hotBadge = isHot ? `<div class="absolute -top-3 -right-3 bg-red-600 text-white text-[9px] font-bold px-2 py-1 rounded-bl-xl shadow-lg border border-red-400 z-10 animate-pulse">HOT</div>` : '';
 
-                if (userData.lastActiveDate !== today) {
-                    userData.taskCounters = { task1: 0, task2: 0, task3: 0, task4: 0 };
-                    userData.dailyTaskCounts = {}; // Reset Daily Dynamic Tasks
-                    userData.lastActiveDate = today;
-                    await updateDoc(userRef, { taskCounters: userData.taskCounters, dailyTaskCounts: {}, lastActiveDate: today });
+                            con.innerHTML += `
+                            <div class="special-task-card p-4 rounded-xl flex justify-between items-center group transition hover:border-yellow-500/50">
+                                ${hotBadge}
+                                <div class="flex items-center gap-4">
+                                    <div class="w-12 h-12 rounded-lg bg-slate-800/80 flex items-center justify-center border border-slate-600 shadow-inner group-hover:scale-105 transition">
+                                        <i data-lucide="${isCode?'lock':'zap'}" class="w-6 h-6 ${isCode?'text-blue-400':'text-yellow-400'}"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-sm text-gray-100 line-clamp-1">${t.title}</h4>
+                                        <div class="flex items-center gap-2 mt-1.5">
+                                            ${badgeHTML}
+                                            <span class="text-yellow-500 text-xs font-bold flex items-center gap-1 bg-yellow-500/10 px-2 py-0.5 rounded"><i data-lucide="coins" class="w-3 h-3"></i> ${t.reward}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button onclick="handleDynamicTask('${d.id}', ${t.reward}, '${t.link}', '${t.type}', ${t.limit}, ${codeArg})" class="bg-gradient-to-r from-yellow-500 to-orange-500 hover:to-orange-600 text-black text-xs font-bold px-4 py-2.5 rounded-lg shadow-lg shadow-orange-500/20 active:scale-95 transition">
+                                    START
+                                </button>
+                            </div>`;
+                        }
+                    });
+                    if(con.innerHTML === "") con.innerHTML = "<p class='text-center text-xs text-gray-500 py-4'>No offers available at the moment.</p>";
+                    lucide.createIcons();
                 }
-                if(userData.referralCount === undefined) userData.referralCount = 0;
-                if(userData.bonusClaims === undefined) userData.bonusClaims = 0;
+            } catch(e) { console.log(e); }
+        }
+
+        async function fetchUserData() {
+            const s = await getDoc(doc(db, "users", currentUser.uid));
+            if(s.exists()) {
+                userData = s.data();
+                const today = new Date().toISOString().split('T')[0];
+                if(userData.lastActiveDate !== today) {
+                    await updateDoc(doc(db, "users", currentUser.uid), { taskCounters: {task1:0,task2:0,task3:0,task4:0}, dailyTaskCounts: {}, lastActiveDate: today });
+                    userData.taskCounters = {task1:0,task2:0,task3:0,task4:0};
+                }
+                updateUI();
             }
-            updateUI();
         }
 
         function updateUI() {
@@ -787,351 +670,197 @@
             document.getElementById('header-balance').innerText = userData.balance;
             document.getElementById('main-balance').innerText = userData.balance.toFixed(2);
             document.getElementById('wallet-balance').innerText = userData.balance.toFixed(2);
-            document.getElementById('header-user-name').innerText = userData.name;
             document.getElementById('profile-name').innerText = userData.name;
             document.getElementById('profile-email').innerText = userData.email;
-            document.getElementById('profile-img').src = `https://ui-avatars.com/api/?name=${userData.name}&background=f59e0b&color=fff`;
             document.getElementById('refer-code-display').innerText = userData.referralCode;
-            document.getElementById('min-withdraw-display').innerText = appConfig.appSettings.minWithdraw;
-            document.getElementById('rate-display').innerText = appConfig.appSettings.conversionRate;
-            document.getElementById('country-badge').innerText = userData.country === 'BD' ? "BD 🇧🇩" : "Global 🌍";
+            document.getElementById('rate-display').innerText = appConfig.appSettings?.conversionRate || 10;
+            document.getElementById('currency-name').innerText = userData.country==='BD'?"BDT":"USD";
+            document.getElementById('country-badge').innerText = userData.country==='BD'?"BD 🇧🇩":"Global 🌍";
             
-            if(appConfig.appSettings.offerText) {
-                document.getElementById('refer-offer-text').innerText = appConfig.appSettings.offerText;
-            }
-
-            if(appConfig.uiSettings) {
-                document.getElementById('logout-btn').style.display = appConfig.uiSettings.showLogout ? 'flex' : 'none';
-                document.getElementById('tg-join-btn').style.display = appConfig.uiSettings.showTelegram ? 'flex' : 'none';
-            }
-
-            const refCount = userData.referralCount || 0;
-            const claims = userData.bonusClaims || 0;
-            document.getElementById('total-refer-count').innerText = refCount;
-            const usedRefs = claims * 10;
-            const availableRefs = refCount - usedRefs;
-            
-            const btnBonus = document.getElementById('btn-claim-bonus');
-            if (availableRefs >= 10) {
-                btnBonus.innerText = "CLAIM BONUS NOW";
-                btnBonus.classList.remove('bg-slate-700', 'text-gray-400', 'cursor-not-allowed');
-                btnBonus.classList.add('btn-primary', 'cursor-pointer');
-                btnBonus.disabled = false;
-            } else {
-                btnBonus.innerText = `NEED ${10 - availableRefs} MORE REFERS`;
-                btnBonus.classList.remove('btn-primary', 'cursor-pointer');
-                btnBonus.classList.add('bg-slate-700', 'text-gray-400', 'cursor-not-allowed');
-                btnBonus.disabled = true;
-            }
-
-            ['task1', 'task2', 'task3', 'task4'].forEach(task => {
-                const count = userData.taskCounters ? userData.taskCounters[task] || 0 : 0;
-                const limit = appConfig.taskLimits[task] || 10;
-                const reward = appConfig.taskRewards[task] || 50;
-
-                document.getElementById(`${task}-count`).innerText = count;
-                document.getElementById(`limit-${task}`).innerText = limit;
-                if(document.getElementById(`reward-text-${task}`)) {
-                    document.getElementById(`reward-text-${task}`).innerText = `(+${reward})`;
-                }
+            // --- FIXED: LIMITS UI UPDATE ---
+            const limits = appConfig.taskLimits || {task1:10, task2:10, task3:10, task4:1};
+            ['task1', 'task2', 'task3', 'task4'].forEach(t => {
+                const count = userData.taskCounters?.[t] || 0;
+                const max = limits[t] || 10;
                 
-                const pct = (count / limit) * 100;
-                document.getElementById(`${task}-progress`).style.width = `${pct}%`;
-                const btn = document.getElementById(`btn-${task}`);
-                if(btn.dataset.state === 'claim') return;
+                // Update Text (0/10)
+                const countElem = document.getElementById(`${t}-count`);
+                if(countElem) countElem.innerText = count;
                 
-                if (count >= limit) {
+                // Update Bar Width
+                const barElem = document.getElementById(`${t}-bar`);
+                if(barElem) barElem.style.width = `${Math.min((count/max)*100, 100)}%`;
+                
+                // Disable Button if Limit Reached
+                const btn = document.getElementById(`btn-${t}`);
+                if(btn && count >= max) {
                     btn.innerText = "COMPLETED";
                     btn.disabled = true;
-                    btn.classList.remove('btn-primary', 'btn-success');
-                    btn.classList.add('bg-slate-700', 'cursor-not-allowed', 'opacity-50');
-                } else {
-                    let txt = task === 'task3' ? "START QUIZ" : (task === 'task4' ? "SPIN NOW" : "START TASK");
-                    btn.innerText = txt;
-                    btn.disabled = false;
-                    btn.classList.remove('bg-slate-700', 'cursor-not-allowed', 'opacity-50', 'btn-success');
-                    btn.classList.add('btn-primary');
+                    btn.className = "w-full py-2 bg-slate-700 rounded-lg text-xs font-bold text-gray-500 cursor-not-allowed";
                 }
             });
+
+            const btn = document.getElementById('btn-claim-bonus');
+            const refs = userData.referralCount||0;
+            const claims = userData.bonusClaims||0;
+            if((refs - (claims*10)) >= 10) {
+                btn.innerText = "CLAIM BONUS REWARD"; btn.classList.replace('bg-slate-700','btn-primary'); btn.classList.remove('cursor-not-allowed'); btn.disabled=false;
+            } else {
+                btn.innerText = `NEED ${10 - (refs-(claims*10))} MORE REFERS`; btn.classList.add('bg-slate-700','cursor-not-allowed'); btn.disabled=true;
+            }
             lucide.createIcons();
         }
 
-        // Signup Logic
-        document.getElementById('signup-btn').addEventListener('click', async () => {
-            const name = document.getElementById('signup-name').value;
-            const email = document.getElementById('signup-email').value;
-            const pass = document.getElementById('signup-password').value;
-            const country = document.getElementById('signup-country').value;
-            const refCode = detectedRefCode; 
+        // --- TASKS LOGIC ---
+        window.handleDynamicTask = async (tid, rwd, lnk, type, lmt, code) => {
+            if(type==='onetime' && userData.completedTasks?.includes(tid)) return showToast("Already Completed!");
+            if(type==='daily' && (userData.dailyTaskCounts?.[tid]||0) >= lmt) return showToast("Daily limit reached!");
             
-            if(!name || !email || !pass || !country) return showToast("Fill all fields");
-            document.getElementById('loader').style.display = 'flex';
-            try {
-                const cred = await createUserWithEmailAndPassword(auth, email, pass);
-                const newUser = {
-                    uid: cred.user.uid,
-                    name: name,
-                    email: email,
-                    country: country, 
-                    balance: 50,
-                    referralCode: Math.random().toString(36).substring(2, 8).toUpperCase(),
-                    referralCount: 0,
-                    bonusClaims: 0,
-                    referredBy: refCode || null,
-                    taskCounters: { task1: 0, task2: 0, task3: 0, task4: 0 },
-                    dailyTaskCounts: {},
-                    completedTasks: [],
-                    lastActiveDate: new Date().toISOString().split('T')[0],
-                    createdAt: serverTimestamp(),
-                    ip: clientIP || "Unknown"
-                };
-                await setDoc(doc(db, "users", cred.user.uid), newUser);
-                if(refCode) {
-                    const q = query(collection(db, "users"), where("referralCode", "==", refCode));
-                    const snap = await getDocs(q);
-                    if(!snap.empty) {
-                        const referrerRef = snap.docs[0].ref;
-                        await updateDoc(referrerRef, { 
-                            balance: increment(200),
-                            referralCount: increment(1)
-                        });
-                    }
-                }
-            } catch(e) { showToast(e.message); document.getElementById('loader').style.display = 'none'; }
-        });
-
-        // Login Logic
-        document.getElementById('login-btn').addEventListener('click', async () => {
-            const email = document.getElementById('login-email').value;
-            const pass = document.getElementById('login-password').value;
-            if(!email || !pass) return showToast("Fill all fields");
-            document.getElementById('loader').style.display = 'flex';
-            try { await signInWithEmailAndPassword(auth, email, pass); }
-            catch(e) { showToast(e.message); document.getElementById('loader').style.display = 'none'; }
-        });
-
-        // Forgot Password Logic
-        document.getElementById('reset-btn').addEventListener('click', async () => {
-            const email = document.getElementById('reset-email').value;
-            if(!email) return showToast("Enter your email");
-            document.getElementById('loader').style.display = 'flex';
-            try {
-                await sendPasswordResetEmail(auth, email);
-                showToast("Reset link sent to your email!");
-                document.getElementById('forgot-view').classList.add('hidden');
-                document.getElementById('login-view').classList.remove('hidden');
-            } catch(e) { showToast(e.message); }
-            document.getElementById('loader').style.display = 'none';
-        });
-
-        // Auth Views Toggles
-        document.getElementById('show-signup').onclick = () => { document.getElementById('login-view').classList.add('hidden'); document.getElementById('signup-view').classList.remove('hidden'); document.getElementById('forgot-view').classList.add('hidden'); };
-        document.getElementById('show-login').onclick = () => { document.getElementById('signup-view').classList.add('hidden'); document.getElementById('login-view').classList.remove('hidden'); document.getElementById('forgot-view').classList.add('hidden'); };
-        document.getElementById('show-forgot').onclick = () => { document.getElementById('login-view').classList.add('hidden'); document.getElementById('forgot-view').classList.remove('hidden'); };
-        document.getElementById('back-to-login').onclick = () => { document.getElementById('forgot-view').classList.add('hidden'); document.getElementById('login-view').classList.remove('hidden'); };
-
-        window.handleTask = async (taskId) => {
-            const btn = document.getElementById(`btn-${taskId}`);
-            const currentCount = userData.taskCounters[taskId] || 0;
-            const limit = appConfig.taskLimits[taskId] || 10;
-            const reward = appConfig.taskRewards[taskId] || 50;
+            activeTask = { tid, rwd, type, code };
+            if(lnk && lnk.length>4) window.open(lnk, "_blank");
             
-            if (currentCount >= limit) return showToast("Daily limit reached!");
-
-            if (btn.dataset.state === 'claim') {
-                btn.innerText = "ADDING...";
-                try {
-                    await updateDoc(doc(db, "users", currentUser.uid), { 
-                        balance: increment(reward), 
-                        [`taskCounters.${taskId}`]: increment(1)
-                    });
-                    userData.balance += reward;
-                    userData.taskCounters[taskId]++;
-                    delete btn.dataset.state;
-                    updateUI();
-                    showToast(`Success! +${reward} coins added.`);
-                } catch(e) { showToast("Error adding balance"); delete btn.dataset.state; updateUI(); }
+            if(code) {
+                showToast("Find the code & verify!");
+                setTimeout(() => document.getElementById('code-modal').classList.remove('hidden'), 2000);
             } else {
-                 if (typeof window.show_10352978 !== 'function') {
-                    showToast("Ad loading... please wait");
-                    setTimeout(() => window.open("https://otieu.com/4/10354231", "_blank"), 1000);
-                }
-                btn.innerText = "Loading Ad...";
-                try {
-                    await window.show_10352978().catch(e => { throw e; });
-                    btn.innerText = "CLAIM REWARD";
-                    btn.classList.remove('btn-primary');
-                    btn.classList.add('btn-success');
-                    btn.dataset.state = 'claim';
-                } catch(e) {
-                    window.open("https://otieu.com/4/10354231", "_blank");
-                    setTimeout(() => {
-                        btn.innerText = "CLAIM REWARD";
-                        btn.classList.remove('btn-primary');
-                        btn.classList.add('btn-success');
-                        btn.dataset.state = 'claim';
-                    }, 5000);
-                }
+                showToast("Wait 15 seconds...");
+                setTimeout(() => completeTask(), 15000); // 15 Sec Wait
             }
         };
 
-        window.handleDirectLinkTask = async (taskId) => {
-            const currentCount = userData.taskCounters[taskId] || 0;
-            const limit = appConfig.taskLimits[taskId] || 1;
-            const reward = appConfig.taskRewards[taskId] || 100;
+        window.submitVerifyCode = () => {
+            const inp = document.getElementById('verify-input').value.trim();
+            const correct = activeTask.code ? activeTask.code.trim() : "";
+            if(inp === correct) {
+                document.getElementById('code-modal').classList.add('hidden');
+                completeTask();
+                document.getElementById('verify-input').value = "";
+            } else showToast("Invalid Code! Try again.");
+        };
 
-            if (currentCount >= limit) return showToast("Daily limit reached!");
-            window.open("https://otieu.com/4/10354231", "_blank");
+        async function completeTask() {
+            if(!activeTask) return;
+            const { tid, rwd, type } = activeTask;
+            const uRef = doc(db, "users", currentUser.uid);
+            const up = { balance: increment(rwd) };
+            if(type==='onetime') { up.completedTasks = arrayUnion(tid); if(!userData.completedTasks) userData.completedTasks=[]; userData.completedTasks.push(tid); }
+            else { up[`dailyTaskCounts.${tid}`] = increment(1); }
+            
+            await updateDoc(uRef, up);
+            userData.balance += rwd; updateUI(); showToast(`+${rwd} Coins Added!`);
+            activeTask = null;
+        }
+
+        // --- FIXED: MONETAG AD + FALLBACK LOGIC ---
+        window.handleTask = async (id) => {
+            const current = userData.taskCounters?.[id] || 0;
+            const max = (appConfig.taskLimits?.[id]) || 10;
+
+            // 1. Check Limit
+            if (current >= max) return showToast("Daily limit reached!");
+
+            const btn = document.getElementById(`btn-${id}`);
+            const originalText = btn.innerText;
+            btn.innerText = "LOADING...";
+            btn.disabled = true;
+
+            // 2. Try Monetag SDK
+            if(typeof window.show_10352978 === 'function') {
+                try {
+                    await window.show_10352978(); // Show Ad
+                } catch(e) {
+                    // Ad failed/blocked -> Open Direct Link as Backup
+                    console.warn("Ad blocked, opening backup");
+                    window.open("https://otieu.com/4/10354231", "_blank");
+                }
+            } else {
+                // SDK not ready -> Open Direct Link
+                window.open("https://otieu.com/4/10354231", "_blank");
+            }
+
+            // 3. Reward Logic (Wait 15s to simulate watch)
+            btn.innerText = "WAIT 15s...";
             setTimeout(async () => {
                 await updateDoc(doc(db, "users", currentUser.uid), { 
-                    balance: increment(reward), 
-                    [`taskCounters.${taskId}`]: increment(1)
+                    balance: increment(50), 
+                    [`taskCounters.${id}`]: increment(1) 
                 });
-                userData.balance += reward;
-                userData.taskCounters[taskId]++;
-                updateUI();
-                showToast(`+${reward} Coins Received!`);
-            }, 3000); 
+                
+                userData.balance += 50; 
+                if(!userData.taskCounters) userData.taskCounters = {};
+                userData.taskCounters[id] = (userData.taskCounters[id] || 0) + 1;
+                
+                updateUI(); 
+                showToast("+50 Coins Added!");
+                
+                // Reset Button
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }, 15000); 
+        };
+        
+        window.handleMathTask = () => { document.getElementById('math-q').innerText=`${Math.floor(Math.random()*9)}+${Math.floor(Math.random()*9)}`; document.getElementById('math-modal').classList.remove('hidden'); };
+        window.submitMath = async () => {
+            document.getElementById('math-modal').classList.add('hidden');
+            await handleTask('task3');
+        };
+        
+        window.handleDirectLinkTask = async (id) => {
+             const current = userData.taskCounters?.[id] || 0;
+             if(current >= 1) return showToast("Spin limit reached!");
+             
+             window.open("https://otieu.com/4/10354231", "_blank");
+             
+             setTimeout(async()=>{
+                await updateDoc(doc(db, "users", currentUser.uid), { balance: increment(100), [`taskCounters.${id}`]: increment(1) });
+                userData.balance+=100; userData.taskCounters[id]++; updateUI(); showToast("+100 Coins");
+            }, 5000);
         };
 
-        window.handleMathTask = () => {
-            if(userData.taskCounters.task3 >= (appConfig.taskLimits.task3 || 10)) return showToast("Daily limit reached!");
-            const n1 = Math.floor(Math.random() * 9) + 1;
-            const n2 = Math.floor(Math.random() * 9) + 1;
-            mathAnswer = n1 + n2;
-            document.getElementById('math-q').innerText = `${n1} + ${n2}`;
-            document.getElementById('math-ans').value = '';
-            document.getElementById('math-modal').classList.remove('hidden');
-        };
-        window.closeMathModal = () => document.getElementById('math-modal').classList.add('hidden');
-        window.submitMath = async () => {
-            const ans = parseInt(document.getElementById('math-ans').value);
-            if(ans === mathAnswer) { closeMathModal(); await handleTask('task3'); } else { showToast("Wrong Answer!"); }
+        // --- WITHDRAW ---
+        function renderPaymentMethods() {
+            const c = document.getElementById('payment-methods-container'); c.innerHTML = "";
+            const m = userData.country==='BD' ? ['bKash','Nagad','Binance'] : ['Binance','TON','TRX'];
+            m.forEach(i => c.innerHTML += `<div onclick="document.getElementById('selected-method').value='${i}';this.parentElement.childNodes.forEach(x=>x.classList.remove('border-yellow-500'));this.classList.add('border-yellow-500')" class="p-3 bg-slate-800 border border-slate-700 rounded-xl text-center cursor-pointer text-xs font-bold text-gray-300 hover:bg-slate-700 transition">${i}</div>`);
+        }
+
+        document.getElementById('withdraw-btn').onclick = async () => {
+            const amt=parseInt(document.getElementById('withdraw-amount').value), num=document.getElementById('withdraw-number').value, met=document.getElementById('selected-method').value;
+            const target = (userData.customRefThreshold !== undefined) ? userData.customRefThreshold : (appConfig.appSettings?.referralThreshold || 20);
+            
+            if(target > 0 && (userData.referralCount||0) < target) return showToast(`You need ${target} Referrals to withdraw!`);
+            if(!amt || !num || !met) return showToast("Please fill all details");
+            if(amt < (appConfig.appSettings?.minWithdraw||5000)) return showToast("Minimum amount not reached");
+            if(amt > userData.balance) return showToast("Insufficient balance");
+
+            await updateDoc(doc(db, "users", currentUser.uid), { balance: increment(-amt) });
+            await addDoc(collection(db, "withdrawals"), { userId: currentUser.uid, amount: amt, method: met, number: num, status: 'pending', type: 'regular', country: userData.country, date: serverTimestamp() });
+            userData.balance -= amt; updateUI(); showToast("Withdrawal Request Submitted!"); loadHistory();
         };
 
         window.handleRefBonus = async () => {
-            const operator = document.getElementById('bonus-operator').value;
-            const number = document.getElementById('bonus-number').value;
-            const refCount = userData.referralCount || 0;
-            const claims = userData.bonusClaims || 0;
-            const available = refCount - (claims * 10);
-            if(available < 10) return showToast("You need 10 referrals to claim!");
-            if(!operator) return showToast("Select an Operator");
-            if(!number || number.length < 5) return showToast("Enter valid number/ID");
-            const btn = document.getElementById('btn-claim-bonus');
-            btn.innerText = "Processing...";
-            btn.disabled = true;
-            try {
-                await addDoc(collection(db, "withdrawals"), {
-                    userId: currentUser.uid, amount: "Bonus", method: `Bonus (${operator})`,
-                    number: number, status: 'pending', type: 'referral_bonus', date: serverTimestamp()
-                });
-                await updateDoc(doc(db, "users", currentUser.uid), { bonusClaims: increment(1) });
-                userData.bonusClaims += 1;
-                showToast("Request Submitted Successfuly!");
-                document.getElementById('bonus-number').value = "";
-                updateUI();
-                navigateTo('wallet-page');
-            } catch(e) { showToast("Error: " + e.message); updateUI(); }
-        };
-
-        window.selectMethod = (el, method) => {
-            document.querySelectorAll('.method-select').forEach(d => d.classList.remove('border-yellow-500', 'text-yellow-500'));
-            el.classList.add('border-yellow-500', 'text-yellow-500');
-            document.getElementById('selected-method').value = method;
-        };
-
-        // WITHDRAW LOGIC - UPDATED WITH DYNAMIC REFERRAL CHECK
-        document.getElementById('withdraw-btn').onclick = async () => {
-            const amount = parseInt(document.getElementById('withdraw-amount').value);
-            const number = document.getElementById('withdraw-number').value;
-            const method = document.getElementById('selected-method').value;
-            const minWithdraw = appConfig.appSettings.minWithdraw || 5000;
-            
-            // Check Referrals First (Dynamic from Admin)
-            const globalTarget = appConfig.appSettings?.referralThreshold !== undefined ? appConfig.appSettings.referralThreshold : 20; // Default 20
-            const userTarget = (userData.customRefThreshold !== undefined && userData.customRefThreshold !== null) ? userData.customRefThreshold : globalTarget;
-
-            if (userTarget > 0 && (userData.referralCount || 0) < userTarget) {
-                if(userData.country === 'BD') {
-                    return showToast(`উইথড্র করতে ${userTarget} টি রেফার প্রয়োজন।`);
-                } else {
-                    return showToast(`You need ${userTarget} active referrals to withdraw.`);
-                }
-            }
-
-            if(!amount || !number || !method) return showToast("Please fill all details");
-            if(amount < minWithdraw) return showToast(`Minimum withdrawal is ${minWithdraw} coins`);
-            if(amount > userData.balance) return showToast("Insufficient balance");
-            
-            try {
-                await updateDoc(doc(db, "users", currentUser.uid), { balance: increment(-amount) });
-                userData.balance -= amount;
-                await addDoc(collection(db, "withdrawals"), {
-                    userId: currentUser.uid, amount, method, number,
-                    status: 'pending', type: 'regular', country: userData.country, date: serverTimestamp()
-                });
-                updateUI();
-                showToast("Withdrawal Request Submitted!");
-                loadHistory();
-                document.getElementById('withdraw-amount').value = "";
-            } catch(e) { showToast(e.message); }
+            const num = document.getElementById('bonus-number').value;
+            if(!num) return showToast("Enter Number");
+            await addDoc(collection(db, "withdrawals"), { userId: currentUser.uid, amount: "Bonus", method: "Ref Bonus", number: num, status: 'pending', type: 'referral_bonus', date: serverTimestamp() });
+            await updateDoc(doc(db, "users", currentUser.uid), { bonusClaims: increment(1) });
+            userData.bonusClaims++; updateUI(); showToast("Bonus Request Sent!");
         };
 
         async function loadHistory() {
-            const list = document.getElementById('history-list');
+            const l = document.getElementById('history-list'); l.innerHTML = "";
             const q = query(collection(db, "withdrawals"), where("userId", "==", currentUser.uid), orderBy("date", "desc"), limit(5));
-            try {
-                const snap = await getDocs(q);
-                list.innerHTML = "";
-                if(snap.empty) list.innerHTML = "<p class='text-center text-xs text-gray-500'>No transactions yet.</p>";
-                snap.forEach(d => {
-                    const data = d.data();
-                    let color = data.status === 'paid' ? 'text-green-400' : (data.status === 'rejected' ? 'text-red-400' : 'text-yellow-400');
-                    let amtDisplay = data.type === 'referral_bonus' ? data.amount : data.amount;
-                    list.innerHTML += `
-                    <div class="flex justify-between items-center bg-slate-800 p-3 rounded-lg border border-slate-700">
-                        <div>
-                            <p class="font-bold text-sm text-white">${data.method}</p>
-                            <p class="text-[10px] text-gray-400">${data.number}</p>
-                        </div>
-                        <div class="text-right">
-                            <p class="font-bold ${color}">${amtDisplay}</p>
-                            <p class="text-[10px] uppercase text-gray-500">${data.status}</p>
-                        </div>
-                    </div>`;
-                });
-            } catch(e) { list.innerHTML = "<p class='text-center text-xs text-red-400'>Error loading history</p>"; }
+            const s = await getDocs(q);
+            if(s.empty) l.innerHTML = "<p class='text-center text-xs text-gray-500'>No transactions yet.</p>";
+            s.forEach(d => { const w=d.data(); l.innerHTML += `<div class="bg-slate-800 p-3 rounded-xl flex justify-between text-xs items-center"><div><span class="font-bold text-white">${w.amount} Coins</span> <span class="text-gray-500">(${w.method})</span></div><span class="${w.status==='paid'?'text-green-500':'text-yellow-500'} font-bold uppercase text-[10px] bg-white/5 px-2 py-1 rounded">${w.status}</span></div>`; });
         }
 
-        window.copyCode = () => { 
-            const link = `https://t.me/${BOT_USERNAME}/${APP_SHORT_NAME}?startapp=${userData.referralCode}`;
-            navigator.clipboard.writeText(link); 
-            showToast("App Link Copied!"); 
-        };
-
-        // FIXED FUNCTION
-        window.shareLink = () => {
-            if(!userData) return showToast("Login first!");
-            const link = `https://t.me/${BOT_USERNAME}/${APP_SHORT_NAME}?startapp=${userData.referralCode}`;
-            const msg = `Join Earn Pro and earn real money! Use my code: ${userData.referralCode}`;
-            const fullUrl = `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(msg)}`;
-            if(window.Telegram && window.Telegram.WebApp) { window.Telegram.WebApp.openTelegramLink(fullUrl); } 
-            else { window.open(fullUrl, "_blank"); }
-        };
-
+        window.copyCode = () => { navigator.clipboard.writeText(`https://t.me/${BOT_USERNAME}/${APP_SHORT_NAME}?startapp=${userData.referralCode}`); showToast("Copied!"); };
+        window.shareLink = () => { window.open(`https://t.me/share/url?url=${encodeURIComponent(`https://t.me/${BOT_USERNAME}/${APP_SHORT_NAME}?startapp=${userData.referralCode}`)}&text=Join Earn Pro!`, "_blank"); };
+        window.openSocialLink = (t) => window.open(appConfig.socialLinks?.[t]||"#", "_blank");
+        window.handleLogout = () => signOut(auth);
+        
+        setTimeout(()=>{ if(document.getElementById('loader').style.display!=='none') { document.getElementById('loader').style.display='none'; document.getElementById('auth-section').classList.add('active'); } }, 10000);
         lucide.createIcons();
-
-        // SAFETY TIMER: If firebase fails to load in 10 seconds, hide loader
-        setTimeout(() => {
-            const loader = document.getElementById('loader');
-            if(loader && loader.style.display !== 'none') {
-                console.warn("Loading timed out - hiding loader");
-                loader.style.display = 'none';
-                if(!currentUser) document.getElementById('auth-section').classList.add('active');
-            }
-        }, 10000); 
-
     </script>
 </body>
 </html>
