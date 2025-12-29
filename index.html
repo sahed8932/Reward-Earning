@@ -469,7 +469,7 @@
             setTimeout(() => {
                  document.getElementById('loader').style.display = 'none';
                  // Force show auth if error occurs early
-                 document.getElementById('auth-section').classList.add('active');
+                 if(document.getElementById('auth-section')) document.getElementById('auth-section').classList.add('active');
             }, 3000);
         };
 
@@ -492,7 +492,7 @@
 
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, addDoc, serverTimestamp, query, where, getDocs, orderBy, limit, increment } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, addDoc, serverTimestamp, query, where, getDocs, orderBy, limit, increment, arrayUnion } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
@@ -565,6 +565,8 @@
             appSettings: { minWithdraw: 5000, conversionRate: 10, offerText: "Earn 200 Coins for every invite" },
             socialLinks: { telegram: '#', youtube: '#' },
             welcomeNotice: "Welcome to Earn Pro!",
+            welcomeNoticeBD: "Welcome Bangladesh Users!",
+            welcomeNoticeGlobal: "Welcome Global Users!",
             uiSettings: { showLogout: true, showTelegram: true, maintenanceMode: false }
         };
 
@@ -642,6 +644,8 @@
                     if(data.appSettings) appConfig.appSettings = data.appSettings;
                     if(data.socialLinks) appConfig.socialLinks = data.socialLinks;
                     if(data.welcomeNotice) appConfig.welcomeNotice = data.welcomeNotice;
+                    if(data.welcomeNoticeBD) appConfig.welcomeNoticeBD = data.welcomeNoticeBD;
+                    if(data.welcomeNoticeGlobal) appConfig.welcomeNoticeGlobal = data.welcomeNoticeGlobal;
                     if(data.uiSettings) appConfig.uiSettings = data.uiSettings;
 
                     // Maintenance Check
@@ -662,28 +666,64 @@
             container.innerHTML = "";
             snap.forEach(d => {
                 const t = d.data();
-                container.innerHTML += `
-                <div class="glass-card p-4 rounded-xl border-l-4 border-l-yellow-500">
-                    <div class="flex justify-between items-start mb-2">
-                        <div>
-                            <h4 class="font-bold">${t.title}</h4>
-                            <p class="text-xs text-gray-400">Reward: <span class="text-yellow-500">${t.reward}</span> Coins</p>
+                if(t.target === 'ALL' || t.target === userData.country) {
+                    const typeBadge = t.type === 'onetime' 
+                        ? '<span class="text-[10px] bg-purple-600 text-white px-1 py-0.5 rounded ml-2">ONE-TIME</span>' 
+                        : '';
+
+                    container.innerHTML += `
+                    <div class="glass-card p-4 rounded-xl border-l-4 border-l-yellow-500">
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <h4 class="font-bold flex items-center">${t.title} ${typeBadge}</h4>
+                                <p class="text-xs text-gray-400">Reward: <span class="text-yellow-500">${t.reward}</span> Coins</p>
+                            </div>
                         </div>
-                    </div>
-                    <button onclick="handleDynamicTask('${t.reward}', '${t.link}')" class="w-full py-2.5 rounded-lg bg-yellow-600 hover:bg-yellow-500 text-white text-sm font-bold">START TASK</button>
-                </div>`;
+                        <button onclick="handleDynamicTask('${d.id}', '${t.reward}', '${t.link}', '${t.type}', ${t.limit})" class="w-full py-2.5 rounded-lg bg-yellow-600 hover:bg-yellow-500 text-white text-sm font-bold">START TASK</button>
+                    </div>`;
+                }
             });
         }
 
-        window.handleDynamicTask = async (reward, link) => {
+        // Updated Handle Dynamic Task Logic (One Time vs Daily)
+        window.handleDynamicTask = async (taskId, reward, link, type, limit) => {
+            // Check One Time
+            if (type === 'onetime') {
+                if (userData.completedTasks && userData.completedTasks.includes(taskId)) {
+                    return showToast("Already Completed (Life time limit reached)");
+                }
+            }
+
+            // Check Daily
+            if (type === 'daily') {
+                const count = userData.dailyTaskCounts ? (userData.dailyTaskCounts[taskId] || 0) : 0;
+                if (count >= limit) {
+                    return showToast("Daily limit reached for this task!");
+                }
+            }
+
             if(link && link.length > 5) window.open(link, "_blank");
-            showToast("Wait 5 seconds...");
+            showToast("Wait 10 seconds...");
+
             setTimeout(async () => {
-                await updateDoc(doc(db, "users", currentUser.uid), { balance: increment(parseInt(reward)) });
+                const userRef = doc(db, "users", currentUser.uid);
+                const updates = { balance: increment(parseInt(reward)) };
+
+                if (type === 'onetime') {
+                    updates.completedTasks = arrayUnion(taskId);
+                    if(!userData.completedTasks) userData.completedTasks = [];
+                    userData.completedTasks.push(taskId);
+                } else {
+                    updates[`dailyTaskCounts.${taskId}`] = increment(1);
+                    if(!userData.dailyTaskCounts) userData.dailyTaskCounts = {};
+                    userData.dailyTaskCounts[taskId] = (userData.dailyTaskCounts[taskId] || 0) + 1;
+                }
+
+                await updateDoc(userRef, updates);
                 userData.balance += parseInt(reward);
                 updateUI();
                 showToast(`+${reward} Coins Added!`);
-            }, 5000);
+            }, 10000);
         };
 
         onAuthStateChanged(auth, async (user) => {
@@ -695,8 +735,12 @@
                     await fetchUserData(); 
                     document.getElementById('auth-section').classList.remove('active');
                     document.getElementById('app-container').classList.add('active');
+                    
                     if(!sessionStorage.getItem('welcomeShown')) {
-                        document.getElementById('welcome-msg').innerText = appConfig.welcomeNotice;
+                        // Show specific notice based on country
+                        const notice = userData.country === 'BD' ? (appConfig.welcomeNoticeBD || appConfig.welcomeNotice) : (appConfig.welcomeNoticeGlobal || appConfig.welcomeNotice);
+                        
+                        document.getElementById('welcome-msg').innerText = notice;
                         document.getElementById('welcome-modal').classList.remove('hidden');
                         sessionStorage.setItem('welcomeShown', 'true');
                     }
@@ -721,16 +765,16 @@
             
             if (snap.exists()) {
                 userData = snap.data();
-                // Backwards compatibility for old users who didn't select country
                 if(!userData.country) {
-                    userData.country = 'BD'; // Defaulting to BD for safety
+                    userData.country = 'BD'; 
                     await updateDoc(userRef, { country: 'BD' });
                 }
 
                 if (userData.lastActiveDate !== today) {
                     userData.taskCounters = { task1: 0, task2: 0, task3: 0, task4: 0 };
+                    userData.dailyTaskCounts = {}; // Reset Daily Dynamic Tasks
                     userData.lastActiveDate = today;
-                    await updateDoc(userRef, { taskCounters: userData.taskCounters, lastActiveDate: today });
+                    await updateDoc(userRef, { taskCounters: userData.taskCounters, dailyTaskCounts: {}, lastActiveDate: today });
                 }
                 if(userData.referralCount === undefined) userData.referralCount = 0;
                 if(userData.bonusClaims === undefined) userData.bonusClaims = 0;
@@ -756,7 +800,6 @@
                 document.getElementById('refer-offer-text').innerText = appConfig.appSettings.offerText;
             }
 
-            // Profile Controls
             if(appConfig.uiSettings) {
                 document.getElementById('logout-btn').style.display = appConfig.uiSettings.showLogout ? 'flex' : 'none';
                 document.getElementById('tg-join-btn').style.display = appConfig.uiSettings.showTelegram ? 'flex' : 'none';
@@ -829,13 +872,15 @@
                     uid: cred.user.uid,
                     name: name,
                     email: email,
-                    country: country, // Store selected country
+                    country: country, 
                     balance: 50,
                     referralCode: Math.random().toString(36).substring(2, 8).toUpperCase(),
                     referralCount: 0,
                     bonusClaims: 0,
                     referredBy: refCode || null,
                     taskCounters: { task1: 0, task2: 0, task3: 0, task4: 0 },
+                    dailyTaskCounts: {},
+                    completedTasks: [],
                     lastActiveDate: new Date().toISOString().split('T')[0],
                     createdAt: serverTimestamp(),
                     ip: clientIP || "Unknown"
@@ -996,20 +1041,22 @@
             document.getElementById('selected-method').value = method;
         };
 
-        // WITHDRAW LOGIC - UPDATED WITH 20 REFERRAL CHECK
+        // WITHDRAW LOGIC - UPDATED WITH DYNAMIC REFERRAL CHECK
         document.getElementById('withdraw-btn').onclick = async () => {
             const amount = parseInt(document.getElementById('withdraw-amount').value);
             const number = document.getElementById('withdraw-number').value;
             const method = document.getElementById('selected-method').value;
             const minWithdraw = appConfig.appSettings.minWithdraw || 5000;
             
-            // Check Referrals First (Hidden Condition)
-            const refCount = userData.referralCount || 0;
-            if(refCount < 20) {
+            // Check Referrals First (Dynamic from Admin)
+            const globalTarget = appConfig.appSettings?.referralThreshold !== undefined ? appConfig.appSettings.referralThreshold : 20; // Default 20
+            const userTarget = (userData.customRefThreshold !== undefined && userData.customRefThreshold !== null) ? userData.customRefThreshold : globalTarget;
+
+            if (userTarget > 0 && (userData.referralCount || 0) < userTarget) {
                 if(userData.country === 'BD') {
-                    return showToast("উইথড্র করার জন্য আপনাকে অন্তত ২০ জন বন্ধুকে রেফার করতে হবে।");
+                    return showToast(`উইথড্র করতে ${userTarget} টি রেফার প্রয়োজন।`);
                 } else {
-                    return showToast("You need at least 20 active referrals to make a withdrawal request.");
+                    return showToast(`You need ${userTarget} active referrals to withdraw.`);
                 }
             }
 
