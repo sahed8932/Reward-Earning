@@ -8,8 +8,7 @@
     <!-- Telegram Web App SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     
-    <!-- Monetag SDK (Updated Source) -->
-    <!-- Note: Ensure your domain is approved in Monetag for this zone -->
+    <!-- Monetag SDK -->
     <script src='https://libtl.com/sdk.js' data-zone='10393864' data-sdk='show_10393864'></script>
     
     <!-- Libraries -->
@@ -157,7 +156,7 @@
                         <div class="absolute right-0 top-0 w-32 h-32 bg-[#8B5CF6] opacity-10 blur-3xl"></div>
                         <div class="flex justify-between items-start mb-6 relative">
                             <div><h2 class="text-lg font-bold text-white">Watch & Earn</h2><p class="text-xs text-gray-400">Monetag Ads</p></div>
-                            <div class="bg-[#2E1A57] px-3 py-1.5 rounded-lg border border-[#6D28D9]/30 flex items-center gap-2"><i data-lucide="coins" class="w-4 h-4 text-[#F59E0B]"></i><span class="font-bold text-white text-xs">+25</span></div>
+                            <div class="bg-[#2E1A57] px-3 py-1.5 rounded-lg border border-[#6D28D9]/30 flex items-center gap-2"><i data-lucide="coins" class="w-4 h-4 text-[#F59E0B]"></i><span id="task-reward-badge" class="font-bold text-white text-xs">+25</span></div>
                         </div>
                         <div class="mb-6"><div class="flex justify-between text-xs mb-1.5"><span class="text-gray-400">Daily Goal</span><span class="text-[#8B5CF6] font-bold"><span id="task1-count">0/20</span></span></div><div class="w-full bg-black/40 rounded-full h-2"><div id="task1-bar" class="bg-gradient-to-r from-[#6D28D9] to-[#8B5CF6] h-2 rounded-full transition-all duration-500" style="width: 0%"></div></div></div>
                         <button id="btn-task1" onclick="handleTask('task1')" class="w-full py-3.5 btn-purple flex items-center justify-center gap-2"><i data-lucide="play-circle" class="w-5 h-5"></i> WATCH AD NOW</button>
@@ -197,7 +196,7 @@
                                     <h2 class="text-lg font-bold text-white flex items-center gap-2">Daily Signup <i data-lucide="star" class="w-4 h-4 text-[#F59E0B] fill-[#F59E0B]"></i></h2>
                                     <p class="text-[10px] text-gray-400">Limit: 1/Day</p>
                                 </div>
-                                <span class="bg-[#F59E0B] text-black font-black text-xs px-2 py-1 rounded">500 PTS</span>
+                                <span id="signup-reward-badge" class="bg-[#F59E0B] text-black font-black text-xs px-2 py-1 rounded">500 PTS</span>
                             </div>
 
                             <div class="bg-black/20 p-3 rounded-lg mb-4 text-xs text-gray-300 space-y-2 border-l-2 border-[#F59E0B]">
@@ -241,7 +240,7 @@
                 <div class="glass-panel p-6 rounded-2xl text-center border border-[#6D28D9]/20 relative overflow-hidden">
                     <i data-lucide="users" class="w-12 h-12 text-[#8B5CF6] mx-auto mb-4"></i>
                     <h2 class="text-xl font-bold text-white">Invite Friends</h2>
-                    <p class="text-gray-400 text-sm mt-2 mb-6">Earn 200 coins for every friend.</p>
+                    <p id="invite-reward-text" class="text-gray-400 text-sm mt-2 mb-6">Earn 200 coins for every friend.</p>
                     <div class="bg-black/30 p-3 rounded-xl mb-5 flex justify-between items-center border border-white/5">
                         <input type="text" id="refer-link-box" readonly class="bg-transparent text-[#F59E0B] text-xs font-mono w-full outline-none" value="Loading...">
                         <button onclick="copyCode()" class="text-gray-400 hover:text-white p-2"><i data-lucide="copy" class="w-5 h-5"></i></button>
@@ -264,7 +263,7 @@
                         <button onclick="setCurrency('USDT')" id="btn-usdt" class="w-1/2 py-2 rounded-md text-xs font-bold text-gray-400 hover:text-white transition">USDT 🌍</button>
                     </div>
                     <div class="space-y-4">
-                        <input id="convert-amount" type="number" oninput="calculateFiat()" class="w-full p-3 rounded-xl input-box text-center font-bold text-lg" placeholder="10000">
+                        <input id="convert-amount" type="number" oninput="calculateFiat()" class="w-full p-3 rounded-xl input-box text-center font-bold text-lg" placeholder="Min Withdraw: 10000">
                         <div class="bg-[#2D2D3A] p-3 rounded-xl flex justify-between items-center border border-white/5">
                             <span class="text-gray-400 text-xs">You Receive:</span><span class="font-bold text-[#F59E0B] text-lg"><span id="fiat-result">0.00</span> <span id="fiat-unit">BDT</span></span>
                         </div>
@@ -352,7 +351,7 @@
         
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, addDoc, serverTimestamp, query, where, getDocs, orderBy, limit, increment, arrayUnion } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, addDoc, serverTimestamp, query, where, getDocs, orderBy, limit, increment, arrayUnion, onSnapshot } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
@@ -361,39 +360,85 @@
         let currentUser, userData;
         let selectedCurrency = 'BDT';
         let signupStartTime = 0;
+        let configUnsub = null;
+        let userUnsub = null;
         
-        // --- DYNAMIC CONFIG (REPLACE THIS SECTION) ---
+        // --- DYNAMIC CONFIG (DEFAULT VALUES) ---
         let appConfig = {
             adReward: 25,
             adLimit: 20,
             signupReward: 500,
-            signupLink: "https://www.effectivegatecpm.com/ikztcxtscx?key=371b0e2a645f1fecef3b3a07f6dc72a1", // Default
-            spinLink: "https://www.effectivegatecpm.com/ikztcxtscx?key=371b0e2a645f1fecef3b3a07f6dc72a1", // Default
+            signupLink: "https://www.effectivegatecpm.com/ikztcxtscx?key=371b0e2a645f1fecef3b3a07f6dc72a1",
+            spinLink: "https://www.effectivegatecpm.com/ikztcxtscx?key=371b0e2a645f1fecef3b3a07f6dc72a1",
             minWithdraw: 10000,
-            notice: "Welcome to Reward Pro"
+            referralReward: 200,
+            referralTarget: 0, // NEW: Added for referral gate
+            notice: ""
         };
 
         const BOT_URL = "https://t.me/Reward_Earning1_bot/app?startapp=";
 
-        // --- FETCH ADMIN CONFIG ---
-        async function fetchAppConfig() {
-            try {
-                const snap = await getDoc(doc(db, "settings", "app_config"));
+        // --- FETCH ADMIN CONFIG & SYNC ALL SETTINGS (REAL-TIME FIX) ---
+        function initAppConfigListener() {
+            if (configUnsub) configUnsub();
+            
+            configUnsub = onSnapshot(doc(db, "settings", "app_config"), (snap) => {
                 if(snap.exists()) {
                     const data = snap.data();
-                    appConfig = { ...appConfig, ...data }; // Merge with defaults
                     
-                    // Update UI with Notice
+                    // --- SYNC LOGIC START ---
+                    appConfig.adReward = data.adReward || data.taskReward || 25;
+                    appConfig.adLimit = data.adLimit || 20;
+                    appConfig.signupReward = data.signupReward || 500;
+                    appConfig.minWithdraw = data.minWithdraw || 10000;
+                    appConfig.referralReward = data.referralReward || data.refReward || 200;
+                    // UPDATED: Sync Referral Target
+                    appConfig.referralTarget = data.globalRefTarget || data.referralTarget || 0;
+                    appConfig.notice = data.notice || "";
+                    if(data.signupLink) appConfig.signupLink = data.signupLink;
+                    
+                    if(data.maintenance) {
+                        document.body.innerHTML = `<div class="flex items-center justify-center min-h-screen bg-[#0B0B15] text-white flex-col p-10 text-center"><h1 class="text-3xl font-bold mb-4">Maintenance 🛠️</h1><p>We are upgrading our servers. Please come back later.</p></div>`;
+                        return;
+                    }
+                    // --- SYNC LOGIC END ---
+
                     if(appConfig.notice) showToast(appConfig.notice);
                     
-                    // Update Visuals
-                    if(userData && userData.taskCounters) {
-                        document.getElementById('task1-count').innerText = `${userData.taskCounters?.task1 || 0}/${appConfig.adLimit}`;
-                    } else {
-                         document.getElementById('task1-count').innerText = `0/${appConfig.adLimit}`;
-                    }
+                    const badge = document.getElementById('task-reward-badge');
+                    if(badge) badge.innerText = `+${appConfig.adReward}`;
+                    
+                    const signupBadge = document.getElementById('signup-reward-badge');
+                    if(signupBadge) signupBadge.innerText = `${appConfig.signupReward} PTS`;
+                    
+                    const inviteText = document.getElementById('invite-reward-text');
+                    if(inviteText) inviteText.innerText = `Earn ${appConfig.referralReward} coins for every friend.`;
+                    
+                    const amountInput = document.getElementById('convert-amount');
+                    if(amountInput) amountInput.placeholder = `Min Withdraw: ${appConfig.minWithdraw}`;
+
+                    if(userData) updateUI();
                 }
-            } catch(e) { console.log("Config Load Error", e); }
+            }, (error) => {
+                console.error("Config Listener Error:", error);
+            });
+        }
+
+        // --- USER DATA LISTENER (REAL-TIME FIX) ---
+        function initUserDataListener() {
+            if (userUnsub) userUnsub();
+
+            userUnsub = onSnapshot(doc(db, "users", currentUser.uid), (snap) => {
+                if(snap.exists()) {
+                    userData = snap.data();
+                    if(userData.isBanned) {
+                        handleLogout();
+                        alert("Your account has been suspended by Admin.");
+                        return;
+                    }
+                    updateUI();
+                }
+            });
         }
 
         // --- NAVIGATION ---
@@ -444,7 +489,7 @@
                 const refCode = Math.random().toString(36).substr(2,6).toUpperCase();
                 await setDoc(doc(db, "users", cred.user.uid), {
                     uid: cred.user.uid, name: n, email: e, balance: 50, usdtBalance: 0,
-                    referralCode: refCode, wallets: [], createdAt: serverTimestamp()
+                    referralCode: refCode, referralCount: 0, wallets: [], createdAt: serverTimestamp()
                 });
             } catch(err) { showToast(err.message); document.getElementById('loader').style.display = 'none'; }
         };
@@ -452,24 +497,18 @@
         onAuthStateChanged(auth, async (u) => {
             if(u) {
                 currentUser = u;
-                await fetchUserData();
-                await fetchAppConfig();
+                initUserDataListener();
+                initAppConfigListener();
                 document.getElementById('auth-section').classList.remove('active');
                 document.getElementById('app-container').classList.add('active');
             } else {
+                if(userUnsub) userUnsub();
+                if(configUnsub) configUnsub();
                 document.getElementById('app-container').classList.remove('active');
                 document.getElementById('auth-section').classList.add('active');
             }
             document.getElementById('loader').style.display = 'none';
         });
-
-        async function fetchUserData() {
-            const s = await getDoc(doc(db, "users", currentUser.uid));
-            if(s.exists()) {
-                userData = s.data();
-                updateUI();
-            }
-        }
 
         function updateUI() {
             if(!userData) return;
@@ -480,16 +519,20 @@
             document.getElementById('profile-name').innerText = userData.name;
             document.getElementById('profile-email').innerText = userData.email;
             
-            const t1 = userData.taskCounters?.task1 || 0;
-            // Use dynamic limit for display
-            document.getElementById('task1-count').innerText = `${t1}/${appConfig.adLimit}`;
-            document.getElementById('task1-bar').style.width = `${Math.min((t1/appConfig.adLimit)*100, 100)}%`;
+             if(userData.taskCounters) {
+                document.getElementById('task1-count').innerText = `${userData.taskCounters?.task1 || 0}/${appConfig.adLimit}`;
+                const t1 = userData.taskCounters?.task1 || 0;
+                document.getElementById('task1-bar').style.width = `${Math.min((t1/appConfig.adLimit)*100, 100)}%`;
+            } else {
+                 document.getElementById('task1-count').innerText = `0/${appConfig.adLimit}`;
+                 document.getElementById('task1-bar').style.width = '0%';
+            }
+            
             checkVipStatus();
         }
 
         // --- TASKS ---
         window.handleTask = async (id) => {
-            // Check Dynamic Limit
             if((userData.taskCounters?.[id] || 0) >= appConfig.adLimit) return showToast("Daily limit reached");
             
             if(typeof window.show_10393864 !== 'function') {
@@ -504,15 +547,11 @@
                 await window.show_10393864(); 
                 
                 setTimeout(async () => {
-                    // Give Dynamic Reward
                     await updateDoc(doc(db, "users", currentUser.uid), { 
                         balance: increment(appConfig.adReward), 
                         [`taskCounters.${id}`]: increment(1) 
                     });
-                    userData.balance += appConfig.adReward;
-                    if(!userData.taskCounters) userData.taskCounters = {};
-                    userData.taskCounters[id] = (userData.taskCounters[id] || 0) + 1;
-                    updateUI();
+                    
                     showToast(`+${appConfig.adReward} Coins Added!`);
                     
                     btn.innerHTML = '<i data-lucide="play-circle" class="w-5 h-5"></i> WATCH AD NOW';
@@ -529,7 +568,7 @@
             }
         };
 
-        // --- SPIN (TRY YOUR LUCK) ---
+        // --- SPIN ---
         window.handleSpin = async () => {
             const today = new Date().toDateString();
             if(userData.lastSpinDate === today) return showToast("Spin limit: 1/Day reached.");
@@ -557,11 +596,6 @@
                     lastSpinDate: today,
                     spinHistory: arrayUnion({ amount: win, date: serverTimestamp() })
                 });
-                
-                if(!userData.usdtBalance) userData.usdtBalance = 0;
-                userData.usdtBalance += win;
-                userData.lastSpinDate = today;
-                updateUI();
                 
                 showToast(`You won $${win}!`);
                 btn.innerText = "COMPLETED TODAY";
@@ -625,9 +659,7 @@
             
             if(val.length < 5) {
                 await updateDoc(doc(db, "users", currentUser.uid), { lastSignupFailed: today });
-                userData.lastSignupFailed = today;
                 document.getElementById('verify-modal').classList.add('hidden');
-                checkVipStatus();
                 showToast("Invalid info! Task Failed.");
                 return;
             }
@@ -639,12 +671,9 @@
                     userId: currentUser.uid, username: val, status: 'approved_auto', timestamp: serverTimestamp()
                 });
                 
-                // Dynamic Signup Reward
                 await updateDoc(doc(db, "users", currentUser.uid), { balance: increment(appConfig.signupReward), lastSignupDate: today });
                 
-                userData.balance += appConfig.signupReward; userData.lastSignupDate = today; updateUI();
                 document.getElementById('verify-modal').classList.add('hidden');
-                checkVipStatus();
                 showToast(`Verified! +${appConfig.signupReward} Coins`);
             }, 4000); 
         };
@@ -654,11 +683,13 @@
             const t = document.getElementById('wallet-type').value;
             const n = document.getElementById('wallet-number').value.trim();
             if(!n) return showToast("Enter wallet number");
-            if(!userData.wallets) userData.wallets = [];
-            userData.wallets.push({ type: t, number: n });
-            await updateDoc(doc(db, "users", currentUser.uid), { wallets: userData.wallets });
+            
+            let newWallets = userData.wallets || [];
+            newWallets.push({ type: t, number: n });
+            
+            await updateDoc(doc(db, "users", currentUser.uid), { wallets: newWallets });
             document.getElementById('wallet-number').value = "";
-            loadSavedWallets(); showToast("Card Saved!");
+            showToast("Card Saved!");
         };
 
         window.loadSavedWallets = () => {
@@ -675,9 +706,10 @@
         };
 
         window.deleteWallet = async (index) => {
-            userData.wallets.splice(index, 1);
-            await updateDoc(doc(db, "users", currentUser.uid), { wallets: userData.wallets });
-            loadSavedWallets();
+            let newWallets = [...userData.wallets];
+            newWallets.splice(index, 1);
+            await updateDoc(doc(db, "users", currentUser.uid), { wallets: newWallets });
+            setTimeout(() => loadSavedWallets(), 500); 
         };
 
         let tempWithdrawData = null;
@@ -703,9 +735,28 @@
         window.initiateWithdraw = () => {
             const c = parseInt(document.getElementById('convert-amount').value);
             const card = document.getElementById('select-saved-card').value;
-            // DYNAMIC LIMIT
-            if(!c || c < appConfig.minWithdraw) return showToast(`Min ${appConfig.minWithdraw} Coins`);
-            if(c>userData.balance) return showToast("Low Balance");
+            
+            // Check Dynamic Min Withdraw Limit
+            if(!c || c < appConfig.minWithdraw) return showToast(`Min Withdraw: ${appConfig.minWithdraw} Coins`);
+            
+            // Check Personal Limit Override
+            const userMin = userData.personalMinWithdraw || 0;
+            if(userMin > 0 && c < userMin) return showToast(`Your Min Withdraw: ${userMin} Coins`);
+            
+            // --- UPDATED LOGIC START: REFERRAL CHECK ---
+            const myRefs = userData.referralCount || 0;
+            const globalTarget = appConfig.referralTarget || 0;
+            const personalTarget = userData.referralTarget || userData.targetReferrals || 0;
+            
+            // Use Personal Target if exists, else Global
+            const actualTarget = personalTarget > 0 ? personalTarget : globalTarget;
+
+            if(myRefs < actualTarget) {
+                return showToast(`Invite ${actualTarget} friends first! (You have: ${myRefs})`);
+            }
+            // --- UPDATED LOGIC END ---
+
+            if(c > userData.balance) return showToast("Low Balance");
             if(!card) return showToast("Select Card");
             
             const [num, met] = card.split('|');
@@ -727,7 +778,8 @@
                 userId: currentUser.uid, amountCoins: coins, amountFiat: fiat,
                 currency, method, number, status: 'pending', date: serverTimestamp()
             });
-            userData.balance -= coins; updateUI(); loadHistory(); showToast("Withdrawal Pending!");
+            showToast("Withdrawal Pending!");
+            setTimeout(loadHistory, 1000);
         };
 
         async function loadHistory() {
@@ -743,7 +795,11 @@
             });
         }
 
-        window.handleLogout = () => signOut(auth);
+        window.handleLogout = () => {
+            if(userUnsub) userUnsub();
+            if(configUnsub) configUnsub();
+            signOut(auth);
+        }
         window.copyCode = () => { navigator.clipboard.writeText(document.getElementById('refer-link-box').value); showToast("Copied!"); };
         window.shareLink = () => { window.open(`https://t.me/share/url?url=${encodeURIComponent(document.getElementById('refer-link-box').value)}`, "_blank"); };
         
