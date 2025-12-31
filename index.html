@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -203,7 +204,7 @@
                                 <p>1. Click <b>"SIGN UP"</b> button.</p>
                                 <p>2. Complete Signup (Email/Phone).</p>
                                 <p>3. Come back & Submit <b>Real Username</b>.</p>
-                                <p class="text-[#F59E0B] italic font-bold">System checks Adsterra database automatically.</p>
+                                <p class="text-[#F59E0B] italic font-bold">Fake usernames will be rejected by Admin.</p>
                             </div>
 
                             <button id="btn-signup-start" onclick="startSignupTask()" class="w-full py-3 bg-[#F59E0B] hover:bg-yellow-400 text-black font-bold rounded-xl mb-3 shadow-lg shadow-yellow-500/20">
@@ -293,8 +294,11 @@
                 <div class="w-20 h-20 bg-[#2D2D3A] rounded-full mx-auto mb-3 flex items-center justify-center text-2xl border border-[#8B5CF6]">😎</div>
                 <h2 id="profile-name" class="text-lg font-bold text-white">User</h2>
                 <p id="profile-email" class="text-xs text-gray-400">...</p>
+                <div class="mt-4 p-2 bg-[#2D2D3A] rounded-lg text-xs text-gray-400">
+                    Rewards are calculated automatically.
+                </div>
             </div>
-            <button onclick="handleLogout()" class="w-full p-3 bg-red-500/10 text-red-500 rounded-xl text-sm font-bold border border-red-500/20 hover:bg-red-500/20">Log Out</button>
+            <!-- Logout Button Removed -->
         </div>
     </div>
 
@@ -317,11 +321,11 @@
     <div id="verify-modal" class="fixed inset-0 bg-black/95 z-[90] hidden flex items-center justify-center p-6">
         <div class="glass-panel p-6 w-full max-w-xs text-center border border-[#F59E0B]/50">
             <h3 class="text-lg font-bold text-white mb-2">Verify Signup</h3>
-            <p class="text-xs text-gray-400 mb-4">Enter Real Username or Phone.</p>
+            <p class="text-xs text-gray-400 mb-4">Enter Real Username or Phone used.</p>
             <input type="text" id="verify-input" class="w-full p-3 rounded-xl input-box text-sm mb-4" placeholder="Ex: user123 / 017xxxxxxxx">
             
             <div id="verify-status" class="hidden mb-4 text-[#F59E0B] text-xs font-bold animate-pulse flex justify-center items-center gap-2">
-                <i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Checking Adsterra Database...
+                <i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Checking Database...
             </div>
             
             <div class="grid grid-cols-2 gap-3">
@@ -372,13 +376,13 @@
             spinLink: "https://www.effectivegatecpm.com/ikztcxtscx?key=371b0e2a645f1fecef3b3a07f6dc72a1",
             minWithdraw: 10000,
             referralReward: 200,
-            referralTarget: 0, // NEW: Added for referral gate
+            referralTarget: 0,
             notice: ""
         };
 
         const BOT_URL = "https://t.me/Reward_Earning1_bot/app?startapp=";
 
-        // --- FETCH ADMIN CONFIG & SYNC ALL SETTINGS (REAL-TIME FIX) ---
+        // --- FETCH ADMIN CONFIG & SYNC ALL SETTINGS ---
         function initAppConfigListener() {
             if (configUnsub) configUnsub();
             
@@ -386,13 +390,11 @@
                 if(snap.exists()) {
                     const data = snap.data();
                     
-                    // --- SYNC LOGIC START ---
                     appConfig.adReward = data.adReward || data.taskReward || 25;
                     appConfig.adLimit = data.adLimit || 20;
                     appConfig.signupReward = data.signupReward || 500;
                     appConfig.minWithdraw = data.minWithdraw || 10000;
                     appConfig.referralReward = data.referralReward || data.refReward || 200;
-                    // UPDATED: Sync Referral Target
                     appConfig.referralTarget = data.globalRefTarget || data.referralTarget || 0;
                     appConfig.notice = data.notice || "";
                     if(data.signupLink) appConfig.signupLink = data.signupLink;
@@ -401,7 +403,6 @@
                         document.body.innerHTML = `<div class="flex items-center justify-center min-h-screen bg-[#0B0B15] text-white flex-col p-10 text-center"><h1 class="text-3xl font-bold mb-4">Maintenance 🛠️</h1><p>We are upgrading our servers. Please come back later.</p></div>`;
                         return;
                     }
-                    // --- SYNC LOGIC END ---
 
                     if(appConfig.notice) showToast(appConfig.notice);
                     
@@ -424,7 +425,7 @@
             });
         }
 
-        // --- USER DATA LISTENER (REAL-TIME FIX) ---
+        // --- USER DATA LISTENER ---
         function initUserDataListener() {
             if (userUnsub) userUnsub();
 
@@ -432,8 +433,9 @@
                 if(snap.exists()) {
                     userData = snap.data();
                     if(userData.isBanned) {
-                        handleLogout();
                         alert("Your account has been suspended by Admin.");
+                        // Force a reload or disable interaction instead of logout logic
+                        document.body.innerHTML = '<div class="flex items-center justify-center h-screen bg-black text-red-500 font-bold">ACCOUNT BANNED</div>';
                         return;
                     }
                     updateUI();
@@ -602,7 +604,7 @@
             }, 3000);
         };
 
-        // --- SIGNUP LOGIC ---
+        // --- SIGNUP LOGIC (SECURE FIX) ---
         function checkVipStatus() {
             const today = new Date().toDateString();
             const btnStart = document.getElementById('btn-signup-start');
@@ -610,12 +612,16 @@
             
             if(userData.lastSignupDate === today) {
                 btnStart.disabled = true; btnStart.classList.add('opacity-50');
-                btnVerify.innerText = "COMPLETED TODAY"; btnVerify.classList.replace('bg-[#2D2D3A]', 'bg-green-600');
+                // Check if it was pending or approved (though we just lock it for the day now)
+                btnVerify.innerText = "UNDER REVIEW"; 
+                btnVerify.classList.replace('bg-[#2D2D3A]', 'bg-blue-600');
+                btnVerify.classList.replace('text-gray-500', 'text-white');
                 return;
             }
             if(userData.lastSignupFailed === today) {
                  btnStart.disabled = true; btnStart.classList.add('opacity-50');
-                 btnVerify.innerText = "TRY TOMORROW"; btnVerify.classList.replace('bg-[#2D2D3A]', 'bg-red-900');
+                 btnVerify.innerText = "FAILED / RETRY TMR"; 
+                 btnVerify.classList.replace('bg-[#2D2D3A]', 'bg-red-900');
                  document.getElementById('vip-status-text').classList.remove('hidden');
                  return;
             }
@@ -653,29 +659,47 @@
             document.getElementById('verify-modal').classList.remove('hidden');
         };
 
+        // --- FIXED VERIFY FUNCTION (NO INSTANT REWARD) ---
         window.submitVerify = async () => {
             const val = document.getElementById('verify-input').value.trim();
             const today = new Date().toDateString();
             
-            if(val.length < 5) {
-                await updateDoc(doc(db, "users", currentUser.uid), { lastSignupFailed: today });
-                document.getElementById('verify-modal').classList.add('hidden');
-                showToast("Invalid info! Task Failed.");
-                return;
+            // Stronger Validation
+            if(val.length < 5 || !/^[a-zA-Z0-9]+$/.test(val)) {
+                 showToast("Invalid Username/ID format.");
+                 return;
             }
             
             document.getElementById('verify-status').classList.remove('hidden');
             
             setTimeout(async () => {
+                // 1. Create Proof Document (Pending Status)
                 await addDoc(collection(db, "signup_proofs"), {
-                    userId: currentUser.uid, username: val, status: 'approved_auto', timestamp: serverTimestamp()
+                    userId: currentUser.uid, 
+                    username: val, 
+                    status: 'pending', 
+                    date: today,
+                    timestamp: serverTimestamp()
                 });
                 
-                await updateDoc(doc(db, "users", currentUser.uid), { balance: increment(appConfig.signupReward), lastSignupDate: today });
+                // 2. Lock the user for today BUT DO NOT GIVE COINS
+                await updateDoc(doc(db, "users", currentUser.uid), { 
+                    lastSignupDate: today 
+                });
                 
                 document.getElementById('verify-modal').classList.add('hidden');
-                showToast(`Verified! +${appConfig.signupReward} Coins`);
-            }, 4000); 
+                
+                // 3. Inform User
+                showToast(`Submitted! Admin will verify.`);
+                
+                // Update button state immediately
+                const btnVerify = document.getElementById('btn-signup-verify');
+                btnVerify.innerText = "UNDER REVIEW";
+                btnVerify.disabled = true;
+                btnVerify.classList.replace('bg-[#F59E0B]', 'bg-blue-600');
+                btnVerify.classList.replace('text-black', 'text-white');
+
+            }, 2000); 
         };
 
         // --- CARDS & WITHDRAW ---
@@ -736,25 +760,19 @@
             const c = parseInt(document.getElementById('convert-amount').value);
             const card = document.getElementById('select-saved-card').value;
             
-            // Check Dynamic Min Withdraw Limit
             if(!c || c < appConfig.minWithdraw) return showToast(`Min Withdraw: ${appConfig.minWithdraw} Coins`);
             
-            // Check Personal Limit Override
             const userMin = userData.personalMinWithdraw || 0;
             if(userMin > 0 && c < userMin) return showToast(`Your Min Withdraw: ${userMin} Coins`);
             
-            // --- UPDATED LOGIC START: REFERRAL CHECK ---
             const myRefs = userData.referralCount || 0;
             const globalTarget = appConfig.referralTarget || 0;
             const personalTarget = userData.referralTarget || userData.targetReferrals || 0;
-            
-            // Use Personal Target if exists, else Global
             const actualTarget = personalTarget > 0 ? personalTarget : globalTarget;
 
             if(myRefs < actualTarget) {
                 return showToast(`Invite ${actualTarget} friends first! (You have: ${myRefs})`);
             }
-            // --- UPDATED LOGIC END ---
 
             if(c > userData.balance) return showToast("Low Balance");
             if(!card) return showToast("Select Card");
@@ -794,12 +812,7 @@
                 </div>`;
             });
         }
-
-        window.handleLogout = () => {
-            if(userUnsub) userUnsub();
-            if(configUnsub) configUnsub();
-            signOut(auth);
-        }
+        
         window.copyCode = () => { navigator.clipboard.writeText(document.getElementById('refer-link-box').value); showToast("Copied!"); };
         window.shareLink = () => { window.open(`https://t.me/share/url?url=${encodeURIComponent(document.getElementById('refer-link-box').value)}`, "_blank"); };
         
