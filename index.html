@@ -46,8 +46,7 @@
             transition: transform 0.2s, box-shadow 0.2s;
         }
         .btn-purple:active { transform: scale(0.96); box-shadow: none; }
-        .btn-disabled { background: #2D2D3A; color: #6B7280; cursor: not-allowed; opacity: 0.6; pointer-events: none; }
-
+        
         .tab-btn { color: #9CA3AF; padding-bottom: 8px; font-weight: 600; font-size: 14px; position: relative; transition: color 0.3s; }
         .tab-btn.active { color: #8B5CF6; }
         .tab-btn.active::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: #8B5CF6; border-radius: 10px; }
@@ -153,6 +152,7 @@
 
                 <!-- QUICK TAB -->
                 <div id="content-quick" class="tab-content">
+                    <!-- Default Ad Task -->
                     <div class="bg-[#1D1238] p-5 rounded-2xl relative overflow-hidden mb-6 border border-[#6D28D9]/30">
                         <div class="absolute right-0 top-0 w-32 h-32 bg-[#8B5CF6] opacity-10 blur-3xl"></div>
                         <div class="flex justify-between items-start mb-6 relative">
@@ -161,6 +161,12 @@
                         </div>
                         <div class="mb-6"><div class="flex justify-between text-xs mb-1.5"><span class="text-gray-400">Daily Goal</span><span class="text-[#8B5CF6] font-bold"><span id="task1-count">0/20</span></span></div><div class="w-full bg-black/40 rounded-full h-2"><div id="task1-bar" class="bg-gradient-to-r from-[#6D28D9] to-[#8B5CF6] h-2 rounded-full transition-all duration-500" style="width: 0%"></div></div></div>
                         <button id="btn-task1" onclick="handleTask('task1')" class="w-full py-3.5 btn-purple flex items-center justify-center gap-2"><i data-lucide="play-circle" class="w-5 h-5"></i> WATCH AD NOW</button>
+                    </div>
+
+                    <!-- Extra Tasks from Admin -->
+                    <h3 class="font-bold text-white mb-3 flex items-center gap-2"><i data-lucide="list-plus" class="w-4 h-4 text-[#F59E0B]"></i> More Earning Tasks</h3>
+                    <div id="extra-tasks-list" class="space-y-3 pb-6">
+                        <p class="text-center text-xs text-gray-500 py-4">Loading extra tasks...</p>
                     </div>
                 </div>
 
@@ -297,8 +303,8 @@
                 <div class="mt-4 p-2 bg-[#2D2D3A] rounded-lg text-xs text-gray-400">
                     Rewards are calculated automatically.
                 </div>
+                <button id="btn-logout" onclick="handleLogout()" class="hidden mt-6 w-full py-3 bg-red-500/10 text-red-500 border border-red-500/20 rounded-xl font-bold text-xs">LOG OUT</button>
             </div>
-            <!-- Logout Button Removed -->
         </div>
     </div>
 
@@ -366,18 +372,20 @@
         let signupStartTime = 0;
         let configUnsub = null;
         let userUnsub = null;
+        let taskUnsub = null;
         
         // --- DYNAMIC CONFIG (DEFAULT VALUES) ---
         let appConfig = {
             adReward: 25,
             adLimit: 20,
             signupReward: 500,
-            signupLink: "https://www.effectivegatecpm.com/ikztcxtscx?key=371b0e2a645f1fecef3b3a07f6dc72a1",
-            spinLink: "https://www.effectivegatecpm.com/ikztcxtscx?key=371b0e2a645f1fecef3b3a07f6dc72a1",
+            signupLink: "https://google.com",
+            spinLink: "https://google.com",
             minWithdraw: 10000,
             referralReward: 200,
-            referralTarget: 0,
-            notice: ""
+            referralTarget: 10,
+            notice: "",
+            showLogout: false
         };
 
         const BOT_URL = "https://t.me/Reward_Earning1_bot/app?startapp=";
@@ -390,13 +398,16 @@
                 if(snap.exists()) {
                     const data = snap.data();
                     
-                    appConfig.adReward = data.adReward || data.taskReward || 25;
+                    appConfig.adReward = data.adReward || 25;
                     appConfig.adLimit = data.adLimit || 20;
                     appConfig.signupReward = data.signupReward || 500;
                     appConfig.minWithdraw = data.minWithdraw || 10000;
-                    appConfig.referralReward = data.referralReward || data.refReward || 200;
-                    appConfig.referralTarget = data.globalRefTarget || data.referralTarget || 0;
+                    // Fix: Ensure fields match Admin Panel names
+                    appConfig.referralReward = data.referralReward || 200;
+                    appConfig.referralTarget = data.globalRefTarget || data.referralTarget || 10;
                     appConfig.notice = data.notice || "";
+                    appConfig.showLogout = data.showLogout || false;
+                    
                     if(data.signupLink) appConfig.signupLink = data.signupLink;
                     
                     if(data.maintenance) {
@@ -406,6 +417,7 @@
 
                     if(appConfig.notice) showToast(appConfig.notice);
                     
+                    // Update UI Elements based on Config
                     const badge = document.getElementById('task-reward-badge');
                     if(badge) badge.innerText = `+${appConfig.adReward}`;
                     
@@ -418,11 +430,116 @@
                     const amountInput = document.getElementById('convert-amount');
                     if(amountInput) amountInput.placeholder = `Min Withdraw: ${appConfig.minWithdraw}`;
 
+                    // Toggle Logout Button
+                    const logoutBtn = document.getElementById('btn-logout');
+                    if(logoutBtn) {
+                        if(appConfig.showLogout) logoutBtn.classList.remove('hidden');
+                        else logoutBtn.classList.add('hidden');
+                    }
+
                     if(userData) updateUI();
                 }
             }, (error) => {
                 console.error("Config Listener Error:", error);
             });
+        }
+
+        // --- CUSTOM TASKS LISTENER (NEW) ---
+        function loadExtraTasks() {
+            const list = document.getElementById('extra-tasks-list');
+            if (taskUnsub) taskUnsub();
+
+            taskUnsub = onSnapshot(query(collection(db, "custom_tasks"), orderBy("createdAt", "desc")), (snap) => {
+                list.innerHTML = "";
+                if(snap.empty) {
+                    list.innerHTML = '<p class="text-center text-xs text-gray-500 py-4">No extra tasks available.</p>';
+                    return;
+                }
+
+                snap.forEach(d => {
+                    const t = d.data();
+                    const taskId = d.id;
+                    const isCompleted = isTaskCompleted(taskId, t.frequency);
+                    
+                    let icon = 'globe';
+                    if(t.platform === 'telegram') icon = 'send';
+                    else if(t.platform === 'youtube') icon = 'youtube';
+                    else if(t.platform === 'facebook') icon = 'facebook';
+                    else if(t.platform === 'signup') icon = 'clipboard-list';
+
+                    list.innerHTML += `
+                        <div class="glass-panel p-4 flex justify-between items-center ${isCompleted ? 'opacity-50' : ''}">
+                            <div class="flex items-center gap-3">
+                                <div class="bg-[#2D2D3A] p-2.5 rounded-xl text-[#8B5CF6]"><i data-lucide="${icon}" class="w-5 h-5"></i></div>
+                                <div>
+                                    <h4 class="text-sm font-bold text-white">${t.title}</h4>
+                                    <div class="flex items-center gap-2 mt-1">
+                                        <span class="bg-[#F59E0B]/20 text-[#F59E0B] text-[10px] font-bold px-2 py-0.5 rounded">+${t.reward}</span>
+                                        <span class="text-[10px] text-gray-500">${t.timer}s • ${t.frequency}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <button id="btn-custom-${taskId}" 
+                                onclick="${isCompleted ? '' : `startCustomTask('${taskId}', '${t.link}', ${t.reward}, ${t.timer}, '${t.frequency}')`}" 
+                                class="px-4 py-2 rounded-lg text-xs font-bold ${isCompleted ? 'bg-[#2D2D3A] text-gray-500 cursor-not-allowed' : 'bg-[#6D28D9] text-white'}">
+                                ${isCompleted ? 'DONE' : 'START'}
+                            </button>
+                        </div>`;
+                });
+                lucide.createIcons();
+            });
+        }
+
+        function isTaskCompleted(id, type) {
+            if(!userData) return false;
+            if(type === 'once') {
+                return userData.completedTasks && userData.completedTasks.includes(id);
+            } else if(type === 'daily') {
+                const today = new Date().toDateString();
+                const lastRun = userData.dailyTaskHistory ? userData.dailyTaskHistory[id] : null;
+                return lastRun === today;
+            }
+            return false;
+        }
+
+        window.startCustomTask = (id, link, reward, timer, type) => {
+            const btn = document.getElementById(`btn-custom-${id}`);
+            window.open(link, "_blank");
+            
+            btn.disabled = true;
+            let timeLeft = timer;
+            
+            const interval = setInterval(() => {
+                btn.innerText = `Wait ${timeLeft}s`;
+                timeLeft--;
+                if(timeLeft < 0) {
+                    clearInterval(interval);
+                    completeCustomTask(id, reward, type, btn);
+                }
+            }, 1000);
+        };
+
+        async function completeCustomTask(id, reward, type, btn) {
+            btn.innerText = "Claiming...";
+            const today = new Date().toDateString();
+            
+            const updateData = { balance: increment(reward) };
+            if(type === 'once') {
+                updateData.completedTasks = arrayUnion(id);
+            } else {
+                updateData[`dailyTaskHistory.${id}`] = today;
+            }
+
+            try {
+                await updateDoc(doc(db, "users", currentUser.uid), updateData);
+                showToast(`+${reward} Coins Received!`);
+                btn.innerText = "DONE";
+                btn.classList.replace('bg-[#6D28D9]', 'bg-[#2D2D3A]');
+                btn.classList.add('text-gray-500');
+            } catch(e) {
+                console.error(e);
+                btn.innerText = "Error";
+            }
         }
 
         // --- USER DATA LISTENER ---
@@ -434,11 +551,11 @@
                     userData = snap.data();
                     if(userData.isBanned) {
                         alert("Your account has been suspended by Admin.");
-                        // Force a reload or disable interaction instead of logout logic
                         document.body.innerHTML = '<div class="flex items-center justify-center h-screen bg-black text-red-500 font-bold">ACCOUNT BANNED</div>';
                         return;
                     }
                     updateUI();
+                    loadExtraTasks(); // Reload tasks to check completion status
                 }
             });
         }
@@ -480,6 +597,11 @@
             if(!e || !p) return showToast("Enter credentials");
             document.getElementById('loader').style.display = 'flex';
             try { await signInWithEmailAndPassword(auth, e, p); } catch(err) { showToast(err.message); document.getElementById('loader').style.display = 'none'; }
+        };
+
+        window.handleLogout = async () => {
+            await signOut(auth);
+            location.reload();
         };
 
         window.handleSignup = async () => {
@@ -604,7 +726,7 @@
             }, 3000);
         };
 
-        // --- SIGNUP LOGIC (SECURE FIX) ---
+        // --- VIP SIGNUP ---
         function checkVipStatus() {
             const today = new Date().toDateString();
             const btnStart = document.getElementById('btn-signup-start');
@@ -612,24 +734,16 @@
             
             if(userData.lastSignupDate === today) {
                 btnStart.disabled = true; btnStart.classList.add('opacity-50');
-                // Check if it was pending or approved (though we just lock it for the day now)
                 btnVerify.innerText = "UNDER REVIEW"; 
                 btnVerify.classList.replace('bg-[#2D2D3A]', 'bg-blue-600');
                 btnVerify.classList.replace('text-gray-500', 'text-white');
                 return;
             }
-            if(userData.lastSignupFailed === today) {
-                 btnStart.disabled = true; btnStart.classList.add('opacity-50');
-                 btnVerify.innerText = "FAILED / RETRY TMR"; 
-                 btnVerify.classList.replace('bg-[#2D2D3A]', 'bg-red-900');
-                 document.getElementById('vip-status-text').classList.remove('hidden');
-                 return;
-            }
         }
 
         window.startSignupTask = () => {
             const today = new Date().toDateString();
-            if(userData.lastSignupDate === today || userData.lastSignupFailed === today) return showToast("Task locked.");
+            if(userData.lastSignupDate === today) return showToast("Task locked.");
             
             window.open(appConfig.signupLink, "_blank");
             signupStartTime = Date.now();
@@ -659,12 +773,10 @@
             document.getElementById('verify-modal').classList.remove('hidden');
         };
 
-        // --- FIXED VERIFY FUNCTION (NO INSTANT REWARD) ---
         window.submitVerify = async () => {
             const val = document.getElementById('verify-input').value.trim();
             const today = new Date().toDateString();
             
-            // Stronger Validation
             if(val.length < 5 || !/^[a-zA-Z0-9]+$/.test(val)) {
                  showToast("Invalid Username/ID format.");
                  return;
@@ -673,7 +785,6 @@
             document.getElementById('verify-status').classList.remove('hidden');
             
             setTimeout(async () => {
-                // 1. Create Proof Document (Pending Status)
                 await addDoc(collection(db, "signup_proofs"), {
                     userId: currentUser.uid, 
                     username: val, 
@@ -682,17 +793,13 @@
                     timestamp: serverTimestamp()
                 });
                 
-                // 2. Lock the user for today BUT DO NOT GIVE COINS
                 await updateDoc(doc(db, "users", currentUser.uid), { 
                     lastSignupDate: today 
                 });
                 
                 document.getElementById('verify-modal').classList.add('hidden');
-                
-                // 3. Inform User
                 showToast(`Submitted! Admin will verify.`);
                 
-                // Update button state immediately
                 const btnVerify = document.getElementById('btn-signup-verify');
                 btnVerify.innerText = "UNDER REVIEW";
                 btnVerify.disabled = true;
