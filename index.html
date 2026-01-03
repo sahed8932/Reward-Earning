@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,7 +12,7 @@
     <!-- Telegram Web App SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     
-    <!-- Monetag SDK -->
+    <!-- Monetag SDK (Updated) -->
     <script src='//libtl.com/sdk.js' data-zone='10352978' data-sdk='show_10352978'></script>
     
     <!-- Tailwind & Icons -->
@@ -692,7 +693,7 @@
             }
         };
 
-        // --- WATCH AD FIX (UPDATED) ---
+        // --- WATCH AD FIX (UPDATED TO MATCH NEW ZONE) ---
         window.watchAd = async () => {
             const adsToday = userData.adsToday || 0;
             if(adsToday >= appConfig.dailyAdLimit) {
@@ -703,9 +704,9 @@
             btn.disabled = true;
             btn.innerHTML = `<div class="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent inline-block mr-2"></div> Loading...`;
             
-            if(typeof window.show_10393864 === 'function') {
-                // Using .then() to handle background throttling better than await
-                window.show_10393864().then(async () => {
+            // HERE IS THE FIX: Using the new function name that matches the new Zone ID
+            if(typeof window.show_10352978 === 'function') {
+                window.show_10352978().then(async () => {
                     try {
                         const reward = appConfig.adReward; 
                         await updateDoc(doc(db, "users", currentUser.uid), {
@@ -717,7 +718,6 @@
                         showToast(`Success! +${reward.toFixed(2)} Taka Added.`);
                     } catch (err) {
                         console.error("DB Error", err);
-                        // Even if DB fails visually, we assume success for UX if ad watched
                     }
                     resetAdButton();
                 }).catch((e) => {
@@ -813,4 +813,3 @@
     </script>
 </body>
 </html>
-
