@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,8 +11,8 @@
     <!-- Telegram Web App SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     
-    <!-- Monetag SDK (Updated) -->
-    <script src='//libtl.com/sdk.js' data-zone='10352978' data-sdk='show_10352978'></script>
+    <!-- Monetag SDK (Updated Correct Zone) -->
+    <script src='//libtl.com/sdk.js' data-zone='10055912' data-sdk='show_10055912'></script>
     
     <!-- Tailwind & Icons -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -50,6 +49,12 @@
         }
         .btn-primary:active { transform: scale(0.97); }
         .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; filter: grayscale(100%); }
+
+        .btn-secondary {
+            background: white; border: 2px solid #E5E7EB; color: #374151;
+            border-radius: 12px; font-weight: 700; transition: all 0.2s;
+        }
+        .btn-secondary:active { transform: scale(0.97); background-color: #F3F4F6; }
 
         .nav-item { color: #9CA3AF; font-size: 10px; display: flex; flex-direction: column; align-items: center; gap: 4px; font-weight: 500; }
         .nav-item.active { color: #2563EB; font-weight: 700; }
@@ -182,9 +187,10 @@
                     </div>
                 </div>
 
+                <!-- MAIN TASK SECTION -->
                 <div class="bg-gray-100 rounded-xl p-4 mb-6">
                     <div class="flex justify-between text-xs text-gray-600 mb-2 font-medium">
-                        <span>Daily Progress</span>
+                        <span>Daily Progress (Main)</span>
                         <span id="progress-text">0/0 completed</span>
                     </div>
                     <div class="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
@@ -206,7 +212,26 @@
                 <button onclick="watchAd()" id="btn-watch-ad" class="w-full py-4 btn-primary flex items-center justify-center gap-2 text-sm shadow-xl shadow-blue-500/20">
                     Watch Ad & Earn <i data-lucide="play-circle" class="fill-white text-blue-500 w-5 h-5"></i>
                 </button>
-                <p class="text-center text-[10px] text-gray-400 mt-3">Reward per Ad: <span id="ad-reward-display" class="font-bold text-gray-600">0.00</span> Taka</p>
+                <p class="text-center text-[10px] text-gray-400 mt-3">Reward: <span id="ad-reward-display" class="font-bold text-gray-600">0.00</span> Taka</p>
+            </div>
+
+            <!-- EXTRA TASK SECTION (NEW: 1 Button, 20 Limit, 0.30 Reward) -->
+            <div class="stat-card mb-4">
+                 <div class="flex items-center gap-2 mb-4">
+                    <div class="p-2 bg-yellow-50 text-yellow-600 rounded-lg"><i data-lucide="star" class="w-4 h-4"></i></div>
+                    <div>
+                        <h3 class="font-bold text-gray-800 text-sm">Extra Task</h3>
+                        <p class="text-[10px] text-gray-400">Additional earning opportunity</p>
+                    </div>
+                    <div class="ml-auto text-right">
+                        <span class="text-xs font-bold text-gray-800" id="extra-progress">0/20</span>
+                        <p class="text-[10px] text-green-500 font-bold">+0.30 Tk</p>
+                    </div>
+                </div>
+                
+                <button onclick="watchExtraAd()" id="btn-extra-ad" class="w-full py-3.5 btn-secondary flex items-center justify-center gap-2 text-sm">
+                    Watch Extra Ad <i data-lucide="play" class="w-4 h-4 text-gray-400"></i>
+                </button>
             </div>
         </div>
 
@@ -489,7 +514,8 @@
                     uid: cred.user.uid, name: n, email: e, balance: 0.00, 
                     totalEarned: 0.00, referralCode: refCode, referralCount: 0, 
                     adsViewed: 0, createdAt: serverTimestamp(),
-                    completedTasks: [], dailyTasks: {}
+                    completedTasks: [], dailyTasks: {},
+                    extraAdsToday: 0 // New counter for extra task
                 });
             } catch(err) { showToast(err.message); document.getElementById('loader').style.display = 'none'; }
         };
@@ -554,7 +580,7 @@
                             return;
                         }
                         updateUI();
-                        loadTasks(); // Update tasks UI based on user data
+                        loadTasks(); 
                     }
                 });
                 navigateTo('view-home');
@@ -579,6 +605,7 @@
             document.getElementById('dash-ads').innerText = userData.adsViewed || 0;
             document.getElementById('ref-percent-banner').innerText = appConfig.referralCommission + "%";
             
+            // MAIN TASK UI
             const adsDone = userData.adsToday || 0;
             const limit = appConfig.dailyAdLimit;
             document.getElementById('daily-limit-display').innerText = limit;
@@ -586,6 +613,11 @@
             document.getElementById('progress-text').innerText = `${adsDone}/${limit} completed`;
             document.getElementById('progress-bar').style.width = `${Math.min((adsDone/limit)*100, 100)}%`;
             document.getElementById('ad-reward-display').innerText = appConfig.adReward.toFixed(2);
+            
+            // EXTRA TASK UI (Limit 20, Reward 0.30)
+            const extraDone = userData.extraAdsToday || 0;
+            const extraLimit = 20;
+            document.getElementById('extra-progress').innerText = `${extraDone}/${extraLimit}`;
             
             document.getElementById('referral-link').value = BOT_URL + userData.referralCode;
             document.getElementById('referral-count').innerText = userData.referralCount || 0;
@@ -601,6 +633,84 @@
             document.getElementById('detail-balance').innerText = bal;
             document.getElementById('detail-total').innerText = tot;
         }
+
+        // --- WATCH MAIN AD (ADMIN CONTROLLED) ---
+        window.watchAd = async () => {
+            const adsToday = userData.adsToday || 0;
+            if(adsToday >= appConfig.dailyAdLimit) {
+                return showToast(`Daily limit of ${appConfig.dailyAdLimit} ads reached!`);
+            }
+            
+            const btn = document.getElementById('btn-watch-ad');
+            btn.disabled = true;
+            btn.innerHTML = `<div class="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent inline-block mr-2"></div> Loading...`;
+            
+            if(typeof window.show_10055912 === 'function') {
+                window.show_10055912().then(async () => {
+                    try {
+                        const reward = appConfig.adReward;
+                        await updateDoc(doc(db, "users", currentUser.uid), {
+                            balance: increment(reward),
+                            totalEarned: increment(reward),
+                            adsViewed: increment(1),
+                            adsToday: increment(1)
+                        });
+                        showToast(`Success! +${reward.toFixed(2)} Taka Added.`);
+                    } catch (err) { console.error(err); }
+                    btn.disabled = false;
+                    btn.innerHTML = `Watch Ad & Earn <i data-lucide="play-circle" class="fill-white text-blue-500 w-5 h-5"></i>`;
+                    lucide.createIcons();
+                }).catch((e) => {
+                    showToast("Ad failed. Try again.");
+                    btn.disabled = false;
+                    btn.innerHTML = `Watch Ad & Earn <i data-lucide="play-circle" class="fill-white text-blue-500 w-5 h-5"></i>`;
+                    lucide.createIcons();
+                });
+            } else {
+                showToast("Ad connecting... please wait");
+                btn.disabled = false;
+            }
+        };
+
+        // --- WATCH EXTRA AD (FIXED 20 LIMIT, 0.30 TK) ---
+        window.watchExtraAd = async () => {
+            const extraLimit = 20;
+            const reward = 0.30;
+            const extraDone = userData.extraAdsToday || 0;
+
+            if(extraDone >= extraLimit) {
+                return showToast("Extra task limit (20) reached today!");
+            }
+
+            const btn = document.getElementById('btn-extra-ad');
+            btn.disabled = true;
+            btn.innerHTML = `<div class="animate-spin rounded-full h-4 w-4 border-2 border-gray-600 border-t-transparent inline-block mr-2"></div>`;
+
+            if(typeof window.show_10055912 === 'function') {
+                window.show_10055912().then(async () => {
+                    try {
+                        await updateDoc(doc(db, "users", currentUser.uid), {
+                            balance: increment(reward),
+                            totalEarned: increment(reward),
+                            adsViewed: increment(1),
+                            extraAdsToday: increment(1)
+                        });
+                        showToast(`Success! +${reward} Taka Added.`);
+                    } catch (err) { console.error(err); }
+                    btn.disabled = false;
+                    btn.innerHTML = `Watch Extra Ad <i data-lucide="play" class="w-4 h-4 text-gray-400"></i>`;
+                    lucide.createIcons();
+                }).catch((e) => {
+                    showToast("Ad failed. Try again.");
+                    btn.disabled = false;
+                    btn.innerHTML = `Watch Extra Ad <i data-lucide="play" class="w-4 h-4 text-gray-400"></i>`;
+                    lucide.createIcons();
+                });
+            } else {
+                showToast("Ad connecting... please wait");
+                btn.disabled = false;
+            }
+        };
 
         // --- TASK SYSTEM LOGIC ---
         function loadTasks() {
@@ -692,51 +802,6 @@
                 showToast("Error saving reward: " + e.message);
             }
         };
-
-        // --- WATCH AD FIX (UPDATED TO MATCH NEW ZONE) ---
-        window.watchAd = async () => {
-            const adsToday = userData.adsToday || 0;
-            if(adsToday >= appConfig.dailyAdLimit) {
-                return showToast(`Daily limit of ${appConfig.dailyAdLimit} ads reached!`);
-            }
-            
-            const btn = document.getElementById('btn-watch-ad');
-            btn.disabled = true;
-            btn.innerHTML = `<div class="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent inline-block mr-2"></div> Loading...`;
-            
-            // HERE IS THE FIX: Using the new function name that matches the new Zone ID
-            if(typeof window.show_10352978 === 'function') {
-                window.show_10352978().then(async () => {
-                    try {
-                        const reward = appConfig.adReward; 
-                        await updateDoc(doc(db, "users", currentUser.uid), {
-                            balance: increment(reward),
-                            totalEarned: increment(reward),
-                            adsViewed: increment(1),
-                            adsToday: increment(1)
-                        });
-                        showToast(`Success! +${reward.toFixed(2)} Taka Added.`);
-                    } catch (err) {
-                        console.error("DB Error", err);
-                    }
-                    resetAdButton();
-                }).catch((e) => {
-                    console.error("Ad Error", e);
-                    showToast("Ad closed or failed. Try again.");
-                    resetAdButton();
-                });
-            } else {
-                showToast("Ad Network Connecting...");
-                setTimeout(() => location.reload(), 2000);
-            }
-        };
-
-        function resetAdButton() {
-            const btn = document.getElementById('btn-watch-ad');
-            btn.disabled = false;
-            btn.innerHTML = `Watch Ad & Earn <i data-lucide="play-circle" class="fill-white text-blue-500 w-5 h-5"></i>`;
-            lucide.createIcons();
-        }
 
         // --- WITHDRAW LOGIC ---
         window.submitWithdraw = async () => {
