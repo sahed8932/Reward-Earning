@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -447,7 +448,24 @@
         let currentUser = null;
         let userData = null;
         
-        // --- DEFAULT CONFIG (Fallback) ---
+        // --- REFERRAL CODE CAPTURE LOGIC (FIXED) ---
+        // Check URL params or Telegram params immediately on load
+        try {
+            const urlParams = new URLSearchParams(window.location.search);
+            let referrerCode = urlParams.get('startapp') || urlParams.get('ref');
+
+            // Check Telegram WebApp param
+            if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.start_param) {
+                referrerCode = window.Telegram.WebApp.initDataUnsafe.start_param;
+            }
+
+            if(referrerCode) {
+                console.log("Referrer found:", referrerCode);
+                sessionStorage.setItem('refCode', referrerCode);
+            }
+        } catch(e) { console.error("Ref error:", e); }
+
+        // --- DEFAULT CONFIG ---
         let appConfig = { 
             adReward: 0.45,
             dailyAdLimit: 31,
@@ -501,22 +519,58 @@
             catch(err) { showToast(err.message); document.getElementById('loader').style.display = 'none'; }
         };
 
+        // --- SIGNUP LOGIC (FIXED FOR REFERRALS) ---
         window.handleSignup = async () => {
             const n = document.getElementById('signup-name').value;
             const e = document.getElementById('signup-email').value;
             const p = document.getElementById('signup-password').value;
             if(!n || !e || !p) return showToast("Fill all fields");
             document.getElementById('loader').style.display = 'flex';
+            
             try {
                 const cred = await createUserWithEmailAndPassword(auth, e, p);
                 const refCode = Math.random().toString(36).substr(2,6).toUpperCase();
-                await setDoc(doc(db, "users", cred.user.uid), {
-                    uid: cred.user.uid, name: n, email: e, balance: 0.00, 
-                    totalEarned: 0.00, referralCode: refCode, referralCount: 0, 
-                    adsViewed: 0, createdAt: serverTimestamp(),
-                    completedTasks: [], dailyTasks: {},
-                    extraAdsToday: 0 // New counter for extra task
-                });
+                
+                // Initialize user data object
+                let userDataObj = {
+                    uid: cred.user.uid, 
+                    name: n, 
+                    email: e, 
+                    balance: 0.00, 
+                    totalEarned: 0.00, 
+                    referralCode: refCode, 
+                    referralCount: 0, 
+                    adsViewed: 0, 
+                    createdAt: serverTimestamp(),
+                    completedTasks: [], 
+                    dailyTasks: {},
+                    extraAdsToday: 0,
+                    referredBy: null
+                };
+
+                // Check for stored referral code in session
+                const savedRef = sessionStorage.getItem('refCode');
+                if(savedRef) {
+                    // Find the referrer user
+                    const q = query(collection(db, "users"), where("referralCode", "==", savedRef));
+                    const querySnapshot = await getDocs(q);
+                    
+                    if(!querySnapshot.empty) {
+                        const referrerDoc = querySnapshot.docs[0];
+                        const referrerId = referrerDoc.id;
+                        
+                        // Increment referrer's count
+                        await updateDoc(doc(db, "users", referrerId), {
+                            referralCount: increment(1)
+                        });
+                        
+                        // Mark new user as referred by them
+                        userDataObj.referredBy = savedRef;
+                    }
+                }
+
+                await setDoc(doc(db, "users", cred.user.uid), userDataObj);
+                
             } catch(err) { showToast(err.message); document.getElementById('loader').style.display = 'none'; }
         };
 
