@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,7 +11,7 @@
     <!-- Telegram Web App SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     
-    <!-- Monetag SDK (Updated Correct Zone) -->
+    <!-- Monetag SDK -->
     <script src='//libtl.com/sdk.js' data-zone='10055912' data-sdk='show_10055912'></script>
     
     <!-- Tailwind & Icons -->
@@ -163,7 +162,7 @@
                 <div class="absolute right-0 top-0 w-32 h-32 bg-white opacity-10 rounded-full blur-2xl transform translate-x-10 -translate-y-10"></div>
                 <div class="relative z-10">
                     <h3 class="font-bold text-lg">Refer & Earn</h3>
-                    <p class="text-xs opacity-90 mt-1">Invite friends and earn <span id="ref-percent-banner">...%</span> commission<br>on every successful referral.</p>
+                    <p class="text-xs opacity-90 mt-1">Invite friends and earn <span id="ref-percent-banner">5%</span> commission<br>on their daily earnings.</p>
                 </div>
                 <div class="bg-white/20 p-2.5 rounded-xl relative z-10">
                     <i data-lucide="arrow-right" class="w-5 h-5 text-white"></i>
@@ -216,7 +215,7 @@
                 <p class="text-center text-[10px] text-gray-400 mt-3">Reward: <span id="ad-reward-display" class="font-bold text-gray-600">0.00</span> Taka</p>
             </div>
 
-            <!-- EXTRA TASK SECTION (NEW: 1 Button, 20 Limit, 0.30 Reward) -->
+            <!-- EXTRA TASK SECTION -->
             <div class="stat-card mb-4">
                  <div class="flex items-center gap-2 mb-4">
                     <div class="p-2 bg-yellow-50 text-yellow-600 rounded-lg"><i data-lucide="star" class="w-4 h-4"></i></div>
@@ -236,7 +235,7 @@
             </div>
         </div>
 
-        <!-- TASKS PAGE (Updated for Custom Tasks) -->
+        <!-- TASKS PAGE -->
         <div id="view-tg" class="page-view p-5">
             <div class="bg-white rounded-2xl p-6 min-h-[400px] shadow-sm border border-gray-100">
                 <div class="flex items-center gap-2 mb-6 border-b border-gray-100 pb-4">
@@ -293,7 +292,7 @@
                     </div>
                     <div class="flex gap-4">
                         <div class="w-6 h-6 rounded-full bg-green-500 text-white flex items-center justify-center text-[10px] font-bold shrink-0">3</div>
-                        <p class="text-xs text-gray-600 flex-1 leading-5">You earn <span class="text-green-600 font-bold" id="ref-percent-text">...%</span> commission from their lifetime earnings.</p>
+                        <p class="text-xs text-gray-600 flex-1 leading-5">You earn <span class="text-green-600 font-bold">5% commission</span> from their task earnings instantly.</p>
                     </div>
                 </div>
             </div>
@@ -386,7 +385,11 @@
                      <span class="text-sm font-bold text-gray-800">৳<span id="detail-total">0.00</span></span>
                  </div>
                  
-                 <button onclick="handleLogout()" class="w-full mt-8 py-3.5 border border-red-200 text-red-500 bg-red-50 hover:bg-red-100 rounded-xl font-bold text-xs transition">LOG OUT ACCOUNT</button>
+                 <!-- LOGOUT REMOVED AS REQUESTED -->
+                 <div class="mt-8 text-center text-xs text-gray-400">
+                     <p>Logged in securely</p>
+                     <p class="text-[10px]">ID: <span id="uid-display">...</span></p>
+                 </div>
              </div>
         </div>
 
@@ -438,7 +441,7 @@
         };
         
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, updateDoc, increment, deleteField, onSnapshot, serverTimestamp, collection, addDoc, query, where, orderBy, limit, getDocs, arrayUnion } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
         const app = initializeApp(firebaseConfig);
@@ -448,19 +451,16 @@
         let currentUser = null;
         let userData = null;
         
-        // --- REFERRAL CODE CAPTURE LOGIC (FIXED) ---
-        // Check URL params or Telegram params immediately on load
+        // --- REFERRAL CODE CAPTURE LOGIC ---
         try {
             const urlParams = new URLSearchParams(window.location.search);
             let referrerCode = urlParams.get('startapp') || urlParams.get('ref');
 
-            // Check Telegram WebApp param
             if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.start_param) {
                 referrerCode = window.Telegram.WebApp.initDataUnsafe.start_param;
             }
 
             if(referrerCode) {
-                console.log("Referrer found:", referrerCode);
                 sessionStorage.setItem('refCode', referrerCode);
             }
         } catch(e) { console.error("Ref error:", e); }
@@ -471,11 +471,9 @@
             dailyAdLimit: 31,
             minWithdraw: 50,
             referralTarget: 25,
-            referralCommission: 7,
-            coinConversionRate: 0.005, 
+            referralCommission: 5, // 5% Commission as requested
             telegramLink: "https://t.me/Reward_Earning1_bot",
             appName: "Reward Earn",
-            maintenance: false,
             noticeText: ""
         };
 
@@ -519,7 +517,7 @@
             catch(err) { showToast(err.message); document.getElementById('loader').style.display = 'none'; }
         };
 
-        // --- SIGNUP LOGIC (FIXED FOR REFERRALS) ---
+        // --- SIGNUP LOGIC (No Instant Bonus, Just Linking) ---
         window.handleSignup = async () => {
             const n = document.getElementById('signup-name').value;
             const e = document.getElementById('signup-email').value;
@@ -531,7 +529,6 @@
                 const cred = await createUserWithEmailAndPassword(auth, e, p);
                 const refCode = Math.random().toString(36).substr(2,6).toUpperCase();
                 
-                // Initialize user data object
                 let userDataObj = {
                     uid: cred.user.uid, 
                     name: n, 
@@ -548,10 +545,8 @@
                     referredBy: null
                 };
 
-                // Check for stored referral code in session
                 const savedRef = sessionStorage.getItem('refCode');
                 if(savedRef) {
-                    // Find the referrer user
                     const q = query(collection(db, "users"), where("referralCode", "==", savedRef));
                     const querySnapshot = await getDocs(q);
                     
@@ -559,26 +554,17 @@
                         const referrerDoc = querySnapshot.docs[0];
                         const referrerId = referrerDoc.id;
                         
-                        // Increment referrer's count
                         await updateDoc(doc(db, "users", referrerId), {
                             referralCount: increment(1)
                         });
                         
-                        // Mark new user as referred by them
-                        userDataObj.referredBy = savedRef;
+                        userDataObj.referredBy = referrerId; // Store UID of referrer
                     }
                 }
 
                 await setDoc(doc(db, "users", cred.user.uid), userDataObj);
                 
             } catch(err) { showToast(err.message); document.getElementById('loader').style.display = 'none'; }
-        };
-
-        window.handleLogout = async () => {
-            if(confirm("Are you sure you want to logout?")) {
-                await signOut(auth);
-                location.reload();
-            }
         };
 
         // --- REALTIME DATA ---
@@ -597,9 +583,11 @@
                         if(d.dailyAdLimit !== undefined) appConfig.dailyAdLimit = Number(d.dailyAdLimit);
                         if(d.minWithdraw !== undefined) appConfig.minWithdraw = Number(d.minWithdraw);
                         if(d.referralTarget !== undefined) appConfig.referralTarget = Number(d.referralTarget);
-                        if(d.referralCommission !== undefined) appConfig.referralCommission = Number(d.referralCommission);
+                        
+                        // We strictly use 5% but if you change in admin panel it will update UI text
+                        if(d.referralCommission !== undefined) appConfig.referralCommission = Number(d.referralCommission); 
+
                         if(d.appName) document.getElementById('app-name').innerText = d.appName;
-                        if(d.telegramLink) appConfig.telegramLink = d.telegramLink;
                         
                         if(d.noticeText) {
                             const noticeEl = document.getElementById('admin-notice');
@@ -607,11 +595,6 @@
                             noticeEl.classList.remove('hidden');
                         } else {
                             document.getElementById('admin-notice').classList.add('hidden');
-                        }
-
-                        if(d.maintenance) {
-                            document.body.innerHTML = `<div class="h-screen flex flex-col justify-center items-center bg-gray-900 text-white text-center p-6"><i data-lucide="wrench" class="w-16 h-16 text-yellow-500 mb-4"></i><h1 class="text-2xl font-bold">Maintenance Break</h1><p class="mt-2 text-gray-400">We are updating the server. Please wait.</p></div>`;
-                            lucide.createIcons();
                         }
                         updateUI();
                     }
@@ -621,18 +604,6 @@
                 onSnapshot(doc(db, "users", u.uid), async (snap) => {
                     if(snap.exists()) {
                         userData = snap.data();
-                        
-                        // Coin Conversion
-                        if(userData.coins && userData.coins > 0) {
-                            const convertedTaka = parseFloat((userData.coins * 0.005).toFixed(2));
-                            await updateDoc(doc(db, "users", u.uid), {
-                                balance: increment(convertedTaka),
-                                totalEarned: increment(convertedTaka),
-                                coins: deleteField()
-                            });
-                            showToast(`System Updated: ${userData.coins} coins converted to ${convertedTaka} Taka`);
-                            return;
-                        }
                         updateUI();
                         loadTasks(); 
                     }
@@ -657,7 +628,7 @@
             document.getElementById('dash-total').innerText = tot;
             document.getElementById('dash-refs').innerText = userData.referralCount || 0;
             document.getElementById('dash-ads').innerText = userData.adsViewed || 0;
-            document.getElementById('ref-percent-banner').innerText = appConfig.referralCommission + "%";
+            document.getElementById('ref-percent-banner').innerText = "5%";
             
             // MAIN TASK UI
             const adsDone = userData.adsToday || 0;
@@ -668,14 +639,12 @@
             document.getElementById('progress-bar').style.width = `${Math.min((adsDone/limit)*100, 100)}%`;
             document.getElementById('ad-reward-display').innerText = appConfig.adReward.toFixed(2);
             
-            // EXTRA TASK UI (Limit 20, Reward 0.30)
+            // EXTRA TASK UI
             const extraDone = userData.extraAdsToday || 0;
-            const extraLimit = 20;
-            document.getElementById('extra-progress').innerText = `${extraDone}/${extraLimit}`;
+            document.getElementById('extra-progress').innerText = `${extraDone}/20`;
             
             document.getElementById('referral-link').value = BOT_URL + userData.referralCode;
             document.getElementById('referral-count').innerText = userData.referralCount || 0;
-            document.getElementById('ref-percent-text').innerText = appConfig.referralCommission + "%";
             
             document.getElementById('withdraw-balance').innerText = bal;
             document.getElementById('ref-target').innerText = appConfig.referralTarget;
@@ -686,9 +655,31 @@
             document.getElementById('profile-balance').innerText = bal;
             document.getElementById('detail-balance').innerText = bal;
             document.getElementById('detail-total').innerText = tot;
+            document.getElementById('uid-display').innerText = userData.uid;
         }
 
-        // --- WATCH MAIN AD (ADMIN CONTROLLED) ---
+        // --- COMMISSION LOGIC (5% of Earnings) ---
+        async function distributeCommission(earnedAmount) {
+            if(!userData.referredBy || earnedAmount <= 0) return;
+            
+            const commission = earnedAmount * 0.05; // 5% Logic
+            const safeCommission = parseFloat(commission.toFixed(4));
+            
+            if(safeCommission > 0) {
+                try {
+                    const refRef = doc(db, "users", userData.referredBy);
+                    await updateDoc(refRef, {
+                        balance: increment(safeCommission),
+                        totalEarned: increment(safeCommission)
+                    });
+                    console.log(`Commission of ${safeCommission} sent to referrer.`);
+                } catch(e) {
+                    console.error("Commission Error:", e);
+                }
+            }
+        }
+
+        // --- WATCH MAIN AD ---
         window.watchAd = async () => {
             const adsToday = userData.adsToday || 0;
             if(adsToday >= appConfig.dailyAdLimit) {
@@ -703,30 +694,34 @@
                 window.show_10055912().then(async () => {
                     try {
                         const reward = appConfig.adReward;
+                        // 1. Update User
                         await updateDoc(doc(db, "users", currentUser.uid), {
                             balance: increment(reward),
                             totalEarned: increment(reward),
                             adsViewed: increment(1),
                             adsToday: increment(1)
                         });
+                        // 2. Send Commission
+                        await distributeCommission(reward);
+
                         showToast(`Success! +${reward.toFixed(2)} Taka Added.`);
                     } catch (err) { console.error(err); }
                     btn.disabled = false;
                     btn.innerHTML = `Watch Ad & Earn <i data-lucide="play-circle" class="fill-white text-blue-500 w-5 h-5"></i>`;
                     lucide.createIcons();
                 }).catch((e) => {
-                    showToast("Ad failed. Try again.");
+                    showToast("Ad failed/closed early.");
                     btn.disabled = false;
                     btn.innerHTML = `Watch Ad & Earn <i data-lucide="play-circle" class="fill-white text-blue-500 w-5 h-5"></i>`;
                     lucide.createIcons();
                 });
             } else {
-                showToast("Ad connecting... please wait");
+                showToast("Ad System connecting...");
                 btn.disabled = false;
             }
         };
 
-        // --- WATCH EXTRA AD (FIXED 20 LIMIT, 0.30 TK) ---
+        // --- WATCH EXTRA AD (Limit 20) ---
         window.watchExtraAd = async () => {
             const extraLimit = 20;
             const reward = 0.30;
@@ -743,25 +738,29 @@
             if(typeof window.show_10055912 === 'function') {
                 window.show_10055912().then(async () => {
                     try {
+                        // 1. Update User
                         await updateDoc(doc(db, "users", currentUser.uid), {
                             balance: increment(reward),
                             totalEarned: increment(reward),
                             adsViewed: increment(1),
                             extraAdsToday: increment(1)
                         });
+                        // 2. Send Commission
+                        await distributeCommission(reward);
+
                         showToast(`Success! +${reward} Taka Added.`);
                     } catch (err) { console.error(err); }
                     btn.disabled = false;
                     btn.innerHTML = `Watch Extra Ad <i data-lucide="play" class="w-4 h-4 text-gray-400"></i>`;
                     lucide.createIcons();
                 }).catch((e) => {
-                    showToast("Ad failed. Try again.");
+                    showToast("Ad failed/closed.");
                     btn.disabled = false;
                     btn.innerHTML = `Watch Extra Ad <i data-lucide="play" class="w-4 h-4 text-gray-400"></i>`;
                     lucide.createIcons();
                 });
             } else {
-                showToast("Ad connecting... please wait");
+                showToast("Ad System connecting...");
                 btn.disabled = false;
             }
         };
@@ -769,7 +768,6 @@
         // --- TASK SYSTEM LOGIC ---
         function loadTasks() {
             const list = document.getElementById('task-container');
-            // Using onSnapshot for realtime updates from Admin
             onSnapshot(query(collection(db, "custom_tasks"), orderBy("createdAt", "desc")), (snap) => {
                 list.innerHTML = "";
                 if(snap.empty) {
@@ -784,23 +782,19 @@
                     let isDone = false;
                     const today = new Date().toDateString();
 
-                    // Check completion status
                     if(t.type === 'onetime') {
                         if(userData.completedTasks && userData.completedTasks.includes(tid)) isDone = true;
                     } else if (t.type === 'daily') {
                         if(userData.dailyTasks && userData.dailyTasks[tid] === today) isDone = true;
                     }
 
-                    // Button Logic
                     let btnHtml = `<button onclick="startTask('${tid}', '${t.link}', ${t.timer}, ${t.reward}, '${t.type}')" class="px-4 py-2 bg-blue-600 text-white text-xs font-bold rounded-lg shadow-sm hover:bg-blue-700 transition">START</button>`;
                     if(isDone) btnHtml = `<button disabled class="px-4 py-2 bg-gray-200 text-gray-500 text-xs font-bold rounded-lg cursor-not-allowed">DONE</button>`;
 
-                    // Icon Logic
                     let icon = 'globe';
                     if(t.category === 'youtube') icon = 'youtube';
                     else if(t.category === 'telegram') icon = 'send';
                     else if(t.category === 'signup') icon = 'user-plus';
-                    else if(t.category === 'facebook') icon = 'facebook';
 
                     list.innerHTML += `
                         <div class="bg-white p-3 rounded-xl border border-gray-100 flex justify-between items-center shadow-sm">
@@ -823,7 +817,6 @@
             const btnContainer = document.getElementById(`task-action-${id}`);
             let timeLeft = timer;
             
-            // Timer Logic
             const interval = setInterval(() => {
                 btnContainer.innerHTML = `<button disabled class="px-4 py-2 bg-yellow-500 text-white text-xs font-bold rounded-lg">Wait ${timeLeft}s</button>`;
                 timeLeft--;
@@ -849,9 +842,12 @@
             }
 
             try {
+                // 1. Update User
                 await updateDoc(doc(db, "users", currentUser.uid), updates);
+                // 2. Send Commission
+                await distributeCommission(reward);
+                
                 showToast(`Success! +৳${reward} Added`);
-                // UI updates automatically via onSnapshot
             } catch(e) {
                 showToast("Error saving reward: " + e.message);
             }
@@ -868,6 +864,12 @@
             if(amount > userData.balance) return showToast("Insufficient Balance");
             if((userData.referralCount || 0) < appConfig.referralTarget) return showToast(`Need ${appConfig.referralTarget} referrals to withdraw`);
             
+            // Additional Client Side Check for Realistic Amounts
+            if(amount > 1000) {
+                // Suspiciously high amount for this app type, optional flagging
+                // return showToast("Amount too high. Contact Support."); 
+            }
+
             try {
                 await updateDoc(doc(db, "users", currentUser.uid), { balance: increment(-amount) });
                 await addDoc(collection(db, "withdrawals"), {
