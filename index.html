@@ -517,7 +517,7 @@
             catch(err) { showToast(err.message); document.getElementById('loader').style.display = 'none'; }
         };
 
-        // --- SIGNUP LOGIC (No Instant Bonus, Just Linking) ---
+        // --- SIGNUP LOGIC (Added lastActiveDate init) ---
         window.handleSignup = async () => {
             const n = document.getElementById('signup-name').value;
             const e = document.getElementById('signup-email').value;
@@ -542,6 +542,8 @@
                     completedTasks: [], 
                     dailyTasks: {},
                     extraAdsToday: 0,
+                    adsToday: 0, // Explicitly set to 0
+                    lastActiveDate: new Date().toDateString(), // Track Date
                     referredBy: null
                 };
 
@@ -558,7 +560,7 @@
                             referralCount: increment(1)
                         });
                         
-                        userDataObj.referredBy = referrerId; // Store UID of referrer
+                        userDataObj.referredBy = referrerId;
                     }
                 }
 
@@ -567,7 +569,7 @@
             } catch(err) { showToast(err.message); document.getElementById('loader').style.display = 'none'; }
         };
 
-        // --- REALTIME DATA ---
+        // --- REALTIME DATA (Added Date Check Logic) ---
         onAuthStateChanged(auth, (u) => {
             if(u) {
                 currentUser = u;
@@ -583,10 +585,7 @@
                         if(d.dailyAdLimit !== undefined) appConfig.dailyAdLimit = Number(d.dailyAdLimit);
                         if(d.minWithdraw !== undefined) appConfig.minWithdraw = Number(d.minWithdraw);
                         if(d.referralTarget !== undefined) appConfig.referralTarget = Number(d.referralTarget);
-                        
-                        // We strictly use 5% but if you change in admin panel it will update UI text
                         if(d.referralCommission !== undefined) appConfig.referralCommission = Number(d.referralCommission); 
-
                         if(d.appName) document.getElementById('app-name').innerText = d.appName;
                         
                         if(d.noticeText) {
@@ -600,10 +599,32 @@
                     }
                 });
 
-                // User Data Listener
+                // User Data Listener (WITH RESET LOGIC)
                 onSnapshot(doc(db, "users", u.uid), async (snap) => {
                     if(snap.exists()) {
                         userData = snap.data();
+
+                        // --- FIX: CHECK DATE AND RESET IF NEW DAY ---
+                        const todayStr = new Date().toDateString();
+                        const lastDate = userData.lastActiveDate || ""; // Default empty if not exists
+
+                        if(lastDate !== todayStr) {
+                            // Date mismatch = New Day. Reset Counters.
+                            // We use 'updateDoc' which will trigger this snapshot again with corrected values.
+                            try {
+                                await updateDoc(doc(db, "users", u.uid), {
+                                    adsToday: 0,
+                                    extraAdsToday: 0,
+                                    lastActiveDate: todayStr
+                                });
+                                console.log("Daily limits reset for new day.");
+                                return; // Stop execution, wait for next snapshot update
+                            } catch(e) {
+                                console.error("Error resetting daily limits", e);
+                            }
+                        }
+                        // ---------------------------------------------
+
                         updateUI();
                         loadTasks(); 
                     }
@@ -699,7 +720,8 @@
                             balance: increment(reward),
                             totalEarned: increment(reward),
                             adsViewed: increment(1),
-                            adsToday: increment(1)
+                            adsToday: increment(1),
+                            lastActiveDate: new Date().toDateString() // Ensure date is set
                         });
                         // 2. Send Commission
                         await distributeCommission(reward);
@@ -743,7 +765,8 @@
                             balance: increment(reward),
                             totalEarned: increment(reward),
                             adsViewed: increment(1),
-                            extraAdsToday: increment(1)
+                            extraAdsToday: increment(1),
+                            lastActiveDate: new Date().toDateString() // Ensure date is set
                         });
                         // 2. Send Commission
                         await distributeCommission(reward);
