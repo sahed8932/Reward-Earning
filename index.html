@@ -8,11 +8,14 @@
     <!-- Monetag Tag -->
     <meta name="monetag" content="d500febeec02101b4d579166dcc59473">
     
+    <!-- Monetag 4 Zones Scripts -->
+    <script src='//libtl.com/sdk.js' data-zone='10393864' data-sdk='show_10393864'></script>
+    <script src='//libtl.com/sdk.js' data-zone='10375044' data-sdk='show_10375044'></script>
+    <script src='//libtl.com/sdk.js' data-zone='10352978' data-sdk='show_10352978'></script>
+    <script src='//libtl.com/sdk.js' data-zone='10055912' data-sdk='show_10055912'></script>
+    
     <!-- Telegram Web App SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    
-    <!-- Monetag SDK -->
-    <script src='//libtl.com/sdk.js' data-zone='10055912' data-sdk='show_10055912'></script>
     
     <!-- Tailwind & Icons -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -28,7 +31,6 @@
                         darkHeader: '#1F222A',
                         bgLight: '#F3F4F6',
                         cardWhite: '#FFFFFF',
-                        accentPurple: '#7C3AED'
                     }
                 }
             }
@@ -50,12 +52,6 @@
         .btn-primary:active { transform: scale(0.97); }
         .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; filter: grayscale(100%); }
 
-        .btn-secondary {
-            background: white; border: 2px solid #E5E7EB; color: #374151;
-            border-radius: 12px; font-weight: 700; transition: all 0.2s;
-        }
-        .btn-secondary:active { transform: scale(0.97); background-color: #F3F4F6; }
-
         .nav-item { color: #9CA3AF; font-size: 10px; display: flex; flex-direction: column; align-items: center; gap: 4px; font-weight: 500; }
         .nav-item.active { color: #2563EB; font-weight: 700; }
         
@@ -68,6 +64,12 @@
             background: #F9FAFB; outline: none; transition: 0.3s; font-size: 14px;
         }
         .input-field:focus { border-color: #2563EB; background: #fff; }
+
+        /* Banner Container for Adsterra */
+        .banner-container {
+            width: 100%; display: flex; justify-content: center; overflow: hidden; margin-bottom: 20px;
+            background: #fff; padding: 10px 0; border-radius: 12px; border: 1px dashed #cbd5e1;
+        }
     </style>
 </head>
 <body class="max-w-md mx-auto min-h-screen relative bg-[#F3F4F6]">
@@ -94,7 +96,6 @@
         </div>
         <div class="flex gap-4">
              <button onclick="location.reload()"><i data-lucide="rotate-cw" class="w-5 h-5 text-gray-400"></i></button>
-             <i data-lucide="more-vertical" class="w-5 h-5 text-gray-400"></i>
         </div>
     </div>
 
@@ -133,6 +134,21 @@
         
         <!-- HOME PAGE -->
         <div id="view-home" class="page-view active p-5">
+            
+            <!-- Adsterra Banner -->
+            <div class="banner-container">
+                <script type="text/javascript">
+                    atOptions = {
+                        'key' : 'f6889c0d46bfecd9364466833db17e7f',
+                        'format' : 'iframe',
+                        'height' : 250,
+                        'width' : 300,
+                        'params' : {}
+                    };
+                </script>
+                <script type="text/javascript" src="https://www.highperformanceformat.com/f6889c0d46bfecd9364466833db17e7f/invoke.js"></script>
+            </div>
+
             <h2 class="text-xl font-medium text-gray-800 mb-1">Welcome back, <span id="display-name" class="font-bold">...</span>!</h2>
             <p class="text-xs text-gray-500 mb-6">Complete Tasks To Earn Real Taka</p>
 
@@ -162,7 +178,7 @@
                 <div class="absolute right-0 top-0 w-32 h-32 bg-white opacity-10 rounded-full blur-2xl transform translate-x-10 -translate-y-10"></div>
                 <div class="relative z-10">
                     <h3 class="font-bold text-lg">Refer & Earn</h3>
-                    <p class="text-xs opacity-90 mt-1">Invite friends and earn <span id="ref-percent-banner">5%</span> commission<br>on their daily earnings.</p>
+                    <p class="text-xs opacity-90 mt-1">Invite friends and earn <span id="ref-percent-banner">5%</span> commission.</p>
                 </div>
                 <div class="bg-white/20 p-2.5 rounded-xl relative z-10">
                     <i data-lucide="arrow-right" class="w-5 h-5 text-white"></i>
@@ -172,66 +188,87 @@
             <div id="admin-notice" class="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-xl text-xs text-yellow-800 hidden"></div>
         </div>
 
-        <!-- EARN PAGE (WATCH ADS) -->
+        <!-- EARN PAGE -->
         <div id="view-earn" class="page-view p-5">
-            <div class="stat-card mb-4 relative overflow-hidden">
-                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 to-purple-500"></div>
-                <p class="text-gray-500 text-xs mb-5 mt-2">Earn money by watching short video advertisements.</p>
-                
-                <div class="flex gap-3 mb-6">
-                    <div class="bg-purple-50 px-4 py-2.5 rounded-xl flex items-center gap-2 text-purple-700 text-xs font-bold border border-purple-100">
-                        <i data-lucide="clock" class="w-3.5 h-3.5"></i> 0 sec
-                    </div>
-                    <div class="bg-purple-50 px-4 py-2.5 rounded-xl flex items-center gap-2 text-purple-700 text-xs font-bold border border-purple-100">
-                        <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> 24 Hourly
-                    </div>
-                </div>
-
-                <!-- MAIN TASK SECTION -->
-                <div class="bg-gray-100 rounded-xl p-4 mb-6">
-                    <div class="flex justify-between text-xs text-gray-600 mb-2 font-medium">
-                        <span>Daily Progress (Main)</span>
-                        <span id="progress-text">0/0 completed</span>
-                    </div>
-                    <div class="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
-                        <div id="progress-bar" class="bg-blue-600 h-2.5 rounded-full transition-all duration-500 ease-out" style="width: 0%"></div>
-                    </div>
-                </div>
-
-                <div class="flex gap-4 mb-6">
-                    <div class="flex-1 bg-gray-50 p-4 rounded-2xl text-center border border-gray-100">
-                        <p class="text-[10px] text-gray-400 uppercase font-bold mb-1 tracking-wider">DAILY LIMIT</p>
-                        <h3 class="text-2xl font-black text-purple-700" id="daily-limit-display">0</h3>
-                    </div>
-                    <div class="flex-1 bg-gray-50 p-4 rounded-2xl text-center border border-gray-100">
-                        <p class="text-[10px] text-gray-400 uppercase font-bold mb-1 tracking-wider">COMPLETED</p>
-                        <h3 class="text-2xl font-black text-purple-700" id="earn-compiled">0</h3>
-                    </div>
-                </div>
-
-                <button onclick="watchAd()" id="btn-watch-ad" class="w-full py-4 btn-primary flex items-center justify-center gap-2 text-sm shadow-xl shadow-blue-500/20">
-                    Watch Ad & Earn <i data-lucide="play-circle" class="fill-white text-blue-500 w-5 h-5"></i>
-                </button>
-                <p class="text-center text-[10px] text-gray-400 mt-3">Reward: <span id="ad-reward-display" class="font-bold text-gray-600">0.00</span> Taka</p>
+            
+            <!-- Adsterra Banner -->
+            <div class="banner-container">
+                <script type="text/javascript">
+                    atOptions = {
+                        'key' : 'f6889c0d46bfecd9364466833db17e7f',
+                        'format' : 'iframe',
+                        'height' : 250,
+                        'width' : 300,
+                        'params' : {}
+                    };
+                </script>
+                <script type="text/javascript" src="https://www.highperformanceformat.com/f6889c0d46bfecd9364466833db17e7f/invoke.js"></script>
             </div>
 
-            <!-- EXTRA TASK SECTION -->
-            <div class="stat-card mb-4">
-                 <div class="flex items-center gap-2 mb-4">
-                    <div class="p-2 bg-yellow-50 text-yellow-600 rounded-lg"><i data-lucide="star" class="w-4 h-4"></i></div>
-                    <div>
-                        <h3 class="font-bold text-gray-800 text-sm">Extra Task</h3>
-                        <p class="text-[10px] text-gray-400">Additional earning opportunity</p>
-                    </div>
-                    <div class="ml-auto text-right">
-                        <span class="text-xs font-bold text-gray-800" id="extra-progress">0/20</span>
-                        <p class="text-[10px] text-green-500 font-bold">+0.30 Tk</p>
-                    </div>
-                </div>
+            <div class="stat-card mb-4 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 to-purple-500"></div>
+                <p class="text-gray-500 text-xs mb-5 mt-2">Earn money by watching ads from different servers.</p>
                 
-                <button onclick="watchExtraAd()" id="btn-extra-ad" class="w-full py-3.5 btn-secondary flex items-center justify-center gap-2 text-sm">
-                    Watch Extra Ad <i data-lucide="play" class="w-4 h-4 text-gray-400"></i>
-                </button>
+                <!-- ZONE 1 -->
+                <div class="bg-gray-100 rounded-xl p-4 mb-4 border border-gray-200">
+                    <div class="flex justify-between items-center mb-2">
+                        <div class="flex items-center gap-2">
+                            <span class="p-1.5 bg-blue-100 text-blue-600 rounded"><i data-lucide="server" class="w-4 h-4"></i></span>
+                            <h3 class="font-bold text-gray-700 text-sm">Server 1</h3>
+                        </div>
+                        <span class="text-xs font-bold text-gray-500" id="limit-z1">0/0</span>
+                    </div>
+                    <button onclick="watchZone(1, 'show_10393864')" id="btn-z1" class="w-full py-3 btn-primary text-sm flex items-center justify-center gap-2 shadow-blue-500/20">
+                        Watch Ad <i data-lucide="play-circle" class="w-4 h-4"></i>
+                    </button>
+                    <p class="text-[10px] text-center text-gray-400 mt-2">Reward: ৳<span id="reward-z1">0.00</span></p>
+                </div>
+
+                <!-- ZONE 2 -->
+                <div class="bg-gray-100 rounded-xl p-4 mb-4 border border-gray-200">
+                    <div class="flex justify-between items-center mb-2">
+                        <div class="flex items-center gap-2">
+                            <span class="p-1.5 bg-purple-100 text-purple-600 rounded"><i data-lucide="zap" class="w-4 h-4"></i></span>
+                            <h3 class="font-bold text-gray-700 text-sm">Server 2</h3>
+                        </div>
+                        <span class="text-xs font-bold text-gray-500" id="limit-z2">0/0</span>
+                    </div>
+                    <button onclick="watchZone(2, 'show_10375044')" id="btn-z2" class="w-full py-3 btn-primary bg-gradient-to-r from-purple-600 to-indigo-600 text-sm flex items-center justify-center gap-2">
+                        Watch Ad <i data-lucide="play-circle" class="w-4 h-4"></i>
+                    </button>
+                    <p class="text-[10px] text-center text-gray-400 mt-2">Reward: ৳<span id="reward-z2">0.00</span></p>
+                </div>
+
+                <!-- ZONE 3 -->
+                <div class="bg-gray-100 rounded-xl p-4 mb-4 border border-gray-200">
+                    <div class="flex justify-between items-center mb-2">
+                        <div class="flex items-center gap-2">
+                            <span class="p-1.5 bg-green-100 text-green-600 rounded"><i data-lucide="globe" class="w-4 h-4"></i></span>
+                            <h3 class="font-bold text-gray-700 text-sm">Server 3</h3>
+                        </div>
+                        <span class="text-xs font-bold text-gray-500" id="limit-z3">0/0</span>
+                    </div>
+                    <button onclick="watchZone(3, 'show_10352978')" id="btn-z3" class="w-full py-3 btn-primary bg-gradient-to-r from-green-500 to-emerald-600 text-sm flex items-center justify-center gap-2">
+                        Watch Ad <i data-lucide="play-circle" class="w-4 h-4"></i>
+                    </button>
+                    <p class="text-[10px] text-center text-gray-400 mt-2">Reward: ৳<span id="reward-z3">0.00</span></p>
+                </div>
+
+                <!-- ZONE 4 -->
+                <div class="bg-gray-100 rounded-xl p-4 border border-gray-200">
+                    <div class="flex justify-between items-center mb-2">
+                        <div class="flex items-center gap-2">
+                            <span class="p-1.5 bg-orange-100 text-orange-600 rounded"><i data-lucide="star" class="w-4 h-4"></i></span>
+                            <h3 class="font-bold text-gray-700 text-sm">Server 4</h3>
+                        </div>
+                        <span class="text-xs font-bold text-gray-500" id="limit-z4">0/0</span>
+                    </div>
+                    <button onclick="watchZone(4, 'show_10055912')" id="btn-z4" class="w-full py-3 btn-primary bg-gradient-to-r from-orange-500 to-red-600 text-sm flex items-center justify-center gap-2">
+                        Watch Ad <i data-lucide="play-circle" class="w-4 h-4"></i>
+                    </button>
+                    <p class="text-[10px] text-center text-gray-400 mt-2">Reward: ৳<span id="reward-z4">0.00</span></p>
+                </div>
+
             </div>
         </div>
 
@@ -242,8 +279,6 @@
                     <i data-lucide="list-checks" class="text-blue-600 w-5 h-5"></i>
                     <h2 class="font-bold text-gray-800">Available Tasks</h2>
                 </div>
-                
-                <!-- Dynamic Task List -->
                 <div id="task-container" class="space-y-4">
                      <div class="text-center py-10 text-gray-400">
                         <i data-lucide="loader" class="w-8 h-8 mx-auto mb-3 animate-spin"></i>
@@ -265,7 +300,6 @@
                     <i data-lucide="send" class="w-4 h-4"></i> Share on Telegram
                 </button>
             </div>
-
             <div class="stat-card mb-6 flex items-center gap-5">
                 <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center text-purple-600">
                     <i data-lucide="users" class="w-6 h-6"></i>
@@ -273,27 +307,6 @@
                 <div>
                     <h3 class="text-2xl font-black text-gray-800" id="referral-count">0</h3>
                     <p class="text-xs text-gray-500 font-medium">Total Active Referrals</p>
-                </div>
-            </div>
-
-            <div class="stat-card">
-                <div class="flex items-center gap-2 mb-5">
-                    <i data-lucide="zap" class="text-orange-500 w-5 h-5 fill-current"></i>
-                    <h3 class="font-bold text-gray-800">How it Works</h3>
-                </div>
-                <div class="space-y-5">
-                    <div class="flex gap-4">
-                        <div class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] font-bold shrink-0">1</div>
-                        <p class="text-xs text-gray-600 flex-1 leading-5">Share your referral link with your friends and family.</p>
-                    </div>
-                    <div class="flex gap-4">
-                        <div class="w-6 h-6 rounded-full bg-purple-600 text-white flex items-center justify-center text-[10px] font-bold shrink-0">2</div>
-                        <p class="text-xs text-gray-600 flex-1 leading-5">Your friend signs up using your link.</p>
-                    </div>
-                    <div class="flex gap-4">
-                        <div class="w-6 h-6 rounded-full bg-green-500 text-white flex items-center justify-center text-[10px] font-bold shrink-0">3</div>
-                        <p class="text-xs text-gray-600 flex-1 leading-5">You earn <span class="text-green-600 font-bold">5% commission</span> from their task earnings instantly.</p>
-                    </div>
                 </div>
             </div>
         </div>
@@ -325,7 +338,7 @@
                 </div>
 
                 <div class="mb-5">
-                    <label class="block text-gray-500 text-[11px] font-bold mb-2 uppercase tracking-wide">Account Number / ID</label>
+                    <label class="block text-gray-500 text-[11px] font-bold mb-2 uppercase tracking-wide">Account Number</label>
                     <input type="text" id="withdraw-address" class="input-field" placeholder="Ex: 017xxxxxxxx (bKash)">
                 </div>
 
@@ -347,7 +360,6 @@
             
             <div id="withdraw-history" class="mt-6 space-y-2">
                 <h4 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 pl-1">Recent History</h4>
-                <!-- History items injected here -->
             </div>
         </div>
 
@@ -385,7 +397,6 @@
                      <span class="text-sm font-bold text-gray-800">৳<span id="detail-total">0.00</span></span>
                  </div>
                  
-                 <!-- LOGOUT REMOVED AS REQUESTED -->
                  <div class="mt-8 text-center text-xs text-gray-400">
                      <p>Logged in securely</p>
                      <p class="text-[10px]">ID: <span id="uid-display">...</span></p>
@@ -451,28 +462,16 @@
         let currentUser = null;
         let userData = null;
         
-        // --- REFERRAL CODE CAPTURE LOGIC ---
-        try {
-            const urlParams = new URLSearchParams(window.location.search);
-            let referrerCode = urlParams.get('startapp') || urlParams.get('ref');
-
-            if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.start_param) {
-                referrerCode = window.Telegram.WebApp.initDataUnsafe.start_param;
-            }
-
-            if(referrerCode) {
-                sessionStorage.setItem('refCode', referrerCode);
-            }
-        } catch(e) { console.error("Ref error:", e); }
-
-        // --- DEFAULT CONFIG ---
+        // --- ADMIN CONTROLLABLE CONFIG ---
+        // এই ভ্যালুগুলো Firebase এর settings/app_config থেকে আপডেট হবে
         let appConfig = { 
-            adReward: 0.45,
-            dailyAdLimit: 31,
-            minWithdraw: 50,
+            limitZ1: 10, rewardZ1: 0.30,
+            limitZ2: 10, rewardZ2: 0.30,
+            limitZ3: 10, rewardZ3: 0.30,
+            limitZ4: 10, rewardZ4: 0.30,
+            minWithdraw: 120, // Default value
             referralTarget: 25,
-            referralCommission: 5, // 5% Commission as requested
-            telegramLink: "https://t.me/Reward_Earning1_bot",
+            referralCommission: 5,
             appName: "Reward Earn",
             noticeText: ""
         };
@@ -506,7 +505,7 @@
                 t.classList.add('opacity-0', '-translate-y-5');
             }, 3000);
         };
-
+        
         // --- AUTH ---
         window.handleLogin = async () => {
             const e = document.getElementById('login-email').value;
@@ -517,7 +516,6 @@
             catch(err) { showToast(err.message); document.getElementById('loader').style.display = 'none'; }
         };
 
-        // --- SIGNUP LOGIC (Added lastActiveDate init) ---
         window.handleSignup = async () => {
             const n = document.getElementById('signup-name').value;
             const e = document.getElementById('signup-email').value;
@@ -537,39 +535,32 @@
                     totalEarned: 0.00, 
                     referralCode: refCode, 
                     referralCount: 0, 
-                    adsViewed: 0, 
                     createdAt: serverTimestamp(),
                     completedTasks: [], 
                     dailyTasks: {},
-                    extraAdsToday: 0,
-                    adsToday: 0, // Explicitly set to 0
-                    lastActiveDate: new Date().toDateString(), // Track Date
-                    referredBy: null
+                    lastActiveDate: new Date().toDateString(), 
+                    referredBy: null,
+                    adsViewed: 0, // Total Ads
+                    // 4 Zones Counters
+                    adsZ1: 0, adsZ2: 0, adsZ3: 0, adsZ4: 0
                 };
 
                 const savedRef = sessionStorage.getItem('refCode');
                 if(savedRef) {
                     const q = query(collection(db, "users"), where("referralCode", "==", savedRef));
                     const querySnapshot = await getDocs(q);
-                    
                     if(!querySnapshot.empty) {
-                        const referrerDoc = querySnapshot.docs[0];
-                        const referrerId = referrerDoc.id;
-                        
-                        await updateDoc(doc(db, "users", referrerId), {
-                            referralCount: increment(1)
-                        });
-                        
+                        const referrerId = querySnapshot.docs[0].id;
+                        await updateDoc(doc(db, "users", referrerId), { referralCount: increment(1) });
                         userDataObj.referredBy = referrerId;
                     }
                 }
 
                 await setDoc(doc(db, "users", cred.user.uid), userDataObj);
-                
             } catch(err) { showToast(err.message); document.getElementById('loader').style.display = 'none'; }
         };
 
-        // --- REALTIME DATA (Added Date Check Logic) ---
+        // --- REALTIME DATA ---
         onAuthStateChanged(auth, (u) => {
             if(u) {
                 currentUser = u;
@@ -577,17 +568,27 @@
                 document.getElementById('app-container').classList.remove('hidden');
                 document.getElementById('bottom-nav').classList.remove('hidden');
                 
-                // Config Listener
+                // Config Listener (SYNC WITH ADMIN)
                 onSnapshot(doc(db, "settings", "app_config"), (snap) => {
                     if(snap.exists()) {
                         const d = snap.data();
-                        if(d.adReward !== undefined) appConfig.adReward = Number(d.adReward);
-                        if(d.dailyAdLimit !== undefined) appConfig.dailyAdLimit = Number(d.dailyAdLimit);
+                        
+                        // Sync 4 Zones
+                        if(d.limitZ1) appConfig.limitZ1 = Number(d.limitZ1);
+                        if(d.limitZ2) appConfig.limitZ2 = Number(d.limitZ2);
+                        if(d.limitZ3) appConfig.limitZ3 = Number(d.limitZ3);
+                        if(d.limitZ4) appConfig.limitZ4 = Number(d.limitZ4);
+                        
+                        if(d.rewardZ1) appConfig.rewardZ1 = Number(d.rewardZ1);
+                        if(d.rewardZ2) appConfig.rewardZ2 = Number(d.rewardZ2);
+                        if(d.rewardZ3) appConfig.rewardZ3 = Number(d.rewardZ3);
+                        if(d.rewardZ4) appConfig.rewardZ4 = Number(d.rewardZ4);
+
+                        // Sync General Settings
+                        if(d.referralCommission !== undefined) appConfig.referralCommission = Number(d.referralCommission);
                         if(d.minWithdraw !== undefined) appConfig.minWithdraw = Number(d.minWithdraw);
                         if(d.referralTarget !== undefined) appConfig.referralTarget = Number(d.referralTarget);
-                        if(d.referralCommission !== undefined) appConfig.referralCommission = Number(d.referralCommission); 
-                        if(d.appName) document.getElementById('app-name').innerText = d.appName;
-                        
+
                         if(d.noticeText) {
                             const noticeEl = document.getElementById('admin-notice');
                             noticeEl.innerText = d.noticeText;
@@ -599,32 +600,22 @@
                     }
                 });
 
-                // User Data Listener (WITH RESET LOGIC)
+                // User Listener
                 onSnapshot(doc(db, "users", u.uid), async (snap) => {
                     if(snap.exists()) {
                         userData = snap.data();
-
-                        // --- FIX: CHECK DATE AND RESET IF NEW DAY ---
+                        
+                        // Check Date for Reset
                         const todayStr = new Date().toDateString();
-                        const lastDate = userData.lastActiveDate || ""; // Default empty if not exists
-
-                        if(lastDate !== todayStr) {
-                            // Date mismatch = New Day. Reset Counters.
-                            // We use 'updateDoc' which will trigger this snapshot again with corrected values.
+                        if(userData.lastActiveDate !== todayStr) {
                             try {
                                 await updateDoc(doc(db, "users", u.uid), {
-                                    adsToday: 0,
-                                    extraAdsToday: 0,
+                                    adsZ1: 0, adsZ2: 0, adsZ3: 0, adsZ4: 0,
                                     lastActiveDate: todayStr
                                 });
-                                console.log("Daily limits reset for new day.");
-                                return; // Stop execution, wait for next snapshot update
-                            } catch(e) {
-                                console.error("Error resetting daily limits", e);
-                            }
+                                return;
+                            } catch(e) { console.error(e); }
                         }
-                        // ---------------------------------------------
-
                         updateUI();
                         loadTasks(); 
                     }
@@ -643,152 +634,117 @@
             const bal = (userData.balance || 0).toFixed(2);
             const tot = (userData.totalEarned || 0).toFixed(2);
             
+            // Header & Home Stats
             document.getElementById('header-balance').innerText = bal;
             document.getElementById('display-name').innerText = userData.name.split(' ')[0];
             document.getElementById('dash-balance').innerText = bal;
             document.getElementById('dash-total').innerText = tot;
             document.getElementById('dash-refs').innerText = userData.referralCount || 0;
-            document.getElementById('dash-ads').innerText = userData.adsViewed || 0;
-            document.getElementById('ref-percent-banner').innerText = "5%";
-            
-            // MAIN TASK UI
-            const adsDone = userData.adsToday || 0;
-            const limit = appConfig.dailyAdLimit;
-            document.getElementById('daily-limit-display').innerText = limit;
-            document.getElementById('earn-compiled').innerText = adsDone;
-            document.getElementById('progress-text').innerText = `${adsDone}/${limit} completed`;
-            document.getElementById('progress-bar').style.width = `${Math.min((adsDone/limit)*100, 100)}%`;
-            document.getElementById('ad-reward-display').innerText = appConfig.adReward.toFixed(2);
-            
-            // EXTRA TASK UI
-            const extraDone = userData.extraAdsToday || 0;
-            document.getElementById('extra-progress').innerText = `${extraDone}/20`;
-            
+            document.getElementById('dash-ads').innerText = userData.adsViewed || 0; 
+
+            document.getElementById('ref-percent-banner').innerText = appConfig.referralCommission + "%";
             document.getElementById('referral-link').value = BOT_URL + userData.referralCode;
             document.getElementById('referral-count').innerText = userData.referralCount || 0;
             
+            // WITHDRAW UI UPDATE (Fixed)
             document.getElementById('withdraw-balance').innerText = bal;
             document.getElementById('ref-target').innerText = appConfig.referralTarget;
-            document.getElementById('withdraw-amount').placeholder = `Min: ${appConfig.minWithdraw}`;
-            
+            document.getElementById('withdraw-amount').placeholder = `Min: ${appConfig.minWithdraw}`; // Now shows admin value
+
             document.getElementById('profile-initial').innerText = userData.name.charAt(0).toUpperCase();
             document.getElementById('profile-name').innerText = userData.name;
             document.getElementById('profile-balance').innerText = bal;
             document.getElementById('detail-balance').innerText = bal;
             document.getElementById('detail-total').innerText = tot;
             document.getElementById('uid-display').innerText = userData.uid;
+
+            // --- 4 TASK UPDATE ---
+            updateZoneButton(1, userData.adsZ1 || 0, appConfig.limitZ1, appConfig.rewardZ1);
+            updateZoneButton(2, userData.adsZ2 || 0, appConfig.limitZ2, appConfig.rewardZ2);
+            updateZoneButton(3, userData.adsZ3 || 0, appConfig.limitZ3, appConfig.rewardZ3);
+            updateZoneButton(4, userData.adsZ4 || 0, appConfig.limitZ4, appConfig.rewardZ4);
         }
 
-        // --- COMMISSION LOGIC (5% of Earnings) ---
+        function updateZoneButton(id, done, limit, reward) {
+            const btn = document.getElementById(`btn-z${id}`);
+            const txt = document.getElementById(`limit-z${id}`);
+            const rew = document.getElementById(`reward-z${id}`);
+            
+            txt.innerText = `${done}/${limit}`;
+            rew.innerText = reward.toFixed(2);
+            
+            if(done >= limit) {
+                btn.disabled = true;
+                btn.classList.add('opacity-50', 'cursor-not-allowed');
+                btn.innerHTML = `Completed <i data-lucide="check" class="w-4 h-4"></i>`;
+            } else {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                btn.innerHTML = `Watch Ad <i data-lucide="play-circle" class="w-4 h-4"></i>`;
+            }
+        }
+
         async function distributeCommission(earnedAmount) {
             if(!userData.referredBy || earnedAmount <= 0) return;
-            
-            const commission = earnedAmount * 0.05; // 5% Logic
-            const safeCommission = parseFloat(commission.toFixed(4));
-            
-            if(safeCommission > 0) {
+            const commission = parseFloat((earnedAmount * (appConfig.referralCommission / 100)).toFixed(4));
+            if(commission > 0) {
                 try {
-                    const refRef = doc(db, "users", userData.referredBy);
-                    await updateDoc(refRef, {
-                        balance: increment(safeCommission),
-                        totalEarned: increment(safeCommission)
+                    await updateDoc(doc(db, "users", userData.referredBy), {
+                        balance: increment(commission),
+                        totalEarned: increment(commission)
                     });
-                    console.log(`Commission of ${safeCommission} sent to referrer.`);
-                } catch(e) {
-                    console.error("Commission Error:", e);
-                }
+                } catch(e) { console.error("Commission Error:", e); }
             }
         }
 
-        // --- WATCH MAIN AD ---
-        window.watchAd = async () => {
-            const adsToday = userData.adsToday || 0;
-            if(adsToday >= appConfig.dailyAdLimit) {
-                return showToast(`Daily limit of ${appConfig.dailyAdLimit} ads reached!`);
-            }
-            
-            const btn = document.getElementById('btn-watch-ad');
+        // --- WATCH AD (GENERIC FUNCTION FOR 4 ZONES) ---
+        window.watchZone = async (zoneNum, sdkMethod) => {
+            const limit = appConfig[`limitZ${zoneNum}`];
+            const reward = appConfig[`rewardZ${zoneNum}`];
+            const current = userData[`adsZ${zoneNum}`] || 0;
+
+            if(current >= limit) return showToast("Daily limit reached for this server!");
+
+            const btn = document.getElementById(`btn-z${zoneNum}`);
+            const originalHtml = btn.innerHTML;
             btn.disabled = true;
-            btn.innerHTML = `<div class="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent inline-block mr-2"></div> Loading...`;
-            
-            if(typeof window.show_10055912 === 'function') {
-                window.show_10055912().then(async () => {
+            btn.innerHTML = `Loading...`;
+
+            if(typeof window[sdkMethod] === 'function') {
+                window[sdkMethod]().then(async () => {
                     try {
-                        const reward = appConfig.adReward;
-                        // 1. Update User
-                        await updateDoc(doc(db, "users", currentUser.uid), {
+                        const updateData = {
                             balance: increment(reward),
                             totalEarned: increment(reward),
-                            adsViewed: increment(1),
-                            adsToday: increment(1),
-                            lastActiveDate: new Date().toDateString() // Ensure date is set
-                        });
-                        // 2. Send Commission
-                        await distributeCommission(reward);
+                            adsViewed: increment(1), // Total Counter
+                            lastActiveDate: new Date().toDateString()
+                        };
+                        updateData[`adsZ${zoneNum}`] = increment(1); // Specific Counter
 
-                        showToast(`Success! +${reward.toFixed(2)} Taka Added.`);
-                    } catch (err) { console.error(err); }
-                    btn.disabled = false;
-                    btn.innerHTML = `Watch Ad & Earn <i data-lucide="play-circle" class="fill-white text-blue-500 w-5 h-5"></i>`;
-                    lucide.createIcons();
-                }).catch((e) => {
-                    showToast("Ad failed/closed early.");
-                    btn.disabled = false;
-                    btn.innerHTML = `Watch Ad & Earn <i data-lucide="play-circle" class="fill-white text-blue-500 w-5 h-5"></i>`;
-                    lucide.createIcons();
-                });
-            } else {
-                showToast("Ad System connecting...");
-                btn.disabled = false;
-            }
-        };
-
-        // --- WATCH EXTRA AD (Limit 20) ---
-        window.watchExtraAd = async () => {
-            const extraLimit = 20;
-            const reward = 0.30;
-            const extraDone = userData.extraAdsToday || 0;
-
-            if(extraDone >= extraLimit) {
-                return showToast("Extra task limit (20) reached today!");
-            }
-
-            const btn = document.getElementById('btn-extra-ad');
-            btn.disabled = true;
-            btn.innerHTML = `<div class="animate-spin rounded-full h-4 w-4 border-2 border-gray-600 border-t-transparent inline-block mr-2"></div>`;
-
-            if(typeof window.show_10055912 === 'function') {
-                window.show_10055912().then(async () => {
-                    try {
-                        // 1. Update User
-                        await updateDoc(doc(db, "users", currentUser.uid), {
-                            balance: increment(reward),
-                            totalEarned: increment(reward),
-                            adsViewed: increment(1),
-                            extraAdsToday: increment(1),
-                            lastActiveDate: new Date().toDateString() // Ensure date is set
-                        });
-                        // 2. Send Commission
+                        await updateDoc(doc(db, "users", currentUser.uid), updateData);
                         await distributeCommission(reward);
 
                         showToast(`Success! +${reward} Taka Added.`);
                     } catch (err) { console.error(err); }
+                    
                     btn.disabled = false;
-                    btn.innerHTML = `Watch Extra Ad <i data-lucide="play" class="w-4 h-4 text-gray-400"></i>`;
+                    btn.innerHTML = originalHtml;
                     lucide.createIcons();
                 }).catch((e) => {
-                    showToast("Ad failed/closed.");
+                    showToast("Ad closed early or failed.");
                     btn.disabled = false;
-                    btn.innerHTML = `Watch Extra Ad <i data-lucide="play" class="w-4 h-4 text-gray-400"></i>`;
+                    btn.innerHTML = originalHtml;
                     lucide.createIcons();
                 });
             } else {
-                showToast("Ad System connecting...");
+                showToast("Ad System Connecting... Try again.");
                 btn.disabled = false;
+                btn.innerHTML = originalHtml;
+                lucide.createIcons();
             }
         };
 
-        // --- TASK SYSTEM LOGIC ---
+        // --- TASKS PAGE LOGIC ---
         function loadTasks() {
             const list = document.getElementById('task-container');
             onSnapshot(query(collection(db, "custom_tasks"), orderBy("createdAt", "desc")), (snap) => {
@@ -798,35 +754,22 @@
                     lucide.createIcons();
                     return;
                 }
-                
                 snap.forEach(d => {
                     const t = d.data();
                     const tid = d.id;
                     let isDone = false;
                     const today = new Date().toDateString();
-
-                    if(t.type === 'onetime') {
-                        if(userData.completedTasks && userData.completedTasks.includes(tid)) isDone = true;
-                    } else if (t.type === 'daily') {
-                        if(userData.dailyTasks && userData.dailyTasks[tid] === today) isDone = true;
-                    }
+                    if(t.type === 'onetime') { if(userData.completedTasks && userData.completedTasks.includes(tid)) isDone = true; } 
+                    else if (t.type === 'daily') { if(userData.dailyTasks && userData.dailyTasks[tid] === today) isDone = true; }
 
                     let btnHtml = `<button onclick="startTask('${tid}', '${t.link}', ${t.timer}, ${t.reward}, '${t.type}')" class="px-4 py-2 bg-blue-600 text-white text-xs font-bold rounded-lg shadow-sm hover:bg-blue-700 transition">START</button>`;
                     if(isDone) btnHtml = `<button disabled class="px-4 py-2 bg-gray-200 text-gray-500 text-xs font-bold rounded-lg cursor-not-allowed">DONE</button>`;
 
-                    let icon = 'globe';
-                    if(t.category === 'youtube') icon = 'youtube';
-                    else if(t.category === 'telegram') icon = 'send';
-                    else if(t.category === 'signup') icon = 'user-plus';
-
                     list.innerHTML += `
                         <div class="bg-white p-3 rounded-xl border border-gray-100 flex justify-between items-center shadow-sm">
                             <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600"><i data-lucide="${icon}" class="w-5 h-5"></i></div>
-                                <div>
-                                    <h4 class="font-bold text-sm text-gray-800">${t.title}</h4>
-                                    <p class="text-[10px] text-gray-500 font-medium">+৳${t.reward} • ${t.type.toUpperCase()}</p>
-                                </div>
+                                <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600"><i data-lucide="globe" class="w-5 h-5"></i></div>
+                                <div><h4 class="font-bold text-sm text-gray-800">${t.title}</h4><p class="text-[10px] text-gray-500 font-medium">+৳${t.reward}</p></div>
                             </div>
                             <div id="task-action-${tid}">${btnHtml}</div>
                         </div>`;
@@ -834,125 +777,62 @@
                 lucide.createIcons();
             });
         }
-
         window.startTask = (id, link, timer, reward, type) => {
             window.open(link, "_blank");
             const btnContainer = document.getElementById(`task-action-${id}`);
             let timeLeft = timer;
-            
             const interval = setInterval(() => {
                 btnContainer.innerHTML = `<button disabled class="px-4 py-2 bg-yellow-500 text-white text-xs font-bold rounded-lg">Wait ${timeLeft}s</button>`;
                 timeLeft--;
-                
                 if(timeLeft < 0) {
                     clearInterval(interval);
                     btnContainer.innerHTML = `<button onclick="claimTask('${id}', ${reward}, '${type}')" class="px-4 py-2 bg-green-500 text-white text-xs font-bold rounded-lg animate-pulse shadow-green-500/30">CLAIM ৳${reward}</button>`;
                 }
             }, 1000);
         };
-
         window.claimTask = async (id, reward, type) => {
             const today = new Date().toDateString();
-            const updates = { 
-                balance: increment(reward), 
-                totalEarned: increment(reward) 
-            };
-            
-            if(type === 'onetime') {
-                updates.completedTasks = arrayUnion(id);
-            } else {
-                updates[`dailyTasks.${id}`] = today;
-            }
-
-            try {
-                // 1. Update User
-                await updateDoc(doc(db, "users", currentUser.uid), updates);
-                // 2. Send Commission
-                await distributeCommission(reward);
-                
-                showToast(`Success! +৳${reward} Added`);
-            } catch(e) {
-                showToast("Error saving reward: " + e.message);
-            }
+            const updates = { balance: increment(reward), totalEarned: increment(reward) };
+            if(type === 'onetime') updates.completedTasks = arrayUnion(id);
+            else updates[`dailyTasks.${id}`] = today;
+            try { await updateDoc(doc(db, "users", currentUser.uid), updates); await distributeCommission(reward); showToast(`Success! +৳${reward} Added`); } 
+            catch(e) { showToast("Error saving reward"); }
         };
 
-        // --- WITHDRAW LOGIC ---
+        // --- WITHDRAW LOGIC (FIXED TO USE SYNCED MIN) ---
         window.submitWithdraw = async () => {
             const amount = parseFloat(document.getElementById('withdraw-amount').value);
             const address = document.getElementById('withdraw-address').value.trim();
             const method = document.getElementById('payment-method').value;
-            
             if(!amount || !address || !method) return showToast("Please fill all details");
+            
+            // Check against configured minimum
             if(amount < appConfig.minWithdraw) return showToast(`Minimum withdraw is ${appConfig.minWithdraw} Taka`);
+            
             if(amount > userData.balance) return showToast("Insufficient Balance");
             if((userData.referralCount || 0) < appConfig.referralTarget) return showToast(`Need ${appConfig.referralTarget} referrals to withdraw`);
-            
-            // Additional Client Side Check for Realistic Amounts
-            if(amount > 1000) {
-                // Suspiciously high amount for this app type, optional flagging
-                // return showToast("Amount too high. Contact Support."); 
-            }
-
             try {
                 await updateDoc(doc(db, "users", currentUser.uid), { balance: increment(-amount) });
-                await addDoc(collection(db, "withdrawals"), {
-                    userId: currentUser.uid, 
-                    amount: amount, 
-                    address: address, 
-                    method: method,
-                    status: 'pending', 
-                    date: serverTimestamp(),
-                    userName: userData.name
-                });
+                await addDoc(collection(db, "withdrawals"), { userId: currentUser.uid, amount, address, method, status: 'pending', date: serverTimestamp(), userName: userData.name });
                 showToast("Withdrawal Request Submitted!");
-                document.getElementById('withdraw-amount').value = "";
-                document.getElementById('withdraw-address').value = "";
                 loadWithdrawHistory();
             } catch(e) { showToast("Error: " + e.message); }
         };
-        
         async function loadWithdrawHistory() {
             const list = document.getElementById('withdraw-history');
             const q = query(collection(db, "withdrawals"), where("userId", "==", currentUser.uid), orderBy("date", "desc"), limit(5));
             const snapshot = await getDocs(q);
-            
             list.innerHTML = `<h4 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 pl-1">Recent History</h4>`;
-            if(snapshot.empty) {
-                list.innerHTML += `<div class="text-center text-gray-400 text-xs py-4">No history found.</div>`;
-                return;
-            }
+            if(snapshot.empty) { list.innerHTML += `<div class="text-center text-gray-400 text-xs py-4">No history found.</div>`; return; }
             snapshot.forEach(d => {
                 const w = d.data();
                 const statusColor = w.status === 'pending' ? 'text-yellow-600 bg-yellow-50' : (w.status === 'paid' ? 'text-green-600 bg-green-50' : 'text-red-600 bg-red-50');
-                list.innerHTML += `
-                    <div class="bg-white p-3 rounded-xl border border-gray-100 flex justify-between items-center">
-                        <div>
-                            <p class="font-bold text-gray-800 text-sm">৳${w.amount}</p>
-                            <p class="text-[10px] text-gray-400 font-medium">${w.method} • ${w.address}</p>
-                        </div>
-                        <span class="${statusColor} px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wide border border-current opacity-80">${w.status}</span>
-                    </div>`;
+                list.innerHTML += `<div class="bg-white p-3 rounded-xl border border-gray-100 flex justify-between items-center mb-2"><div><p class="font-bold text-gray-800 text-sm">৳${w.amount}</p><p class="text-[10px] text-gray-400 font-medium">${w.method}</p></div><span class="${statusColor} px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wide border border-current opacity-80">${w.status}</span></div>`;
             });
         }
 
-        // --- UTILS ---
-        window.copyLink = () => {
-            const copyText = document.getElementById("referral-link");
-            copyText.select();
-            document.execCommand("copy");
-            showToast("Referral Link Copied!");
-        };
-        
-        window.openTelegram = () => { 
-            const refLink = document.getElementById('referral-link').value;
-            if(refLink && refLink.includes('http')) {
-                const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=Join Reward Earn and start earning real money!`;
-                window.open(shareUrl, "_blank");
-            } else {
-                showToast("Link not generated yet!");
-            }
-        };
-
+        window.copyLink = () => { document.getElementById("referral-link").select(); document.execCommand("copy"); showToast("Referral Link Copied!"); };
+        window.openTelegram = () => { const refLink = document.getElementById('referral-link').value; window.open(`https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=Join Reward Earn!`, "_blank"); };
         lucide.createIcons();
     </script>
 </body>
