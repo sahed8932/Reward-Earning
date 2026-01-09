@@ -272,13 +272,15 @@
             </div>
         </div>
 
-        <!-- TASKS PAGE -->
+        <!-- TASKS PAGE (CLEAN) -->
         <div id="view-tg" class="page-view p-5">
             <div class="bg-white rounded-2xl p-6 min-h-[400px] shadow-sm border border-gray-100">
                 <div class="flex items-center gap-2 mb-6 border-b border-gray-100 pb-4">
                     <i data-lucide="list-checks" class="text-blue-600 w-5 h-5"></i>
                     <h2 class="font-bold text-gray-800">Available Tasks</h2>
                 </div>
+                
+                <!-- Dynamic Task List (Only Loads from DB) -->
                 <div id="task-container" class="space-y-4">
                      <div class="text-center py-10 text-gray-400">
                         <i data-lucide="loader" class="w-8 h-8 mx-auto mb-3 animate-spin"></i>
@@ -646,10 +648,10 @@
             document.getElementById('referral-link').value = BOT_URL + userData.referralCode;
             document.getElementById('referral-count').innerText = userData.referralCount || 0;
             
-            // WITHDRAW UI UPDATE (Fixed)
+            // WITHDRAW UI UPDATE
             document.getElementById('withdraw-balance').innerText = bal;
             document.getElementById('ref-target').innerText = appConfig.referralTarget;
-            document.getElementById('withdraw-amount').placeholder = `Min: ${appConfig.minWithdraw}`; // Now shows admin value
+            document.getElementById('withdraw-amount').placeholder = `Min: ${appConfig.minWithdraw}`;
 
             document.getElementById('profile-initial').innerText = userData.name.charAt(0).toUpperCase();
             document.getElementById('profile-name').innerText = userData.name;
@@ -799,7 +801,7 @@
             catch(e) { showToast("Error saving reward"); }
         };
 
-        // --- WITHDRAW LOGIC (FIXED TO USE SYNCED MIN) ---
+        // --- WITHDRAW LOGIC ---
         window.submitWithdraw = async () => {
             const amount = parseFloat(document.getElementById('withdraw-amount').value);
             const address = document.getElementById('withdraw-address').value.trim();
